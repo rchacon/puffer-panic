@@ -13,7 +13,6 @@ export const WORDS: string[] = [
   "go",
   "we",
   "it",
-  "an",
   "as",
   "me",
   "my",
