@@ -49,12 +49,14 @@ export function BattleScene({ sharkProgress, pufferScale, outcome }: Props) {
             transform={`translate(${PUFFER_X} ${PUFFER_Y})`}
             fill="#ffd447"
           >
-            <path d="M0 -60 L9 -20 L0 -34 L-9 -20 Z" />
-            <path d="M60 0 L20 9 L34 0 L20 -9 Z" />
-            <path d="M-60 0 L-20 -9 L-34 0 L-20 9 Z" />
-            <path d="M0 60 L-9 20 L0 34 L9 20 Z" />
-            <path d="M42 -42 L18 -12 L30 -30 L12 -18 Z" />
-            <path d="M-42 42 L-18 12 L-30 30 L-12 18 Z" />
+            <g className="scene__burst-spin">
+              <path d="M0 -60 L9 -20 L0 -34 L-9 -20 Z" />
+              <path d="M60 0 L20 9 L34 0 L20 -9 Z" />
+              <path d="M-60 0 L-20 -9 L-34 0 L-20 9 Z" />
+              <path d="M0 60 L-9 20 L0 34 L9 20 Z" />
+              <path d="M42 -42 L18 -12 L30 -30 L12 -18 Z" />
+              <path d="M-42 42 L-18 12 L-30 30 L-12 18 Z" />
+            </g>
           </g>
         )}
 

@@ -108,12 +108,17 @@ body {
 }
 
 .scene__shark-bob {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: bob 1.6s ease-in-out infinite alternate;
 }
 
 .scene__puffer-bob {
-  animation: bob 2.3s ease-in-out infinite alternate;
+  /* fill-box keeps every scale/rotate pivoting on the fish's own centre so
+     it grows and pulses in place instead of flying toward the viewBox origin. */
+  transform-box: fill-box;
   transform-origin: center;
+  animation: bob 2.3s ease-in-out infinite alternate;
 }
 
 .scene__bubbles circle {
@@ -177,11 +182,12 @@ body {
   animation: flee 1s ease-in 0.15s forwards;
 }
 .scene--victory .scene__puffer-bob {
-  animation: puff 0.7s cubic-bezier(0.2, 1.5, 0.35, 1) forwards;
+  animation: victoryPuff 1.5s cubic-bezier(0.3, 1.2, 0.5, 1) both;
 }
-.scene--victory .scene__burst {
-  animation: sparkle 0.9s ease-out infinite alternate;
+.scene--victory .scene__burst-spin {
+  transform-box: fill-box;
   transform-origin: center;
+  animation: sparkle 0.9s ease-out infinite alternate;
 }
 
 @keyframes chomp {
@@ -211,12 +217,24 @@ body {
     transform: translate(-18px, -4px) scale(0.85);
   }
 }
-@keyframes puff {
-  60% {
-    transform: scale(1.6);
+@keyframes victoryPuff {
+  0% {
+    transform: scale(1);
+  }
+  22% {
+    transform: scale(1.34);
+  }
+  44% {
+    transform: scale(1.12);
+  }
+  64% {
+    transform: scale(1.26);
+  }
+  82% {
+    transform: scale(1.15);
   }
   100% {
-    transform: scale(1.45);
+    transform: scale(1.22);
   }
 }
 @keyframes flee {
@@ -398,8 +416,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .scene__shark-bob,
   .scene__puffer-bob,
+  .scene--victory .scene__puffer-bob,
   .scene__bubbles circle,
-  .scene--victory .scene__burst {
+  .scene--victory .scene__burst-spin {
     animation: none;
   }
   .scene__puffer {
