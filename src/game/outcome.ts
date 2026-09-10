@@ -15,7 +15,7 @@ export function getOutcome(score: number): Outcome {
  * playing (it grows on each correct answer) and to size the final animation.
  */
 export function pufferScale(score: number): number {
-  return 1 + 0.22 * score;
+  return 1 + 0.24 * score;
 }
 
 export const OUTCOME_TEXT: Record<Outcome, { title: string; body: string }> = {

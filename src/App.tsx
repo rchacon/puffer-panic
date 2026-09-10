@@ -28,7 +28,6 @@ export default function App() {
             sharkProgress={game.sharkProgress}
             pufferScale={game.pufferScale}
             outcome={game.outcome}
-            justGrew={state.phase === "reveal" && state.lastCorrect === true}
           />
 
           {state.phase === "result" && game.outcome ? (
