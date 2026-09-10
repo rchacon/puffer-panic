@@ -1,5 +1,9 @@
+import { useState } from "react";
 import { useGame } from "./game/useGame";
 import { TOTAL_ROUNDS } from "./game/outcome";
+import { MIN_WORDS } from "./game/rounds";
+import { WORDS } from "./data/words";
+import { loadSelection, saveSelection } from "./data/wordSelection";
 import { StartScreen } from "./components/StartScreen";
 import { BattleScene } from "./components/BattleScene";
 import { PromptBar } from "./components/PromptBar";
@@ -16,12 +20,24 @@ export default function App() {
   const { state } = game;
   const round = state.rounds[state.roundIndex];
 
+  const [selectedWords, setSelectedWords] = useState(() => loadSelection(WORDS));
+  const updateSelectedWords = (next: string[]) => {
+    setSelectedWords(next);
+    saveSelection(next);
+  };
+
   return (
     <div className="app">
       <h1 className="app__title">Puffer Panic</h1>
 
       {state.phase === "start" ? (
-        <StartScreen onStart={game.start} />
+        <StartScreen
+          onStart={() => game.start(selectedWords)}
+          allWords={WORDS}
+          selected={selectedWords}
+          onSelectedChange={updateSelectedWords}
+          minWords={MIN_WORDS}
+        />
       ) : (
         <>
           <BattleScene

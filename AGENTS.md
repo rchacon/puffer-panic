@@ -11,14 +11,19 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
 ## Layout
 
 - `src/game/` &mdash; all logic, browser-free and unit-tested:
-  - `rounds.ts` &mdash; `buildRounds()` picks targets + 2 distractors each.
+  - `rounds.ts` &mdash; `buildRounds(count, pool)` picks targets + 2 distractors
+    each; also `MIN_WORDS`.
   - `outcome.ts` &mdash; `getOutcome(score)`, `pufferScale(score)`, `OUTCOME_TEXT`, `TOTAL_ROUNDS`.
   - `useGame.ts` &mdash; the `start | playing | reveal | result` state machine.
+    `start(pool?)` takes the chosen word list.
 - `src/components/` &mdash; presentational. `BattleScene` owns the `<svg>` and
-  places `Shark` / `Puffer`; `CardRow` / `FlashCard` are the answers.
+  places `Shark` / `Puffer`; `CardRow` / `FlashCard` are the answers;
+  `WordPicker` is the start-screen word chooser.
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
   silence if a file is missing or autoplay is blocked.
 - `src/data/words.ts` &mdash; the word bank (one double-quoted literal per word).
+- `src/data/wordSelection.ts` &mdash; load/save the chosen words in
+  `localStorage["puffer-panic:selected-words"]`, falling back to the full bank.
 - `public/audio/*.mp3` &mdash; committed voice clips.
 - `scripts/*.mjs` &mdash; zero-dependency Node tools (see Conventions).
 
@@ -36,11 +41,14 @@ npm run screenshot  # drive the running dev server, save screenshots/*.png
 
 ## Game rules (don't reverse-engineer these &mdash; change them here + in `outcome.ts`)
 
-- 5 rounds. The shark advances one step every round regardless of the answer.
+- Always 5 rounds. The shark advances one step every round regardless of the answer.
 - Correct answer &rarr; puffer grows in place (`pufferScale = 1 + 0.24 * score`).
   Wrong answer &rarr; short "Oops.", correct card highlighted, no growth.
 - Final score &rarr; ending: **0&ndash;2** eaten &middot; **3** survives, barely &middot;
   **4** survives, scratched &middot; **5** puffer defeats the shark.
+- The start screen `WordPicker` chooses which words are in play (min `MIN_WORDS`
+  = 3, default all). Still 5 rounds always: with a small pool `buildRounds`
+  repeats target words but never twice in a row.
 
 ## Conventions
 
