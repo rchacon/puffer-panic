@@ -43,7 +43,10 @@ function TriCheck({
 }
 
 export function WordPicker({ allWords, selected, onChange }: Props) {
-  const [open, setOpen] = useState(() => selected.length < MIN_WORDS);
+  const [userOpen, setUserOpen] = useState(false);
+  // Force the panel open whenever the selection is too small to start, so the
+  // fix is always visible even if the player had collapsed it.
+  const open = userOpen || selected.length < MIN_WORDS;
   const selectedSet = useMemo(() => new Set(selected), [selected]);
 
   const groups = useMemo<Group[]>(
@@ -67,7 +70,7 @@ export function WordPicker({ allWords, selected, onChange }: Props) {
         type="button"
         className="wordpicker__summary"
         aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setUserOpen((o) => !o)}
       >
         <span aria-hidden="true">{open ? "▾" : "▸"}</span>
         Choose words

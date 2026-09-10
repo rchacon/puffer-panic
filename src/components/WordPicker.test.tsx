@@ -25,6 +25,17 @@ describe("WordPicker", () => {
     expect(screen.getByText("3 letters")).toBeInTheDocument();
   });
 
+  it("re-opens if the selection later drops below the minimum", () => {
+    const { rerender } = render(
+      <WordPicker allWords={WORDS} selected={WORDS} onChange={vi.fn()} />,
+    );
+    expect(screen.queryByText("3 letters")).not.toBeInTheDocument();
+    rerender(
+      <WordPicker allWords={WORDS} selected={["cat"]} onChange={vi.fn()} />,
+    );
+    expect(screen.getByText("3 letters")).toBeInTheDocument();
+  });
+
   it("clears everything via None", () => {
     const { onChange } = renderPicker();
     fireEvent.click(screen.getByRole("button", { name: /choose words/i }));
