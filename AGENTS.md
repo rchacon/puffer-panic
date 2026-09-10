@@ -32,12 +32,20 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
 ```bash
 npm run dev         # http://localhost:5173
 npm test            # vitest: game logic + one App render smoke, ~1s, no browser
-npm run build       # tsc -b && vite build
+npm run build       # tsc -b && vite build (+ postbuild writes dist/version.json)
 npm run audio:gen   # regenerate public/audio/ (needs network)
 npm run screenshot  # drive the running dev server, save screenshots/*.png
 ```
 
 `?debug=1` on the URL adds an overlay that jumps straight to each ending.
+
+## Checking what's deployed
+
+`npm run build` writes `dist/version.json` (`{ commit, builtAt }`) via the
+`postbuild` hook (`scripts/write-version.mjs`), deployed alongside `index.html`
+at the site root, so a running copy can be identified with
+`curl <site>/version.json`. The commit is a CI-injected SHA (`GITHUB_SHA` /
+`AWS_COMMIT_ID`) when set, else `git rev-parse`, else `"unknown"`.
 
 ## Game rules (don't reverse-engineer these &mdash; change them here + in `outcome.ts`)
 
