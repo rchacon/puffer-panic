@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useGame } from "./game/useGame";
 import { TOTAL_ROUNDS } from "./game/outcome";
-import { MIN_WORDS } from "./game/rounds";
 import { WORDS } from "./data/words";
 import { loadSelection, saveSelection } from "./data/wordSelection";
 import { StartScreen } from "./components/StartScreen";
@@ -36,7 +35,6 @@ export default function App() {
           allWords={WORDS}
           selected={selectedWords}
           onSelectedChange={updateSelectedWords}
-          minWords={MIN_WORDS}
         />
       ) : (
         <>

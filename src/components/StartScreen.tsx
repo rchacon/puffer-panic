@@ -1,3 +1,4 @@
+import { MIN_WORDS } from "../game/rounds";
 import { WordPicker } from "./WordPicker";
 
 interface Props {
@@ -5,7 +6,6 @@ interface Props {
   allWords: string[];
   selected: string[];
   onSelectedChange: (next: string[]) => void;
-  minWords: number;
 }
 
 export function StartScreen({
@@ -13,9 +13,8 @@ export function StartScreen({
   allWords,
   selected,
   onSelectedChange,
-  minWords,
 }: Props) {
-  const ready = selected.length >= minWords;
+  const ready = selected.length >= MIN_WORDS;
   return (
     <div className="start">
       <p className="start__hint">
@@ -38,7 +37,7 @@ export function StartScreen({
         &#9654; Start
       </button>
       {!ready && (
-        <p className="start__warn">Pick at least {minWords} words to play.</p>
+        <p className="start__warn">Pick at least {MIN_WORDS} words to play.</p>
       )}
     </div>
   );
