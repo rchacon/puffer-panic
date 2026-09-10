@@ -73,7 +73,7 @@ function reducer(state: GameState, action: Action): GameState {
 
 export interface Game {
   state: GameState;
-  start: () => void;
+  start: (pool?: string[]) => void;
   answer: (index: number) => void;
   replay: () => void;
   restart: () => void;
@@ -89,8 +89,9 @@ export function useGame(): Game {
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  const start = useCallback(() => {
-    const rounds = buildRounds(TOTAL_ROUNDS);
+  const start = useCallback((pool?: string[]) => {
+    // buildRounds falls back to the full bank when the pool is too small.
+    const rounds = buildRounds(TOTAL_ROUNDS, pool);
     preloadPrompts(rounds.map((r) => r.target));
     dispatch({ type: "start", rounds });
     void playPrompt(rounds[0].target);

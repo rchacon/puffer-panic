@@ -1,8 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import App from "./App";
 
 describe("App", () => {
+  beforeEach(() => localStorage.clear());
+
   it("shows the title and a start button", () => {
     render(<App />);
     expect(screen.getByText("Puffer Panic")).toBeInTheDocument();
@@ -23,5 +25,15 @@ describe("App", () => {
       .getAllByRole("button", { name: /choose the word/i })
       .filter((el) => el.classList.contains("card"));
     expect(cards).toHaveLength(3);
+  });
+
+  it("disables Start until at least 3 words are chosen", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /choose words/i }));
+    fireEvent.click(screen.getByRole("button", { name: "None" }));
+
+    expect(screen.getByRole("button", { name: /start/i })).toBeDisabled();
+    expect(screen.getByText(/pick at least 3 words/i)).toBeInTheDocument();
   });
 });

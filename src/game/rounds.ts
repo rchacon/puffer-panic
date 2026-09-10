@@ -1,5 +1,8 @@
 import { WORDS } from "../data/words";
 
+/** Fewest words a player may pick and still start a game. */
+export const MIN_WORDS = 3;
+
 export interface Round {
   target: string;
   options: string[];
@@ -33,9 +36,32 @@ export function buildRound(pool: readonly string[], target: string): Round {
   return { target, options, correctIndex: options.indexOf(target) };
 }
 
-/** Build `count` rounds with distinct target words. */
+/**
+ * Pick `count` target words from `pool`. With a pool of `count` or more this
+ * returns distinct words; with a smaller pool words repeat, but never twice in
+ * a row.
+ */
+function pickTargets(pool: readonly string[], count: number): string[] {
+  const targets: string[] = [];
+  let bag: string[] = [];
+  while (targets.length < count) {
+    if (bag.length === 0) bag = shuffle(pool);
+    const candidate = bag.pop() as string;
+    if (candidate === targets[targets.length - 1] && bag.length > 0) {
+      // Would repeat the previous target -- take the next card instead and
+      // drop this one back into the bag.
+      const next = bag.pop() as string;
+      bag.unshift(candidate);
+      targets.push(next);
+    } else {
+      targets.push(candidate);
+    }
+  }
+  return targets;
+}
+
+/** Build `count` rounds whose targets are drawn from `pool`. */
 export function buildRounds(count = 5, pool: readonly string[] = WORDS): Round[] {
-  return shuffle(pool)
-    .slice(0, count)
-    .map((target) => buildRound(pool, target));
+  const source = pool.length >= MIN_WORDS ? pool : WORDS;
+  return pickTargets(source, count).map((target) => buildRound(source, target));
 }

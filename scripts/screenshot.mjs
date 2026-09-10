@@ -161,6 +161,14 @@ await waitForDom(`document.querySelector('.start__button')`, "start screen");
 await sleep(400);
 await shot("01-start");
 
+// Expand the word picker.
+await evalJs(`document.querySelector('.wordpicker__summary').click()`);
+await waitForDom(`document.querySelector('.wordpicker__body')`, "word picker");
+await sleep(200);
+await shot("01b-word-picker");
+await evalJs(`document.querySelector('.wordpicker__summary').click()`);
+await sleep(150);
+
 await evalJs(`document.querySelector('.start__button').click()`);
 await waitForDom(
   `document.querySelector('.scene__svg') && document.querySelectorAll('.card').length === 3`,
