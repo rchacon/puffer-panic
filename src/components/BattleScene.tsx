@@ -6,14 +6,26 @@ interface Props {
   sharkProgress: number; // 0..1
   pufferScale: number;
   outcome: Outcome | null;
+  justGrew?: boolean;
 }
 
 const PUFFER_X = 96;
 const PUFFER_Y = 116;
 
-export function BattleScene({ sharkProgress, pufferScale, outcome }: Props) {
+export function BattleScene({
+  sharkProgress,
+  pufferScale,
+  outcome,
+  justGrew = false,
+}: Props) {
   const sharkX = 350 - sharkProgress * 200;
-  const className = outcome ? `scene scene--${outcome}` : "scene";
+  const className = [
+    "scene",
+    outcome ? `scene--${outcome}` : "",
+    justGrew ? "scene--spurt" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={className}>
@@ -62,7 +74,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome }: Props) {
           className="scene__puffer"
           transform={`translate(${PUFFER_X} ${PUFFER_Y}) scale(${pufferScale})`}
         >
-          <g className="scene__puffer-bob">
+          <g className="scene__puffer-bob" key={`pb-${pufferScale.toFixed(2)}`}>
             <Puffer />
           </g>
         </g>
