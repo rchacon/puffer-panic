@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "audio:gen": "node scripts/generate-audio.mjs"
+    "audio:gen": "node scripts/generate-audio.mjs",
+    "screenshot": "node scripts/screenshot.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",

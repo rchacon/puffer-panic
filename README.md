@@ -24,9 +24,16 @@ npm install
 npm run dev        # http://localhost:5173
 npm test           # game logic + a render smoke test
 npm run build      # type-check + production bundle
+npm run screenshot # drive the running dev server, save screens to screenshots/
 ```
 
 Add `?debug=1` to the URL for an overlay that jumps straight to each ending.
+
+`npm run screenshot` needs the dev server running and a Chrome/Chromium binary
+on `PATH` (or `CHROME_BIN`). `scripts/screenshot.mjs` has no dependencies &mdash;
+it drives headless Chrome over the DevTools Protocol and captures every screen
+(start, a round, the answer reveal, and all four endings). It's a manual
+"does it look right" tool, not part of CI.
 
 ## Audio
 
