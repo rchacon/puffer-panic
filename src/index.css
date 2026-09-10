@@ -1,0 +1,408 @@
+:root {
+  --ink: #0b2a3f;
+  --sea: #e8f7ff;
+  --card-bg: #ffffff;
+  --card-edge: #b6dced;
+  --accent: #ff7a3d;
+  --good: #2fbf6b;
+  --bad: #e8553e;
+  font-family: "Baloo 2", "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 0%, #7fd4f0 0%, #cdeefb 45%, #e8f7ff 100%);
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.app__title {
+  margin: 8px 0 0;
+  font-size: clamp(1.6rem, 6vw, 2.6rem);
+  letter-spacing: 0.02em;
+  color: #0b3a5b;
+  text-shadow: 0 2px 0 #ffffff, 0 3px 8px rgba(11, 58, 91, 0.25);
+  text-align: center;
+}
+
+/* ---------- Start screen ---------- */
+.start {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  text-align: center;
+  padding: 24px 8px;
+}
+
+.start__hint {
+  margin: 0;
+  font-size: clamp(1rem, 3.6vw, 1.25rem);
+  max-width: 28ch;
+  line-height: 1.5;
+}
+
+.start__button,
+.result__button {
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  padding: 16px 40px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #d15a24, 0 10px 20px rgba(209, 90, 36, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.start__button:active,
+.result__button:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #d15a24, 0 4px 10px rgba(209, 90, 36, 0.35);
+}
+
+/* ---------- Battle scene ---------- */
+.scene {
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(11, 42, 63, 0.25);
+  border: 4px solid #ffffff;
+}
+
+.scene__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.scene__shark {
+  transition: transform 0.8s ease-in-out;
+}
+
+.scene__puffer {
+  transition: transform 0.6s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+
+.scene__shark-bob {
+  animation: bob 1.6s ease-in-out infinite alternate;
+}
+
+.scene__puffer-bob {
+  animation: bob 2.3s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+.scene__bubbles circle {
+  animation: rise 4s linear infinite;
+}
+.scene__bubbles circle:nth-child(2) {
+  animation-duration: 5.5s;
+}
+.scene__bubbles circle:nth-child(3) {
+  animation-duration: 3.6s;
+}
+.scene__bubbles circle:nth-child(4) {
+  animation-duration: 6s;
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(-3px) rotate(-1.5deg);
+  }
+  to {
+    transform: translateY(3px) rotate(1.5deg);
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(-60px);
+    opacity: 0;
+  }
+}
+
+/* ---------- Outcome animations ---------- */
+.scene--defeat .scene__shark-bob {
+  animation: chomp 0.45s ease-out 3 alternate;
+}
+.scene--defeat .scene__puffer-bob {
+  animation: gone 0.7s ease-in 0.5s forwards;
+}
+
+.scene--survive-barely .scene__shark {
+  transform: translate(210px, 94px) !important;
+  transition: transform 0.6s ease-out;
+}
+.scene--survive-barely .scene__puffer-bob {
+  animation: hurtBad 1s ease-out forwards;
+}
+
+.scene--survive-hurt .scene__shark {
+  transform: translate(240px, 94px) !important;
+  transition: transform 0.6s ease-out;
+}
+.scene--survive-hurt .scene__puffer-bob {
+  animation: hurtLight 1s ease-out forwards;
+}
+
+.scene--victory .scene__shark-bob {
+  animation: flee 1s ease-in 0.15s forwards;
+}
+.scene--victory .scene__puffer-bob {
+  animation: puff 0.7s cubic-bezier(0.2, 1.5, 0.35, 1) forwards;
+}
+.scene--victory .scene__burst {
+  animation: sparkle 0.9s ease-out infinite alternate;
+  transform-origin: center;
+}
+
+@keyframes chomp {
+  to {
+    transform: translateX(-12px) rotate(-7deg);
+  }
+}
+@keyframes gone {
+  to {
+    transform: scale(0.15) rotate(30deg);
+    opacity: 0;
+  }
+}
+@keyframes hurtBad {
+  25% {
+    transform: translateX(-7px) rotate(-10deg);
+  }
+  100% {
+    transform: translate(-34px, -10px) scale(0.55) rotate(-6deg);
+  }
+}
+@keyframes hurtLight {
+  25% {
+    transform: translateX(-5px) rotate(-6deg);
+  }
+  100% {
+    transform: translate(-18px, -4px) scale(0.85);
+  }
+}
+@keyframes puff {
+  60% {
+    transform: scale(2.05);
+  }
+  100% {
+    transform: scale(1.85);
+  }
+}
+@keyframes flee {
+  to {
+    transform: translate(230px, -70px) rotate(140deg);
+    opacity: 0;
+  }
+}
+@keyframes sparkle {
+  from {
+    transform: scale(0.9) rotate(0deg);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1.15) rotate(12deg);
+    opacity: 1;
+  }
+}
+
+/* ---------- Prompt bar ---------- */
+.promptbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.promptbar__round {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #0b3a5b;
+}
+
+.promptbar__replay {
+  border: none;
+  border-radius: 999px;
+  background: #0b3a5b;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  padding: 12px 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #062435;
+}
+.promptbar__replay:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #062435;
+}
+
+/* ---------- Cards ---------- */
+.cards {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.card {
+  border: 4px solid var(--card-edge);
+  border-radius: 18px;
+  background: var(--card-bg);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 9vw, 3rem);
+  padding: 28px 8px;
+  min-height: 108px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 var(--card-edge);
+  transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.card:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--card-edge);
+}
+
+.card:disabled {
+  cursor: default;
+}
+
+.card--correct {
+  background: #e3fbec;
+  border-color: var(--good);
+  box-shadow: 0 6px 0 var(--good);
+  animation: pop 0.3s ease;
+}
+
+.card--wrong {
+  background: #ffe9e4;
+  border-color: var(--bad);
+  box-shadow: 0 6px 0 var(--bad);
+  animation: shake 0.35s ease;
+}
+
+@keyframes pop {
+  50% {
+    transform: scale(1.08);
+  }
+}
+@keyframes shake {
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+/* ---------- Result ---------- */
+.result {
+  width: 100%;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px 20px 28px;
+  box-shadow: 0 8px 24px rgba(11, 42, 63, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.result__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 7vw, 2.4rem);
+  color: var(--accent);
+}
+.result--defeat .result__title {
+  color: var(--bad);
+}
+.result--victory .result__title {
+  color: var(--good);
+}
+
+.result__score {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.result__body {
+  margin: 0 0 6px;
+  max-width: 32ch;
+  line-height: 1.5;
+}
+
+/* ---------- Debug ---------- */
+.debug {
+  width: 100%;
+  font-size: 0.85rem;
+  background: #0b2a3f;
+  color: #cfe8f4;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.debug__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.debug__buttons button {
+  font: inherit;
+  border: 1px solid #3f6b80;
+  background: #12435f;
+  color: #eaf6fc;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .scene__shark-bob,
+  .scene__puffer-bob,
+  .scene__bubbles circle,
+  .scene--victory .scene__burst {
+    animation: none;
+  }
+  .card--correct,
+  .card--wrong {
+    animation: none;
+  }
+}
