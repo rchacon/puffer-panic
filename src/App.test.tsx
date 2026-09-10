@@ -5,7 +5,7 @@ import App from "./App";
 describe("App", () => {
   it("shows the title and a start button", () => {
     render(<App />);
-    expect(screen.getByText("Xtreme Sight Words")).toBeInTheDocument();
+    expect(screen.getByText("Puffer Panic")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /start/i })).toBeInTheDocument();
   });
 

@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <h1 className="app__title">Xtreme Sight Words</h1>
+      <h1 className="app__title">Puffer Panic</h1>
 
       {state.phase === "start" ? (
         <StartScreen onStart={game.start} />
