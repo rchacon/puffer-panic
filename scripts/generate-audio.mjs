@@ -22,7 +22,6 @@ if (WORDS.length === 0) {
 
 const CUES = [
   ["correct", "Yes! That's right!"],
-  ["wrong", "Oops. Try again."],
   ["defeat", "Oh no! The shark caught the puffer fish."],
   ["survive-barely", "Phew! The puffer fish barely got away."],
   ["survive-hurt", "Nice work! The puffer fish got away."],

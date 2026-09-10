@@ -102,7 +102,9 @@ export function useGame(): Game {
       const round = state.rounds[state.roundIndex];
       const correct = index === round.correctIndex;
       dispatch({ type: "answer", correct, pickedIndex: index });
-      void playCue(correct ? "correct" : "wrong");
+      // Only a spoken cue for a correct pick. On a wrong pick the correct card
+      // is highlighted instead -- there's no retry, so "try again" would mislead.
+      if (correct) void playCue("correct");
 
       const isLast = state.roundIndex === state.rounds.length - 1;
       const finalScore = state.score + (correct ? 1 : 0);
