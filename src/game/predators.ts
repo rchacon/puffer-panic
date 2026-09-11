@@ -8,7 +8,7 @@ export type PredatorKind =
   | "piranha"
   | "anglerfish"
   | "catfish"
-  | "orca"
+  | "sharkprincess"
   | "megalodon"
   | "mosasaurus"
   | "kraken";
@@ -29,7 +29,7 @@ export const PREDATOR_LEVELS: PredatorLevel[] = [
   { level: 4, kind: "piranha", count: 4, label: "The four piranhas" },
   { level: 5, kind: "anglerfish", count: 1, label: "The anglerfish" },
   { level: 6, kind: "catfish", count: 1, label: "The Tapah catfish" },
-  { level: 7, kind: "orca", count: 1, label: "The orca" },
+  { level: 7, kind: "sharkprincess", count: 1, label: "The Shark Princess" },
   { level: 8, kind: "megalodon", count: 1, label: "The Megalodon" },
   { level: 9, kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
   { level: 10, kind: "kraken", count: 1, label: "The Kraken" },

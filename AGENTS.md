@@ -25,8 +25,10 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
-  flat-SVG technique as `Shark.tsx`/`Puffer.tsx`). `Orca`/`Megalodon` reuse
-  `Shark` recolored/rescaled rather than new art.
+  flat-SVG technique as `Shark.tsx`/`Puffer.tsx`). `Megalodon` reuses `Shark`
+  recolored/rescaled rather than new art. `Kraken` and `SharkPrincess` are
+  the two exceptions, both vendored/user-provided raster or vector art
+  rather than hand-drawn -- see "Predator escalation" below.
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
   silence if a file is missing or autoplay is blocked.
 - `src/shared/` &mdash; plain `.mjs` (not `.ts`) helpers needed by both the app
@@ -118,6 +120,23 @@ Kraken" from SVG Repo (svgrepo.com/svg/355417/mode-standard-kraken). SVG Repo
 blocks automated fetches with a bot-detection checkpoint, so this was
 downloaded by hand and its exact license wasn't independently re-verified --
 check that page before reusing this icon anywhere beyond this one spot.
+
+Level 7's `SharkPrincess` (`src/components/predators/SharkPrincess.tsx`) is a
+cheerful crowned whale shark, user-provided (not sourced/licensed the way the
+Kraken assets were -- verify provenance before reusing it anywhere else).
+The original was a ~1.5MB PNG with a solid white background wrapped in an SVG
+file; `src/assets/shark-princess.png` is a processed derivative, not that
+original file: background flood-filled to transparent from the image's
+border inward (safe here because the art's outline never touches the
+canvas edge -- a naive "make white pixels transparent" would have also
+punched holes in the legitimate white belly/spots), then cropped to content
+and downscaled to 700px wide (comfortably covers the scene's realistic
+on-screen size at up to 3x device pixel ratio -- see `.scene__svg`'s CSS in
+`index.css`, it's rendered at `width: 100%` of a 720px-max-width container).
+Imported as a URL (`import x from "./shark-princess.png"`), not `?raw` like
+the Kraken SVG, so Vite emits it as its own cacheable file rather than
+inlining a large base64 string into the JS bundle -- worth doing for any
+future raster predator art, not just this one.
 
 ## Conventions
 

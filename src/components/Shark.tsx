@@ -6,8 +6,8 @@ interface Props {
 }
 
 // Shark drawn around the origin, nose pointing left (toward the puffer fish).
-// Roughly 60 units from nose to tail tip. Palette is overridable so Orca and
-// Megalodon can reuse this shape instead of hand-drawing a near-duplicate.
+// Roughly 60 units from nose to tail tip. Palette is overridable so Megalodon
+// can reuse this shape instead of hand-drawing a near-duplicate.
 export function Shark({
   bodyFill = "#7f9dae",
   bodyStroke = "#4f6d7e",
