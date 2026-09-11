@@ -236,6 +236,12 @@ body {
   animation: bob 1.6s ease-in-out infinite alternate;
 }
 
+.kraken {
+  /* The vendored illustration is mostly grey/silver; hue-rotate alone can't
+     tint true greys (no chroma to rotate), so sepia() injects some first. */
+  filter: sepia(1) saturate(4) hue-rotate(230deg);
+}
+
 .scene__puffer-bob {
   /* fill-box keeps every scale/rotate pivoting on the fish's own centre so
      it grows and pulses in place instead of flying toward the viewBox origin. */
