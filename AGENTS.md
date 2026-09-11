@@ -104,6 +104,13 @@ SVG this lives in `src/assets/` and is played through a Vite asset import
 (`import krakenMusic from "./assets/kraken-music.wav"`), not `public/audio/`,
 since it isn't part of the TTS pipeline `generate-audio.mjs` covers.
 
+`KrakenIntro` also shows a big black kraken emblem behind the text
+(`.kraken-intro__icon`, `src/assets/kraken-icon.svg`) -- "Mode Standard
+Kraken" from SVG Repo (svgrepo.com/svg/355417/mode-standard-kraken). SVG Repo
+blocks automated fetches with a bot-detection checkpoint, so this was
+downloaded by hand and its exact license wasn't independently re-verified --
+check that page before reusing this icon anywhere beyond this one spot.
+
 ## Conventions
 
 - **Scripts stay dependency-free.** `scripts/generate-audio.mjs` and

@@ -89,6 +89,7 @@ describe("App - predator escalation", () => {
     // itself hasn't started yet.
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
     expect(screen.getByText(/release the kraken/i)).toBeInTheDocument();
+    expect(document.querySelector(".kraken-intro__icon")).toBeInTheDocument();
     expect(screen.queryByRole("img", { name: /kraken/i })).not.toBeInTheDocument();
 
     act(() => {
