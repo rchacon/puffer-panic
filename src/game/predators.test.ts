@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getPredatorLevel, PREDATOR_LEVELS } from "./predators";
-import { PREDATOR_COMPONENTS } from "../components/predators";
+import { getSchoolOffsets, PREDATOR_COMPONENTS } from "../components/predators";
 
 describe("getPredatorLevel", () => {
   it("returns level 1 through level 10 for playCount 1..10", () => {
@@ -36,6 +36,16 @@ describe("PREDATOR_LEVELS", () => {
   it("every kind has a matching illustration component", () => {
     for (const p of PREDATOR_LEVELS) {
       expect(PREDATOR_COMPONENTS[p.kind]).toBeTypeOf("function");
+    }
+  });
+
+  it("every level's count has a matching school offset entry", () => {
+    // getSchoolOffsets() silently falls back to SCHOOL_OFFSETS[1] for any
+    // count it doesn't recognize -- which would render every instance of a
+    // school stacked on top of each other instead of failing loudly. This
+    // catches a new/edited level whose count outgrew the offset table.
+    for (const p of PREDATOR_LEVELS) {
+      expect(getSchoolOffsets(p.count)).toHaveLength(p.count);
     }
   });
 });
