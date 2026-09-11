@@ -131,8 +131,19 @@ check that page before reusing this icon anywhere beyond this one spot.
   and flies off screen. Keyframe `transform` on an element also overrides its
   positioning `transform` attribute &mdash; nest a positioned outer `<g>` around
   an animated inner `<g>`.
-- **Tests** cover pure logic + a render smoke only; keep them browser-free and
-  fast. `npm run screenshot` is a manual "does it look right" check, never CI.
+- **Tests** are pure logic tests (`rounds`/`outcome`/`predators`/`wordSelection`)
+  plus interaction tests over `<App>` with Testing Library + fake timers --
+  not pure render smoke tests. Reach for a full playthrough (`fireEvent`
+  through real rounds via `answerAllRounds`/`playThroughOneGame` in
+  `App.test.tsx`) when the thing being verified is state-machine/timing
+  behavior across real user interactions (predator escalation, the Kraken
+  intro's timer/re-entrancy guard) -- there's no shortcut to that state
+  other than actually playing it; `?debug=1`'s `debugOutcome` bypasses
+  `handleStart`/`beginGame` entirely, so it tests something else, not a
+  lighter version of the same thing. Keep it to a single light render check
+  otherwise. Either way: no real browser, no real timers (`vi.useFakeTimers`),
+  stay fast. `npm run screenshot` is a manual "does it look right" check,
+  never CI.
 - Short single-letter / `a`-initial sight words tend to be mispronounced by the
   TTS voice; check a new word actually sounds right before adding it.
 
