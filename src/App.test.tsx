@@ -73,4 +73,31 @@ describe("App - predator escalation", () => {
 
     expect(document.querySelectorAll(".shark")).toHaveLength(2);
   });
+
+  function playThroughOneGame() {
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+    answerAllRounds();
+    fireEvent.click(screen.getByRole("button", { name: /play again/i }));
+  }
+
+  it("shows a dramatic intro before the Kraken (level 10) begins", () => {
+    render(<App />);
+
+    for (let i = 0; i < 9; i++) playThroughOneGame();
+
+    // 10th start -> level 10, the Kraken. The intro plays first; the round
+    // itself hasn't started yet.
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+    expect(screen.getByText(/release the kraken/i)).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /kraken/i })).not.toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    expect(screen.queryByText(/release the kraken/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: /kraken swimming toward a puffer fish/i }),
+    ).toBeInTheDocument();
+  });
 });

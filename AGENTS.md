@@ -79,6 +79,14 @@ selection, reloading the page resets it to level 1. Voice cues
 (`defeat.mp3`/`victory.mp3`) stay generic rather than recording 20 more
 variants; the on-screen text carries the per-level flavor instead.
 
+The Kraken (level 10, and every time the cycle wraps back to it) gets an
+extra title-card flourish -- `App.tsx`'s `handleStart` detects it via
+`nextPredator.kind`, shows `KrakenIntro` and plays `release-the-kraken.mp3`
+for ~1.9s before the round actually begins (`beginGame`). The Kraken's own
+artwork (`src/components/predators/Kraken.tsx`) is a vendored illustration,
+not hand-drawn like the others -- see that file's header comment for why it
+isn't mirrored/rotated like you'd expect.
+
 ## Conventions
 
 - **Scripts stay dependency-free.** `scripts/generate-audio.mjs` and

@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGame } from "./game/useGame";
 import { TOTAL_ROUNDS } from "./game/outcome";
 import { getPredatorLevel } from "./game/predators";
 import { WORDS } from "./data/words";
 import { loadSelection, saveSelection } from "./data/wordSelection";
+import { playCue } from "./audio/player";
 import { StartScreen } from "./components/StartScreen";
 import { BattleScene } from "./components/BattleScene";
 import { PromptBar } from "./components/PromptBar";
 import { CardRow } from "./components/CardRow";
 import { ResultScreen } from "./components/ResultScreen";
 import { DebugPanel } from "./components/DebugPanel";
+import { KrakenIntro } from "./components/KrakenIntro";
 
 const DEBUG =
   typeof window !== "undefined" &&
@@ -32,9 +34,29 @@ export default function App() {
   const [playCount, setPlayCount] = useState(0);
   const predator = getPredatorLevel(playCount || 1);
   const nextPredator = getPredatorLevel(playCount + 1);
-  const handleStart = () => {
+
+  // "RELEASE THE KRAKEN!" title-card flourish, played before round 1 of a
+  // Kraken game (level 10, and every time the cycle comes back around to it).
+  const [showKrakenIntro, setShowKrakenIntro] = useState(false);
+  const introTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(introTimer.current), []);
+
+  const beginGame = () => {
     setPlayCount((c) => c + 1);
     game.start(selectedWords);
+  };
+
+  const handleStart = () => {
+    if (nextPredator.kind === "kraken") {
+      setShowKrakenIntro(true);
+      void playCue("release-the-kraken");
+      introTimer.current = setTimeout(() => {
+        setShowKrakenIntro(false);
+        beginGame();
+      }, 1900);
+    } else {
+      beginGame();
+    }
   };
 
   return (
@@ -85,6 +107,7 @@ export default function App() {
         </>
       )}
 
+      {showKrakenIntro && <KrakenIntro />}
       {DEBUG && <DebugPanel game={game} />}
     </div>
   );

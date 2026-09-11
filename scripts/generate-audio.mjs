@@ -27,6 +27,7 @@ const CUES = [
   ["survive-barely", "Phew! The puffer fish barely got away."],
   ["survive-hurt", "Nice work! The puffer fish got away."],
   ["victory", "Wow! The puffer fish beat the shark!"],
+  ["release-the-kraken", "Release the Kraken!"],
 ];
 
 const jobs = [
