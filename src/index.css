@@ -221,7 +221,7 @@ body {
   height: auto;
 }
 
-.scene__shark {
+.scene__predator {
   transition: transform 0.8s ease-in-out;
 }
 
@@ -230,10 +230,16 @@ body {
   transition: transform 0.6s ease-out;
 }
 
-.scene__shark-bob {
+.scene__predator-bob {
   transform-box: fill-box;
   transform-origin: center;
   animation: bob 1.6s ease-in-out infinite alternate;
+}
+
+.kraken {
+  /* The vendored illustration is mostly grey/silver; hue-rotate alone can't
+     tint true greys (no chroma to rotate), so sepia() injects some first. */
+  filter: sepia(1) saturate(3) hue-rotate(220deg) brightness(0.64);
 }
 
 .scene__puffer-bob {
@@ -278,14 +284,14 @@ body {
 }
 
 /* ---------- Outcome animations ---------- */
-.scene--defeat .scene__shark-bob {
+.scene--defeat .scene__predator-bob {
   animation: chomp 0.45s ease-out 3 alternate;
 }
 .scene--defeat .scene__puffer-bob {
   animation: gone 0.7s ease-in 0.5s forwards;
 }
 
-.scene--survive-barely .scene__shark {
+.scene--survive-barely .scene__predator {
   transform: translate(210px, 94px) !important;
   transition: transform 0.6s ease-out;
 }
@@ -293,7 +299,7 @@ body {
   animation: hurtBad 1s ease-out forwards;
 }
 
-.scene--survive-hurt .scene__shark {
+.scene--survive-hurt .scene__predator {
   transform: translate(240px, 94px) !important;
   transition: transform 0.6s ease-out;
 }
@@ -301,7 +307,7 @@ body {
   animation: hurtLight 1s ease-out forwards;
 }
 
-.scene--victory .scene__shark-bob {
+.scene--victory .scene__predator-bob {
   animation: flee 1s ease-in 0.15s forwards;
 }
 .scene--victory .scene__puffer-bob {
@@ -508,6 +514,13 @@ body {
   line-height: 1.5;
 }
 
+.result__next {
+  margin: -4px 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #5a7a8c;
+}
+
 /* ---------- Debug ---------- */
 .debug {
   width: 100%;
@@ -535,9 +548,88 @@ body {
   cursor: pointer;
 }
 
+/* ---------- Kraken intro ---------- */
+.kraken-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 10, 20, 0.75);
+  animation: krakenFadeIn 0.2s ease-out;
+}
+
+.kraken-intro__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(68vw, 68vh);
+  height: min(68vw, 68vh);
+  transform: translate(-50%, -50%);
+  fill: #000;
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.kraken-intro__text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: 20ch;
+  font-size: clamp(1.8rem, 9vw, 3.4rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-align: center;
+  color: #ff4747;
+  text-shadow: 0 0 14px rgba(255, 71, 71, 0.85), 0 4px 0 #4a0000;
+  animation: krakenShake 2.1s ease-in-out;
+}
+
+@keyframes krakenFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes krakenShake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  10% {
+    transform: translate(-8px, 4px) rotate(-3deg) scale(1.03);
+  }
+  20% {
+    transform: translate(8px, -4px) rotate(3deg) scale(1.05);
+  }
+  30% {
+    transform: translate(-7px, -3px) rotate(-2deg) scale(1.06);
+  }
+  40% {
+    transform: translate(7px, 3px) rotate(2deg) scale(1.07);
+  }
+  50% {
+    transform: translate(-6px, 4px) rotate(-2deg) scale(1.08);
+  }
+  60% {
+    transform: translate(6px, -4px) rotate(2deg) scale(1.08);
+  }
+  70% {
+    transform: translate(-4px, 2px) rotate(-1deg) scale(1.06);
+  }
+  80% {
+    transform: translate(4px, -2px) rotate(1deg) scale(1.04);
+  }
+  90% {
+    transform: translate(-2px, 1px) rotate(0deg) scale(1.02);
+  }
+}
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .scene__shark-bob,
+  .scene__predator-bob,
   .scene__puffer-bob,
   .scene--victory .scene__puffer-bob,
   .scene__bubbles circle,
@@ -549,6 +641,9 @@ body {
   }
   .card--correct,
   .card--wrong {
+    animation: none;
+  }
+  .kraken-intro__text {
     animation: none;
   }
 }

@@ -6,6 +6,8 @@ interface Props {
   allWords: string[];
   selected: string[];
   onSelectedChange: (next: string[]) => void;
+  /** True while something (the Kraken intro) should keep Start inert. */
+  disabled?: boolean;
 }
 
 export function StartScreen({
@@ -13,8 +15,9 @@ export function StartScreen({
   allWords,
   selected,
   onSelectedChange,
+  disabled = false,
 }: Props) {
-  const ready = selected.length >= MIN_WORDS;
+  const wordsReady = selected.length >= MIN_WORDS;
   return (
     <div className="start">
       <p className="start__hint">
@@ -32,11 +35,11 @@ export function StartScreen({
         className="start__button"
         type="button"
         onClick={onStart}
-        disabled={!ready}
+        disabled={!wordsReady || disabled}
       >
         &#9654; Start
       </button>
-      {!ready && (
+      {!wordsReady && (
         <p className="start__warn">Pick at least {MIN_WORDS} words to play.</p>
       )}
     </div>

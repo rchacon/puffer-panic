@@ -1,19 +1,25 @@
 import type { Outcome } from "../game/outcome";
+import type { PredatorLevel } from "../game/predators";
 import { Puffer } from "./Puffer";
-import { Shark } from "./Shark";
+import { ShipWreck } from "./ShipWreck";
+import { PREDATOR_COMPONENTS, getSchoolOffsets } from "./predators";
 
 interface Props {
-  sharkProgress: number; // 0..1
+  sharkProgress: number; // 0..1 -- approach progress
   pufferScale: number;
   outcome: Outcome | null;
+  predator: PredatorLevel;
 }
 
 const PUFFER_X = 96;
 const PUFFER_Y = 116;
+const PREDATOR_Y = 94;
 
-export function BattleScene({ sharkProgress, pufferScale, outcome }: Props) {
+export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
   const sharkX = 350 - sharkProgress * 200;
   const className = outcome ? `scene scene--${outcome}` : "scene";
+  const Creature = PREDATOR_COMPONENTS[predator.kind];
+  const offsets = getSchoolOffsets(predator.count);
 
   return (
     <div className={className}>
@@ -21,7 +27,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome }: Props) {
         className="scene__svg"
         viewBox="0 0 400 200"
         role="img"
-        aria-label="A shark swimming toward a puffer fish"
+        aria-label={`${predator.label} swimming toward a puffer fish`}
       >
         <defs>
           <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
@@ -36,6 +42,8 @@ export function BattleScene({ sharkProgress, pufferScale, outcome }: Props) {
           fill="#0b5a3d"
           opacity="0.75"
         />
+        {predator.kind === "kraken" && <ShipWreck />}
+
         <g className="scene__bubbles" fill="#c7ecff" opacity="0.5">
           <circle cx="58" cy="60" r="3" />
           <circle cx="128" cy="42" r="2" />
@@ -69,10 +77,14 @@ export function BattleScene({ sharkProgress, pufferScale, outcome }: Props) {
           </g>
         </g>
 
-        <g className="scene__shark" transform={`translate(${sharkX} 94)`}>
-          <g className="scene__shark-bob">
-            <Shark />
-          </g>
+        <g className="scene__predator" transform={`translate(${sharkX} ${PREDATOR_Y})`}>
+          {offsets.map((o, i) => (
+            <g key={i} transform={`translate(${o.dx} ${o.dy}) scale(${o.scale})`}>
+              <g className="scene__predator-bob">
+                <Creature />
+              </g>
+            </g>
+          ))}
         </g>
       </svg>
     </div>

@@ -1,0 +1,57 @@
+import type { ComponentType } from "react";
+import type { PredatorKind } from "../../game/predators";
+import { Shark } from "../Shark";
+import { Eel } from "./Eel";
+import { Piranha } from "./Piranha";
+import { Anglerfish } from "./Anglerfish";
+import { TapahCatfish } from "./TapahCatfish";
+import { Orca } from "./Orca";
+import { Megalodon } from "./Megalodon";
+import { Mosasaurus } from "./Mosasaurus";
+import { Kraken } from "./Kraken";
+
+export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
+  shark: Shark,
+  eel: Eel,
+  piranha: Piranha,
+  anglerfish: Anglerfish,
+  catfish: TapahCatfish,
+  orca: Orca,
+  megalodon: Megalodon,
+  mosasaurus: Mosasaurus,
+  kraken: Kraken,
+};
+
+export interface SchoolOffset {
+  dx: number;
+  dy: number;
+  scale: number;
+}
+
+/**
+ * Per-instance position jitter for a "school" of `count` predators (levels
+ * 2-4), applied relative to the shared approach position so the group
+ * retreats/flees together on an outcome while keeping its formation.
+ */
+const SCHOOL_OFFSETS: Record<number, SchoolOffset[]> = {
+  1: [{ dx: 0, dy: 0, scale: 1 }],
+  2: [
+    { dx: 6, dy: -14, scale: 0.92 },
+    { dx: -10, dy: 14, scale: 0.92 },
+  ],
+  3: [
+    { dx: 10, dy: -20, scale: 0.8 },
+    { dx: -6, dy: 2, scale: 0.85 },
+    { dx: 6, dy: 22, scale: 0.8 },
+  ],
+  4: [
+    { dx: 12, dy: -22, scale: 0.72 },
+    { dx: -8, dy: -6, scale: 0.72 },
+    { dx: 10, dy: 10, scale: 0.72 },
+    { dx: -6, dy: 26, scale: 0.72 },
+  ],
+};
+
+export function getSchoolOffsets(count: number): SchoolOffset[] {
+  return SCHOOL_OFFSETS[count] ?? SCHOOL_OFFSETS[1];
+}

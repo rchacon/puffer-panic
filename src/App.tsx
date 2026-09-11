@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGame } from "./game/useGame";
 import { TOTAL_ROUNDS } from "./game/outcome";
+import { getPredatorLevel } from "./game/predators";
 import { WORDS } from "./data/words";
 import { loadSelection, saveSelection } from "./data/wordSelection";
+import { playCue, playUrl } from "./audio/player";
+import krakenMusic from "./assets/kraken-music.wav";
 import { StartScreen } from "./components/StartScreen";
 import { BattleScene } from "./components/BattleScene";
 import { PromptBar } from "./components/PromptBar";
 import { CardRow } from "./components/CardRow";
 import { ResultScreen } from "./components/ResultScreen";
 import { DebugPanel } from "./components/DebugPanel";
+import { KrakenIntro } from "./components/KrakenIntro";
 
 const DEBUG =
   typeof window !== "undefined" &&
@@ -25,16 +29,63 @@ export default function App() {
     saveSelection(next);
   };
 
+  // Session-only: escalates the antagonist each time a game is actually
+  // started (including the very first), then cycles back after the Kraken.
+  // Not persisted -- reloading the page resets it, unlike the word selection.
+  const [playCount, setPlayCount] = useState(0);
+  const predator = getPredatorLevel(playCount || 1);
+  const nextPredator = getPredatorLevel(playCount + 1);
+
+  // "RELEASE THE KRAKEN!" title-card flourish, played before round 1 of a
+  // Kraken game (level 10, and every time the cycle comes back around to it).
+  const [showKrakenIntro, setShowKrakenIntro] = useState(false);
+  const introTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(introTimer.current), []);
+
+  const beginGame = () => {
+    setPlayCount((c) => c + 1);
+    game.start(selectedWords, nextPredator.level);
+  };
+
+  const handleStart = () => {
+    // Guards against a second activation landing while the Kraken intro is
+    // still showing -- the Start button stays mounted underneath it for the
+    // whole ~2.1s, and a focused button can still receive a keyboard
+    // activation regardless of the overlay's z-index. Without this, the
+    // stray call would overwrite introTimer.current (leaking the first
+    // timer) and eventually double-fire beginGame(): playCount incremented
+    // twice for one logical start, the just-begun round reset back to 0, and
+    // both the voice line and kraken-music.wav restarting on top of
+    // themselves. Disabling the button (see StartScreen's `disabled` prop)
+    // covers the common case; this is the actual guard.
+    if (showKrakenIntro) return;
+    if (nextPredator.kind === "kraken") {
+      setShowKrakenIntro(true);
+      void playCue("release-the-kraken");
+      // Trimmed to 2s with a fade-out baked in (see src/assets/kraken-music.wav's
+      // provenance in AGENTS.md) -- quieter than full volume so the voice line
+      // stays clear on top of it.
+      void playUrl(krakenMusic, 0.55);
+      introTimer.current = setTimeout(() => {
+        setShowKrakenIntro(false);
+        beginGame();
+      }, 2100);
+    } else {
+      beginGame();
+    }
+  };
+
   return (
     <div className="app">
       <h1 className="app__title">Puffer Panic</h1>
 
       {state.phase === "start" ? (
         <StartScreen
-          onStart={() => game.start(selectedWords)}
+          onStart={handleStart}
           allWords={WORDS}
           selected={selectedWords}
           onSelectedChange={updateSelectedWords}
+          disabled={showKrakenIntro}
         />
       ) : (
         <>
@@ -42,6 +93,7 @@ export default function App() {
             sharkProgress={game.sharkProgress}
             pufferScale={game.pufferScale}
             outcome={game.outcome}
+            predator={predator}
           />
 
           {state.phase === "result" && game.outcome ? (
@@ -49,6 +101,8 @@ export default function App() {
               score={state.score}
               total={TOTAL_ROUNDS}
               outcome={game.outcome}
+              predatorLabel={predator.label}
+              nextPredatorLabel={nextPredator.label}
               onRestart={game.restart}
             />
           ) : (
@@ -70,7 +124,8 @@ export default function App() {
         </>
       )}
 
-      {DEBUG && <DebugPanel game={game} />}
+      {showKrakenIntro && <KrakenIntro />}
+      {DEBUG && <DebugPanel game={game} predatorLevel={predator.level} />}
     </div>
   );
 }

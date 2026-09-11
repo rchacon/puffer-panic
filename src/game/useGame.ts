@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { buildRounds, type Round } from "./rounds";
-import { getOutcome, pufferScale, TOTAL_ROUNDS, type Outcome } from "./outcome";
+import { getOutcome, outcomeAudioCue, pufferScale, TOTAL_ROUNDS, type Outcome } from "./outcome";
 import { playCue, playPrompt, preloadPrompts } from "../audio/player";
 
 export type Phase = "start" | "playing" | "reveal" | "result";
@@ -73,11 +73,11 @@ function reducer(state: GameState, action: Action): GameState {
 
 export interface Game {
   state: GameState;
-  start: (pool?: string[]) => void;
+  start: (pool?: string[], predatorLevel?: number) => void;
   answer: (index: number) => void;
   replay: () => void;
   restart: () => void;
-  debugOutcome: (score: number) => void;
+  debugOutcome: (score: number, predatorLevel?: number) => void;
   sharkProgress: number;
   pufferScale: number;
   outcome: Outcome | null;
@@ -86,10 +86,14 @@ export interface Game {
 export function useGame(): Game {
   const [state, dispatch] = useReducer(reducer, initialState);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // Which predator level this game is for, purely so the defeat/victory cue
+  // at the end can name it -- doesn't affect any rule (see outcome.ts).
+  const level = useRef(1);
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  const start = useCallback((pool?: string[]) => {
+  const start = useCallback((pool?: string[], predatorLevel = 1) => {
+    level.current = predatorLevel;
     // buildRounds falls back to the full bank when the pool is too small.
     const rounds = buildRounds(TOTAL_ROUNDS, pool);
     preloadPrompts(rounds.map((r) => r.target));
@@ -114,7 +118,7 @@ export function useGame(): Game {
       timer.current = setTimeout(() => {
         if (isLast) {
           dispatch({ type: "finish" });
-          void playCue(getOutcome(finalScore));
+          void playCue(outcomeAudioCue(getOutcome(finalScore), level.current));
         } else {
           dispatch({ type: "advance" });
           void playPrompt(state.rounds[state.roundIndex + 1].target);
@@ -136,10 +140,15 @@ export function useGame(): Game {
     dispatch({ type: "restart" });
   }, []);
 
-  const debugOutcome = useCallback((score: number) => {
+  const debugOutcome = useCallback((score: number, predatorLevel?: number) => {
     clearTimeout(timer.current);
+    // Debug mode can jump straight to an outcome without ever calling
+    // start(), so it can't rely on level.current having been set for the
+    // predator currently on screen -- take it explicitly instead (App.tsx
+    // passes its own predator.level, the same source BattleScene uses).
+    if (predatorLevel !== undefined) level.current = predatorLevel;
     dispatch({ type: "debug", rounds: buildRounds(TOTAL_ROUNDS), score });
-    void playCue(getOutcome(score));
+    void playCue(outcomeAudioCue(getOutcome(score), level.current));
   }, []);
 
   const sharkProgress = useMemo(() => {
