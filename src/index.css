@@ -239,7 +239,7 @@ body {
 .kraken {
   /* The vendored illustration is mostly grey/silver; hue-rotate alone can't
      tint true greys (no chroma to rotate), so sepia() injects some first. */
-  filter: sepia(1) saturate(3) hue-rotate(220deg) brightness(0.58);
+  filter: sepia(1) saturate(3) hue-rotate(220deg) brightness(0.64);
 }
 
 .scene__puffer-bob {
