@@ -19,7 +19,10 @@ function element(src: string): HTMLAudioElement {
 
 function play(src: string, volume?: number): Promise<void> {
   const el = element(src);
-  if (volume !== undefined) el.volume = volume;
+  // Elements are cached by src (see element() above), so a previous call's
+  // volume (e.g. kraken-music.wav's 0.55) would otherwise stick around for
+  // every later play() of that same src that doesn't pass one explicitly.
+  el.volume = volume ?? 1;
   try {
     el.currentTime = 0;
   } catch {
