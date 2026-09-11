@@ -25,6 +25,9 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
 - `src/data/wordSelection.ts` &mdash; load/save the chosen words in
   `localStorage["puffer-panic:selected-words"]`, falling back to the full bank.
 - `public/audio/*.mp3` &mdash; committed voice clips.
+- `public/favicon.svg` &mdash; synced by hand from `puffer-website`
+  (`../puffer-website/public/favicon.svg`, the marketing site repo) so the
+  game and the site share a mark. Re-copy it if that file changes there.
 - `scripts/*.mjs` &mdash; zero-dependency Node tools (see Conventions).
 
 ## Commands
