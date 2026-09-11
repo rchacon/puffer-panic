@@ -92,7 +92,7 @@ describe("App - predator escalation", () => {
     expect(screen.queryByRole("img", { name: /kraken/i })).not.toBeInTheDocument();
 
     act(() => {
-      vi.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2200);
     });
 
     expect(screen.queryByText(/release the kraken/i)).not.toBeInTheDocument();

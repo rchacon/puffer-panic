@@ -88,11 +88,21 @@ their text never mentions the predator either.
 
 The Kraken (level 10, and every time the cycle wraps back to it) gets an
 extra title-card flourish -- `App.tsx`'s `handleStart` detects it via
-`nextPredator.kind`, shows `KrakenIntro` and plays `release-the-kraken.mp3`
-for ~1.9s before the round actually begins (`beginGame`). The Kraken's own
-artwork (`src/components/predators/Kraken.tsx`) is a vendored illustration,
-not hand-drawn like the others -- see that file's header comment for why it
-isn't mirrored/rotated like you'd expect.
+`nextPredator.kind`, shows `KrakenIntro`, and plays both
+`release-the-kraken.mp3` (the voice line) and `src/assets/kraken-music.wav`
+(a quieter background sting, via the generic `playUrl()` in
+`audio/player.ts`) for ~2.1s before the round actually begins (`beginGame`).
+The Kraken's own artwork (`src/components/predators/Kraken.tsx`) is a
+vendored illustration, not hand-drawn like the others -- see that file's
+header comment for why it isn't mirrored/rotated like you'd expect.
+
+`kraken-music.wav` is trimmed (with a baked-in fade-out, no real cut point
+existed in the source -- see the RMS-envelope analysis this was picked from)
+from "Heavy Concept A Bass Master" by cynicmusic, CC0, via OpenGameArt:
+https://opengameart.org/content/dramatic-boss-encounter -- unlike the Kraken
+SVG this lives in `src/assets/` and is played through a Vite asset import
+(`import krakenMusic from "./assets/kraken-music.wav"`), not `public/audio/`,
+since it isn't part of the TTS pipeline `generate-audio.mjs` covers.
 
 ## Conventions
 

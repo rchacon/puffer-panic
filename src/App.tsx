@@ -4,7 +4,8 @@ import { TOTAL_ROUNDS } from "./game/outcome";
 import { getPredatorLevel } from "./game/predators";
 import { WORDS } from "./data/words";
 import { loadSelection, saveSelection } from "./data/wordSelection";
-import { playCue } from "./audio/player";
+import { playCue, playUrl } from "./audio/player";
+import krakenMusic from "./assets/kraken-music.wav";
 import { StartScreen } from "./components/StartScreen";
 import { BattleScene } from "./components/BattleScene";
 import { PromptBar } from "./components/PromptBar";
@@ -50,10 +51,14 @@ export default function App() {
     if (nextPredator.kind === "kraken") {
       setShowKrakenIntro(true);
       void playCue("release-the-kraken");
+      // Trimmed to 2s with a fade-out baked in (see src/assets/kraken-music.wav's
+      // provenance in AGENTS.md) -- quieter than full volume so the voice line
+      // stays clear on top of it.
+      void playUrl(krakenMusic, 0.55);
       introTimer.current = setTimeout(() => {
         setShowKrakenIntro(false);
         beginGame();
-      }, 1900);
+      }, 2100);
     } else {
       beginGame();
     }
