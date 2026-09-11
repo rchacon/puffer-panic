@@ -77,7 +77,7 @@ export interface Game {
   answer: (index: number) => void;
   replay: () => void;
   restart: () => void;
-  debugOutcome: (score: number) => void;
+  debugOutcome: (score: number, predatorLevel?: number) => void;
   sharkProgress: number;
   pufferScale: number;
   outcome: Outcome | null;
@@ -140,8 +140,13 @@ export function useGame(): Game {
     dispatch({ type: "restart" });
   }, []);
 
-  const debugOutcome = useCallback((score: number) => {
+  const debugOutcome = useCallback((score: number, predatorLevel?: number) => {
     clearTimeout(timer.current);
+    // Debug mode can jump straight to an outcome without ever calling
+    // start(), so it can't rely on level.current having been set for the
+    // predator currently on screen -- take it explicitly instead (App.tsx
+    // passes its own predator.level, the same source BattleScene uses).
+    if (predatorLevel !== undefined) level.current = predatorLevel;
     dispatch({ type: "debug", rounds: buildRounds(TOTAL_ROUNDS), score });
     void playCue(outcomeAudioCue(getOutcome(score), level.current));
   }, []);

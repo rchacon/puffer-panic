@@ -125,7 +125,7 @@ export default function App() {
       )}
 
       {showKrakenIntro && <KrakenIntro />}
-      {DEBUG && <DebugPanel game={game} />}
+      {DEBUG && <DebugPanel game={game} predatorLevel={predator.level} />}
     </div>
   );
 }
