@@ -43,7 +43,7 @@ export default function App() {
 
   const beginGame = () => {
     setPlayCount((c) => c + 1);
-    game.start(selectedWords);
+    game.start(selectedWords, nextPredator.level);
   };
 
   const handleStart = () => {

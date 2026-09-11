@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getOutcome, outcomeText, pufferScale, toMidSentence } from "./outcome";
+import { getOutcome, outcomeAudioCue, outcomeText, pufferScale, toMidSentence } from "./outcome";
 
 describe("getOutcome", () => {
   it.each([
@@ -44,5 +44,17 @@ describe("outcomeText", () => {
     const hurt = outcomeText("survive-hurt", "The Kraken").body;
     expect(barely).not.toContain("Kraken");
     expect(hurt).not.toContain("Kraken");
+  });
+});
+
+describe("outcomeAudioCue", () => {
+  it("names the level for defeat and victory", () => {
+    expect(outcomeAudioCue("defeat", 3)).toBe("defeat-3");
+    expect(outcomeAudioCue("victory", 10)).toBe("victory-10");
+  });
+
+  it("leaves the survive outcomes as generic clip names", () => {
+    expect(outcomeAudioCue("survive-barely", 7)).toBe("survive-barely");
+    expect(outcomeAudioCue("survive-hurt", 7)).toBe("survive-hurt");
   });
 });

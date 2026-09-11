@@ -53,3 +53,17 @@ export function outcomeText(outcome: Outcome, predator: string): { title: string
       };
   }
 }
+
+/**
+ * Which public/audio clip to play for the end-of-game outcome. defeat/victory
+ * are level-specific (see scripts/generate-audio.mjs, which generates
+ * defeat-<level>.mp3 / victory-<level>.mp3 for every row in
+ * predators.ts's PREDATOR_LEVELS, with text matching outcomeText above) so
+ * the voice names the actual predator instead of always saying "the shark".
+ * The survive outcomes stay generic -- their text never mentions the predator.
+ */
+export function outcomeAudioCue(outcome: Outcome, level: number): string {
+  if (outcome === "defeat") return `defeat-${level}`;
+  if (outcome === "victory") return `victory-${level}`;
+  return outcome;
+}

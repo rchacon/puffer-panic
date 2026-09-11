@@ -4,7 +4,8 @@
 //   npm run audio:gen
 //
 // The generated .mp3 files are committed, so the app never needs this at runtime.
-// The word list is parsed from src/data/words.ts so it stays the single source.
+// The word list is parsed from src/data/words.ts, and the predator labels from
+// src/game/predators.ts, so both stay a single source of truth.
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
@@ -20,14 +21,37 @@ if (WORDS.length === 0) {
   process.exit(1);
 }
 
+// One label per level, in order (level 1 first) -- mirrors PREDATOR_LEVELS.
+const predatorsSrc = await readFile(new URL("src/game/predators.ts", ROOT), "utf8");
+const PREDATOR_LABELS = [...predatorsSrc.matchAll(/label:\s*"([^"]+)"/g)].map((m) => m[1]);
+
+if (PREDATOR_LABELS.length === 0) {
+  console.error("No predator labels found in src/game/predators.ts");
+  process.exit(1);
+}
+
+// Mirrors outcome.ts's toMidSentence -- keep in sync.
+function toMidSentence(label) {
+  return label.charAt(0).toLowerCase() + label.slice(1);
+}
+
+// defeat-<level>.mp3 / victory-<level>.mp3 -- text matches outcomeText() in
+// src/game/outcome.ts so the voice says what the screen says.
+const outcomeCues = PREDATOR_LABELS.flatMap((label, i) => {
+  const level = i + 1;
+  return [
+    [`defeat-${level}`, `${label} caught the puffer fish this time. Try again!`],
+    [`victory-${level}`, `The puffer fish puffed up huge and sent ${toMidSentence(label)} packing!`],
+  ];
+});
+
 const CUES = [
   ["correct", "Yes! That's right!"],
   ["wrong", "Oops."],
-  ["defeat", "Oh no! The shark caught the puffer fish."],
   ["survive-barely", "Phew! The puffer fish barely got away."],
   ["survive-hurt", "Nice work! The puffer fish got away."],
-  ["victory", "Wow! The puffer fish beat the shark!"],
   ["release-the-kraken", "Release the Kraken!"],
+  ...outcomeCues,
 ];
 
 const jobs = [
