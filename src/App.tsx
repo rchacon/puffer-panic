@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useGame } from "./game/useGame";
 import { TOTAL_ROUNDS } from "./game/outcome";
+import { getPredatorLevel } from "./game/predators";
 import { WORDS } from "./data/words";
 import { loadSelection, saveSelection } from "./data/wordSelection";
 import { StartScreen } from "./components/StartScreen";
@@ -25,13 +26,24 @@ export default function App() {
     saveSelection(next);
   };
 
+  // Session-only: escalates the antagonist each time a game is actually
+  // started (including the very first), then cycles back after the Kraken.
+  // Not persisted -- reloading the page resets it, unlike the word selection.
+  const [playCount, setPlayCount] = useState(0);
+  const predator = getPredatorLevel(playCount || 1);
+  const nextPredator = getPredatorLevel(playCount + 1);
+  const handleStart = () => {
+    setPlayCount((c) => c + 1);
+    game.start(selectedWords);
+  };
+
   return (
     <div className="app">
       <h1 className="app__title">Puffer Panic</h1>
 
       {state.phase === "start" ? (
         <StartScreen
-          onStart={() => game.start(selectedWords)}
+          onStart={handleStart}
           allWords={WORDS}
           selected={selectedWords}
           onSelectedChange={updateSelectedWords}
@@ -42,6 +54,7 @@ export default function App() {
             sharkProgress={game.sharkProgress}
             pufferScale={game.pufferScale}
             outcome={game.outcome}
+            predator={predator}
           />
 
           {state.phase === "result" && game.outcome ? (
@@ -49,6 +62,8 @@ export default function App() {
               score={state.score}
               total={TOTAL_ROUNDS}
               outcome={game.outcome}
+              predatorLabel={predator.label}
+              nextPredatorLabel={nextPredator.label}
               onRestart={game.restart}
             />
           ) : (

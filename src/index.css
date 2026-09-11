@@ -221,7 +221,7 @@ body {
   height: auto;
 }
 
-.scene__shark {
+.scene__predator {
   transition: transform 0.8s ease-in-out;
 }
 
@@ -230,7 +230,7 @@ body {
   transition: transform 0.6s ease-out;
 }
 
-.scene__shark-bob {
+.scene__predator-bob {
   transform-box: fill-box;
   transform-origin: center;
   animation: bob 1.6s ease-in-out infinite alternate;
@@ -278,14 +278,14 @@ body {
 }
 
 /* ---------- Outcome animations ---------- */
-.scene--defeat .scene__shark-bob {
+.scene--defeat .scene__predator-bob {
   animation: chomp 0.45s ease-out 3 alternate;
 }
 .scene--defeat .scene__puffer-bob {
   animation: gone 0.7s ease-in 0.5s forwards;
 }
 
-.scene--survive-barely .scene__shark {
+.scene--survive-barely .scene__predator {
   transform: translate(210px, 94px) !important;
   transition: transform 0.6s ease-out;
 }
@@ -293,7 +293,7 @@ body {
   animation: hurtBad 1s ease-out forwards;
 }
 
-.scene--survive-hurt .scene__shark {
+.scene--survive-hurt .scene__predator {
   transform: translate(240px, 94px) !important;
   transition: transform 0.6s ease-out;
 }
@@ -301,7 +301,7 @@ body {
   animation: hurtLight 1s ease-out forwards;
 }
 
-.scene--victory .scene__shark-bob {
+.scene--victory .scene__predator-bob {
   animation: flee 1s ease-in 0.15s forwards;
 }
 .scene--victory .scene__puffer-bob {
@@ -508,6 +508,13 @@ body {
   line-height: 1.5;
 }
 
+.result__next {
+  margin: -4px 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #5a7a8c;
+}
+
 /* ---------- Debug ---------- */
 .debug {
   width: 100%;
@@ -537,7 +544,7 @@ body {
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .scene__shark-bob,
+  .scene__predator-bob,
   .scene__puffer-bob,
   .scene--victory .scene__puffer-bob,
   .scene__bubbles circle,

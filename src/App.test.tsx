@@ -1,5 +1,6 @@
+import { act } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 
 describe("App", () => {
@@ -35,5 +36,41 @@ describe("App", () => {
 
     expect(screen.getByRole("button", { name: /start/i })).toBeDisabled();
     expect(screen.getByText(/pick at least 3 words/i)).toBeInTheDocument();
+  });
+});
+
+describe("App - predator escalation", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  function answerAllRounds() {
+    for (let round = 0; round < 5; round++) {
+      const cards = screen
+        .getAllByRole("button", { name: /choose the word/i })
+        .filter((el) => el.classList.contains("card"));
+      fireEvent.click(cards[0]);
+      act(() => {
+        vi.advanceTimersByTime(1600);
+      });
+    }
+  }
+
+  it("shows one shark the first time and two the second time", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+    expect(document.querySelectorAll(".shark")).toHaveLength(1);
+
+    answerAllRounds();
+    fireEvent.click(screen.getByRole("button", { name: /play again/i }));
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+
+    expect(document.querySelectorAll(".shark")).toHaveLength(2);
   });
 });

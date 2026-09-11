@@ -18,21 +18,38 @@ export function pufferScale(score: number): number {
   return 1 + 0.24 * score;
 }
 
-export const OUTCOME_TEXT: Record<Outcome, { title: string; body: string }> = {
-  defeat: {
-    title: "Chomp!",
-    body: "The shark caught the puffer fish this time. Try again!",
-  },
-  "survive-barely": {
-    title: "Phew — barely!",
-    body: "The puffer fish took a big hit but wriggled away just in time.",
-  },
-  "survive-hurt": {
-    title: "Close one!",
-    body: "The puffer fish got away with only a little scratch.",
-  },
-  victory: {
-    title: "PUFFER POWER!",
-    body: "The puffer fish puffed up huge and sent that shark packing!",
-  },
-};
+/** Lowercase just the first letter, for mid-sentence use ("The Kraken" -> "the Kraken"). */
+export function toMidSentence(label: string): string {
+  return label.charAt(0).toLowerCase() + label.slice(1);
+}
+
+/**
+ * `predator` is the current level's subject phrase (see predators.ts),
+ * e.g. "The shark" or "The two sharks" -- ready to drop into a sentence.
+ * Only defeat/victory mention it; the survive outcomes only talk about the
+ * puffer fish either way.
+ */
+export function outcomeText(outcome: Outcome, predator: string): { title: string; body: string } {
+  switch (outcome) {
+    case "defeat":
+      return {
+        title: "Chomp!",
+        body: `${predator} caught the puffer fish this time. Try again!`,
+      };
+    case "survive-barely":
+      return {
+        title: "Phew — barely!",
+        body: "The puffer fish took a big hit but wriggled away just in time.",
+      };
+    case "survive-hurt":
+      return {
+        title: "Close one!",
+        body: "The puffer fish got away with only a little scratch.",
+      };
+    case "victory":
+      return {
+        title: "PUFFER POWER!",
+        body: `The puffer fish puffed up huge and sent ${toMidSentence(predator)} packing!`,
+      };
+  }
+}

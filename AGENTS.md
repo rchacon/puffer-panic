@@ -3,7 +3,7 @@
 A small sight-words reading game for early-elementary kids. A female voice asks
 "Which one spells &lt;word&gt;?", three flash cards show 1&ndash;4 letter Dolch sight
 words, and picking the right one over 5 rounds decides whether a puffer fish
-survives a shark.
+survives a shark -- or, on a replay, something worse.
 
 Vite + React + TypeScript. No CSS framework, no animation library, no state
 library &mdash; a `useReducer` state machine and hand-written inline SVG.
@@ -13,12 +13,20 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
 - `src/game/` &mdash; all logic, browser-free and unit-tested:
   - `rounds.ts` &mdash; `buildRounds(count, pool)` picks targets + 2 distractors
     each; also `MIN_WORDS`.
-  - `outcome.ts` &mdash; `getOutcome(score)`, `pufferScale(score)`, `OUTCOME_TEXT`, `TOTAL_ROUNDS`.
+  - `outcome.ts` &mdash; `getOutcome(score)`, `pufferScale(score)`,
+    `outcomeText(outcome, predatorLabel)`, `TOTAL_ROUNDS`.
   - `useGame.ts` &mdash; the `start | playing | reveal | result` state machine.
     `start(pool?)` takes the chosen word list.
+  - `predators.ts` &mdash; `PREDATOR_LEVELS` (10 rows) and
+    `getPredatorLevel(playCount)`; see "Predator escalation" below.
 - `src/components/` &mdash; presentational. `BattleScene` owns the `<svg>` and
-  places `Shark` / `Puffer`; `CardRow` / `FlashCard` are the answers;
-  `WordPicker` is the start-screen word chooser.
+  renders whichever creature(s) `predators.ts` resolved, via
+  `predators/index.ts`'s `PREDATOR_COMPONENTS` map, plus `Puffer`;
+  `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
+  word chooser.
+- `src/components/predators/` &mdash; one illustration per creature (same
+  flat-SVG technique as `Shark.tsx`/`Puffer.tsx`). `Orca`/`Megalodon` reuse
+  `Shark` recolored/rescaled rather than new art.
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
   silence if a file is missing or autoplay is blocked.
 - `src/data/words.ts` &mdash; the word bank (one double-quoted literal per word).
@@ -57,6 +65,19 @@ at the site root, so a running copy can be identified with
 - The start screen `WordPicker` chooses which words are in play (min `MIN_WORDS`
   = 3, default all). Still 5 rounds always: with a small pool `buildRounds`
   repeats target words but never twice in a row.
+
+## Predator escalation
+
+Each game actually *started* this session (including the very first) bumps a
+`playCount` in `App.tsx` and advances one step through `PREDATOR_LEVELS` in
+`src/game/predators.ts` -- level 1 is one shark, level 10 is the Kraken, then
+it wraps back to level 1. **Visual/thematic only**: every level still plays
+the same 5 rounds with the same scoring thresholds above; only what
+`BattleScene` draws and the `ResultScreen` wording change. The counter is
+**session-only** (a plain `useState`, not persisted) -- unlike the word
+selection, reloading the page resets it to level 1. Voice cues
+(`defeat.mp3`/`victory.mp3`) stay generic rather than recording 20 more
+variants; the on-screen text carries the per-level flavor instead.
 
 ## Conventions
 

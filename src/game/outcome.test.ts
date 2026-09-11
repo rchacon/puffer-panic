@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getOutcome, pufferScale } from "./outcome";
+import { getOutcome, outcomeText, pufferScale, toMidSentence } from "./outcome";
 
 describe("getOutcome", () => {
   it.each([
@@ -23,5 +23,26 @@ describe("pufferScale", () => {
     for (let s = 1; s <= 5; s++) {
       expect(pufferScale(s)).toBeGreaterThan(pufferScale(s - 1));
     }
+  });
+});
+
+describe("toMidSentence", () => {
+  it("lowercases only the first letter", () => {
+    expect(toMidSentence("The Kraken")).toBe("the Kraken");
+    expect(toMidSentence("The two sharks")).toBe("the two sharks");
+  });
+});
+
+describe("outcomeText", () => {
+  it("names the predator on defeat and victory", () => {
+    expect(outcomeText("defeat", "The Kraken").body).toContain("The Kraken caught");
+    expect(outcomeText("victory", "The Kraken").body).toContain("sent the Kraken packing");
+  });
+
+  it("keeps the survive outcomes generic regardless of predator", () => {
+    const barely = outcomeText("survive-barely", "The Kraken").body;
+    const hurt = outcomeText("survive-hurt", "The Kraken").body;
+    expect(barely).not.toContain("Kraken");
+    expect(hurt).not.toContain("Kraken");
   });
 });
