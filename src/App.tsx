@@ -48,6 +48,17 @@ export default function App() {
   };
 
   const handleStart = () => {
+    // Guards against a second activation landing while the Kraken intro is
+    // still showing -- the Start button stays mounted underneath it for the
+    // whole ~2.1s, and a focused button can still receive a keyboard
+    // activation regardless of the overlay's z-index. Without this, the
+    // stray call would overwrite introTimer.current (leaking the first
+    // timer) and eventually double-fire beginGame(): playCount incremented
+    // twice for one logical start, the just-begun round reset back to 0, and
+    // both the voice line and kraken-music.wav restarting on top of
+    // themselves. Disabling the button (see StartScreen's `disabled` prop)
+    // covers the common case; this is the actual guard.
+    if (showKrakenIntro) return;
     if (nextPredator.kind === "kraken") {
       setShowKrakenIntro(true);
       void playCue("release-the-kraken");
@@ -74,6 +85,7 @@ export default function App() {
           allWords={WORDS}
           selected={selectedWords}
           onSelectedChange={updateSelectedWords}
+          disabled={showKrakenIntro}
         />
       ) : (
         <>

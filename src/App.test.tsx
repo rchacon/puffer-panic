@@ -101,4 +101,28 @@ describe("App - predator escalation", () => {
       screen.getByRole("img", { name: /kraken swimming toward a puffer fish/i }),
     ).toBeInTheDocument();
   });
+
+  it("keeps Start disabled through the Kraken intro so a repeat activation can't double-start the game", () => {
+    render(<App />);
+
+    for (let i = 0; i < 9; i++) playThroughOneGame();
+
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+    const startButton = screen.getByRole("button", { name: /start/i });
+    expect(startButton).toBeDisabled();
+
+    // A stray extra activation during the intro must be a no-op. Disabled
+    // buttons don't dispatch click handlers in the first place, but this
+    // also guards handleStart's own re-entrancy check if that ever changes.
+    fireEvent.click(startButton);
+    fireEvent.click(startButton);
+
+    act(() => {
+      vi.advanceTimersByTime(2200);
+    });
+
+    // Exactly one game began: round 1, not reset past it by a stray restart.
+    expect(screen.getByText(/Round 1 \/ 5/)).toBeInTheDocument();
+    expect(document.querySelectorAll(".kraken")).toHaveLength(1);
+  });
 });
