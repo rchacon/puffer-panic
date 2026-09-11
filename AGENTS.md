@@ -29,6 +29,11 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `Shark` recolored/rescaled rather than new art.
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
   silence if a file is missing or autoplay is blocked.
+- `src/shared/` &mdash; plain `.mjs` (not `.ts`) helpers needed by both the app
+  and a `scripts/*.mjs` tool, e.g. `textUtils.mjs`'s `toMidSentence` (used by
+  `outcome.ts` and `generate-audio.mjs`) &mdash; a `.d.mts` alongside gives
+  TypeScript its types. Avoids a hand-duplicated copy in the script that only
+  a comment keeps in sync.
 - `src/data/words.ts` &mdash; the word bank (one double-quoted literal per word).
 - `src/data/wordSelection.ts` &mdash; load/save the chosen words in
   `localStorage["puffer-panic:selected-words"]`, falling back to the full bank.
@@ -118,7 +123,8 @@ check that page before reusing this icon anywhere beyond this one spot.
 
 - **Scripts stay dependency-free.** `scripts/generate-audio.mjs` and
   `scripts/screenshot.mjs` use only Node built-ins (`fetch`, `WebSocket`,
-  `child_process`). Don't add npm deps for tooling.
+  `child_process`) plus plain-JS files under `src/shared/` (no build step
+  needed to run either directly with `node`). Don't add npm deps for tooling.
 - **Audio.** Clips are committed so the app runs offline. Regenerate with
   `npm run audio:gen` after editing `src/data/words.ts` (the script parses the
   quoted string literals). The Google TTS endpoint returns slightly different

@@ -1,3 +1,5 @@
+import { toMidSentence } from "../shared/textUtils.mjs";
+
 export const TOTAL_ROUNDS = 5;
 
 export type Outcome = "defeat" | "survive-barely" | "survive-hurt" | "victory";
@@ -18,10 +20,12 @@ export function pufferScale(score: number): number {
   return 1 + 0.24 * score;
 }
 
-/** Lowercase just the first letter, for mid-sentence use ("The Kraken" -> "the Kraken"). */
-export function toMidSentence(label: string): string {
-  return label.charAt(0).toLowerCase() + label.slice(1);
-}
+// Re-exported so existing importers (ResultScreen, outcome.test.ts) don't
+// need to reach into src/shared themselves -- outcome.ts stays the one
+// place game text logic is imported from. The implementation lives in
+// src/shared/textUtils.mjs so scripts/generate-audio.mjs can share it too,
+// instead of a hand-duplicated copy that only a comment kept in sync.
+export { toMidSentence };
 
 /**
  * `predator` is the current level's subject phrase (see predators.ts),

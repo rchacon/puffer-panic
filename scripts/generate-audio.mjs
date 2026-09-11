@@ -9,6 +9,7 @@
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
+import { toMidSentence } from "../src/shared/textUtils.mjs";
 
 const ROOT = new URL("../", import.meta.url);
 const OUT = new URL("public/audio/", ROOT);
@@ -28,11 +29,6 @@ const PREDATOR_LABELS = [...predatorsSrc.matchAll(/label:\s*"([^"]+)"/g)].map((m
 if (PREDATOR_LABELS.length === 0) {
   console.error("No predator labels found in src/game/predators.ts");
   process.exit(1);
-}
-
-// Mirrors outcome.ts's toMidSentence -- keep in sync.
-function toMidSentence(label) {
-  return label.charAt(0).toLowerCase() + label.slice(1);
 }
 
 // defeat-<level>.mp3 / victory-<level>.mp3 -- text matches outcomeText() in
