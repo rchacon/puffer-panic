@@ -43,10 +43,10 @@ export function Piranha() {
   return (
     <g className="piranha">
       <svg
-        x={-40}
-        y={-15}
-        width={60}
-        height={30}
+        x={-60}
+        y={-22.5}
+        width={90}
+        height={45}
         viewBox="0 0 500 250"
         dangerouslySetInnerHTML={{ __html: scopedArtwork }}
       />
