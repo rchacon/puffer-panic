@@ -36,8 +36,8 @@ export interface SchoolOffset {
 const SCHOOL_OFFSETS: Record<number, SchoolOffset[]> = {
   1: [{ dx: 0, dy: 0, scale: 1 }],
   2: [
-    { dx: 6, dy: -14, scale: 0.92 },
-    { dx: -10, dy: 14, scale: 0.92 },
+    { dx: 9, dy: -21, scale: 0.92 },
+    { dx: -15, dy: 21, scale: 0.92 },
   ],
   3: [
     { dx: 10, dy: -20, scale: 0.8 },
