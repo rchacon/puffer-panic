@@ -144,10 +144,13 @@ it changes again:
   base64-PNG-in-an-`<image>` wrapper) -- open it and check before assuming
   it's cheap to embed like the Kraken's real vector art.
 
-Current version: rasterized from the pixel-traced source above (Chrome
-headless, transparent background) then downscaled ~2x with Lanczos
-resampling -- which both shrinks the file and manufactures smooth
-antialiased edges the crispEdges trace didn't have -- to 700px wide (~330KB,
+Current version (restored from the first raster attempt, see git history --
+the pixel-traced-then-rerasterized one above lost a little gradient detail
+in the round trip and isn't what's in the repo): background flood-filled to
+transparent from the original's image border inward (safe there since the
+art never touched the canvas edge -- a naive "make white pixels transparent"
+would have also punched holes in the shark's own legitimate white
+belly/spots), cropped to content, and downscaled to 700px wide (~320KB,
 comfortably covers the scene's realistic on-screen size at up to 3x device
 pixel ratio; `.scene__svg` renders at `width: 100%` of a 720px-max-width
 container). Imported as a URL, not `?raw`, so Vite emits it as its own
