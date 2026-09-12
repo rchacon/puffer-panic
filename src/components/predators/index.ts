@@ -45,10 +45,10 @@ const SCHOOL_OFFSETS: Record<number, SchoolOffset[]> = {
     { dx: 6, dy: 22, scale: 0.8 },
   ],
   4: [
-    { dx: 12, dy: -22, scale: 0.72 },
-    { dx: -8, dy: -6, scale: 0.72 },
-    { dx: 10, dy: 10, scale: 0.72 },
-    { dx: -6, dy: 26, scale: 0.72 },
+    { dx: 18, dy: -32, scale: 0.72 },
+    { dx: -12, dy: -9, scale: 0.72 },
+    { dx: 15, dy: 15, scale: 0.72 },
+    { dx: -9, dy: 37, scale: 0.72 },
   ],
 };
 
