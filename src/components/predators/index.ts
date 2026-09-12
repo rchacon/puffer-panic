@@ -30,8 +30,8 @@ export interface SchoolOffset {
 
 /**
  * Per-instance position jitter for a "school" of `count` predators (levels
- * 2-4), applied relative to the shared approach position so the group
- * retreats/flees together on an outcome while keeping its formation.
+ * 2, 4 and 7), applied relative to the shared approach position so the
+ * group retreats/flees together on an outcome while keeping its formation.
  */
 const SCHOOL_OFFSETS: Record<number, SchoolOffset[]> = {
   1: [{ dx: 0, dy: 0, scale: 1 }],
