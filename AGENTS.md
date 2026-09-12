@@ -260,18 +260,34 @@ a normal-sized footprint (worked, but the user preferred it big), and a
 7-point hand-tuned checkpoint table (worked, but its uneven segment slopes
 made consecutive steps move at wildly different effective speeds, which
 read as janky on mobile). The current fix is a single continuous easing
-formula -- `sharkProgress ** 3` -- applied only to the Mosasaurus's
-progress before the shared linear `sharkX` math: no seams between
-differently-sloped segments for steps to look inconsistent across, just
-one smooth curve that keeps every round's step small and reserves most of
-the closing distance for the very last one (round 5's reveal), which then
-reads as a dramatic final lunge rather than a steady creep. Tuned/verified
-by actually playing through 5 rounds (clicking real cards, not the
-`?debug=1` outcome-jump buttons) and screenshotting every `playing` *and*
-`reveal` phase -- the debug buttons skip the `reveal` phase entirely, which
-turned out to hide a real jump (sharkProgress advances by a full 1/5th of
-the way there, not the smaller step within-round answering causes) that
-earlier verification passes never accounted for.
+formula -- `0.2 * t + 0.8 * t ** 3` (`PREDATOR_APPROACH.mosasaurus.ease` in
+`BattleScene.tsx`) -- applied only to the Mosasaurus's progress before the
+shared linear `sharkX` math: no seams between differently-sloped segments
+for steps to look inconsistent across, just one smooth curve that keeps
+every round's step small and reserves most of the closing distance for the
+very last one (round 5's reveal), which then reads as a dramatic final
+lunge rather than a steady creep. The pure cube this started as
+(`t ** 3`) has a slope of exactly zero at t=0, which made round 1's move a
+couple of imperceptible pixels; blending in 20% linear gives it a nonzero
+slope at the start so that first move actually reads as movement, without
+the cube's dominance over the rest of the curve. Tuned/verified by actually
+playing through 5 rounds (clicking real cards, not the `?debug=1`
+outcome-jump buttons) and screenshotting every `playing` *and* `reveal`
+phase -- the debug buttons skip the `reveal` phase entirely, which turned
+out to hide a real jump (sharkProgress advances by a full 1/5th of the way
+there, not the smaller step within-round answering causes) that earlier
+verification passes never accounted for.
+
+Its `<image>` x offset centers it on the local origin (`-width/2`), same
+convention as Shark/Piranha/SharkPrincess -- each one's art is cropped
+tight to its own content, so centering the box lines up roughly the right
+amount of open jaw with the shared final-contact position (`sharkX=150`)
+for a believable bite. An earlier revision had this off-center by 30
+units (`x={-130}` for a 200-wide box, instead of `-100`), which put the
+puffer under the Mosasaurus's mid-body/flippers at that position instead
+of near its mouth -- caught by `/code-review` actually rendering the final
+frame and comparing bounding boxes against the Shark's, not by inspecting
+the numbers alone.
 
 ## Conventions
 

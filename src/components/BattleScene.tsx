@@ -1,5 +1,5 @@
 import type { Outcome } from "../game/outcome";
-import type { PredatorLevel } from "../game/predators";
+import type { PredatorKind, PredatorLevel } from "../game/predators";
 import { Puffer } from "./Puffer";
 import { ShipWreck } from "./ShipWreck";
 import { PREDATOR_COMPONENTS, getSchoolOffsets } from "./predators";
@@ -15,34 +15,49 @@ const PUFFER_X = 96;
 const PUFFER_Y = 116;
 const PREDATOR_Y = 94;
 
+const DEFAULT_START_X = 350;
+
+// Per-kind overrides to the shared linear approach -- everything not listed
+// here just uses DEFAULT_START_X and travels in a straight line. A lookup
+// keyed by kind instead of another `predator.kind === "..."` branch each
+// time a predator needs special-casing (this is already the second one,
+// after the Kraken's shipwreck check above): easier to see every exception
+// in one place, and to tell at a glance whether a given kind has one.
+interface PredatorApproach {
+  startX: number;
+  /** Reshapes 0..1 sharkProgress before the shared linear position math. */
+  ease?: (t: number) => number;
+}
+
 // Mosasaurus is deliberately drawn much bigger than every other predator
 // (see Mosasaurus.tsx) and starts much farther off the right edge -- a
 // plain linear approach at that scale makes each round-to-round step a big,
 // fast-looking jump (the bigger the runway, the bigger each equal-progress
 // slice of it is). A single smooth power curve keeps every step small and
 // only closes most of the distance on the very last one -- unlike a
-// hand-tuned multi-point checkpoint table (the previous approach here),
-// this has no seams between differently-sloped segments for consecutive
-// steps to look inconsistent across, so it doesn't have the mobile
-// "jumpiness" that table caused.
+// hand-tuned multi-point checkpoint table (an earlier approach here), this
+// has no seams between differently-sloped segments for consecutive steps to
+// look inconsistent across, so it doesn't have the mobile "jumpiness" that
+// table caused.
 //
-// A pure cube (progress**3) pushes the round 1 move down to a couple of
+// A pure cube (progress**3) pushes round 1's move down to a couple of
 // pixels -- imperceptible, reads as not moving at all. Blending in a small
-// linear component keeps that first move visible (the linear term's slope
-// is nonzero at t=0, unlike the cube's) while the cube term still
-// dominates for the rest of the approach, so later rounds still build up
-// gradually and contact still lands on the final reveal, not sooner.
-const MOSASAURUS_APPROACH_EXPONENT = 3;
-const MOSASAURUS_LINEAR_BLEND = 0.2;
-
-function mosasaurusApproach(t: number): number {
-  return MOSASAURUS_LINEAR_BLEND * t + (1 - MOSASAURUS_LINEAR_BLEND) * t ** MOSASAURUS_APPROACH_EXPONENT;
-}
+// linear component (progress*0.2 + progress**3*0.8) keeps that first move
+// visible (the linear term's slope is nonzero at t=0, unlike the cube's)
+// while the cube term still dominates for the rest of the approach, so
+// later rounds still build up gradually and contact still lands on the
+// final reveal, not sooner.
+const PREDATOR_APPROACH: Partial<Record<PredatorKind, PredatorApproach>> = {
+  mosasaurus: {
+    startX: 460,
+    ease: (t) => 0.2 * t + 0.8 * t ** 3,
+  },
+};
 
 export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
-  const startX = predator.kind === "mosasaurus" ? 460 : 350;
-  const approachProgress =
-    predator.kind === "mosasaurus" ? mosasaurusApproach(sharkProgress) : sharkProgress;
+  const approach = PREDATOR_APPROACH[predator.kind];
+  const startX = approach?.startX ?? DEFAULT_START_X;
+  const approachProgress = approach?.ease ? approach.ease(sharkProgress) : sharkProgress;
   const sharkX = startX - approachProgress * (startX - 150);
   const className = outcome ? `scene scene--${outcome}` : "scene";
   const Creature = PREDATOR_COMPONENTS[predator.kind];
