@@ -28,8 +28,9 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   flat-SVG technique as `Puffer.tsx`). `Megalodon` reuses `Shark` rescaled
   and darkened via CSS filter rather than new art. `Shark.tsx` (one level
   up, in `src/components/`), `Kraken`, `SharkPrincess` and `Piranha` are
-  vendored/user-provided raster or vector art rather than hand-drawn -- see
-  "Predator escalation" below.
+  vendored/user-provided raster or vector art rather than hand-drawn;
+  `Mosasaurus` is a real `<svg>` file too but hand-authored (not vendored)
+  -- see "Predator escalation" below.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
   (see there).
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
@@ -225,6 +226,22 @@ override any more, just one baked-in image. A lone `brightness()` doesn't
 have the chained sepia/saturate/hue-rotate fragility that bit the Kraken's
 filter on iOS (see that section) -- it's simple, well-defined, linear math,
 not several functions composed on top of each other.
+
+Level 9's `Mosasaurus` is hand-authored vector art, not vendored -- drawn
+from scratch (inspired by a reference image the user provided, not a trace
+of it) using the same `?raw` + `dangerouslySetInnerHTML` embedding as the
+vendored creatures, since it's a similarly detailed illustration (gradients
+weren't needed in the end; flat mottling blobs over a dark base read fine
+at this size) rather than the flat hand-drawn-JSX style `Eel`/`Anglerfish`/
+`TapahCatfish` use. Built the same way the Piranha's belly patch was: the
+pale underside is its own `<path>` that reuses the main body path's exact
+bottom-edge bezier segments (so it actually follows the silhouette) closed
+with a return sweep back through the interior, kept close to the bottom
+edge (not cutting deep toward the back) so it reads as a slim belly band
+rather than swallowing most of the body -- got this wrong on the first
+attempt (the return sweep cut too high) before fixing it. No internal ids,
+so unlike Piranha/Shark it doesn't need `scopeIds`/`useScopedSvg` -- it
+only ever renders once (`count: 1`).
 
 ## Conventions
 

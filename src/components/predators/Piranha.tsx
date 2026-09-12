@@ -2,7 +2,7 @@ import { useScopedSvg } from "../scopeIds";
 import piranhaArtwork from "../../assets/piranha.svg?raw";
 
 // Level 4's piranha (school of 4) -- a vendored illustration, not hand-drawn
-// like Eel/Anglerfish/TapahCatfish/Mosasaurus. Recolored from its original
+// like Eel/Anglerfish/TapahCatfish. Recolored from its original
 // teal palette to a grey body + red belly (a red-bellied piranha,
 // Pygocentrus nattereri) -- see AGENTS.md for the source, license, and how
 // the belly patch was added. Already drawn nose-left in its native
