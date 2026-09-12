@@ -16,18 +16,23 @@ const ID_ATTR = /\bid="([^"]+)"/g;
  * fragment lookup isn't something worth relying on across browsers).
  */
 function scopeIds(svg: string, suffix: string): string {
-  const ids = new Set<string>();
-  for (const m of svg.matchAll(ID_ATTR)) ids.add(m[1]);
-  let out = svg;
-  for (const id of ids) {
-    const scoped = `${id}-${suffix}`;
-    out = out
-      .replaceAll(`id="${id}"`, `id="${scoped}"`)
-      .replaceAll(`url(#${id})`, `url(#${scoped})`)
-      .replaceAll(`xlink:href="#${id}"`, `xlink:href="#${scoped}"`)
-      .replaceAll(`href="#${id}"`, `href="#${scoped}"`);
-  }
-  return out;
+  const ids = [...new Set(Array.from(svg.matchAll(ID_ATTR), (m) => m[1]))];
+  if (ids.length === 0) return svg;
+
+  // One regex pass over the ORIGINAL string, not N sequential full-string
+  // replaceAll calls -- String.replace with a global regex never rescans
+  // its own output, so the rename is atomic. Doing this as sequential
+  // replaceAll calls (the previous approach) could merge two originally-
+  // distinct ids into one if some id happened to equal another id + "-" +
+  // suffix: renaming the first would collide with the second, and the
+  // second's own (later) rename would then apply to both at once.
+  const alt = ids.map((id) => id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+  const pattern = new RegExp(`id="(${alt})"|url\\(#(${alt})\\)|((?:xlink:)?href="#)(${alt})"`, "g");
+  return svg.replace(pattern, (_match, idMatch, urlMatch, hrefPrefix, hrefMatch) => {
+    if (idMatch !== undefined) return `id="${idMatch}-${suffix}"`;
+    if (urlMatch !== undefined) return `url(#${urlMatch}-${suffix})`;
+    return `${hrefPrefix}${hrefMatch}-${suffix}"`;
+  });
 }
 
 // Level 4's piranha (school of 4) -- a vendored illustration, not hand-drawn

@@ -184,7 +184,12 @@ time (`useId()` + a small regex pass, memoized), so no two piranhas on
 screen ever share a gradient/filter id. Any future vendored asset that can
 render more than once at a time needs the same treatment -- a static prefix
 alone only solves collisions *between* different creatures, not against
-copies of itself.
+copies of itself. That said, `scopeIds()`'s pattern-matching only covers the
+double-quoted `id="..."`, `url(#...)` and `(xlink:)href="#..."` forms an
+Inkscape export actually uses -- it won't catch single-quoted attributes, an
+id referenced from a `<style>` block, or a SMIL `begin="other.click"`-style
+reference. Fine for piranha.svg/kraken.svg as they stand; check for those
+before reusing it on a differently-authored source file.
 
 ## Conventions
 
