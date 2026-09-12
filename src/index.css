@@ -237,9 +237,11 @@ body {
 }
 
 .kraken {
-  /* The vendored illustration is mostly grey/silver; hue-rotate alone can't
-     tint true greys (no chroma to rotate), so sepia() injects some first. */
-  filter: sepia(1) saturate(3) hue-rotate(220deg) brightness(0.64);
+  /* Points at BattleScene.tsx's #krakenPurple SVG filter (built from the
+     same sepia+saturate+hue-rotate+brightness math this used to write as a
+     CSS filter shorthand chain) instead of the shorthand itself -- reported
+     rendering grey instead of purple on iOS, see that filter's comment. */
+  filter: url(#krakenPurple);
 }
 
 .scene__puffer-bob {
