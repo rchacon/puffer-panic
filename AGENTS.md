@@ -27,9 +27,9 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
 - `src/components/predators/` &mdash; one illustration per creature (same
   flat-SVG technique as `Puffer.tsx`). `Megalodon` reuses `Shark` rescaled
   and darkened via CSS filter rather than new art. `Shark.tsx` (one level
-  up, in `src/components/`), `Kraken`, `SharkPrincess` and `Piranha` are
-  vendored/user-provided raster or vector art rather than hand-drawn -- see
-  "Predator escalation" below.
+  up, in `src/components/`), `Kraken`, `SharkPrincess`, `Piranha` and
+  `Mosasaurus` are vendored/user-provided raster or vector art rather than
+  hand-drawn -- see "Predator escalation" below.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
   (see there).
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
@@ -225,6 +225,69 @@ override any more, just one baked-in image. A lone `brightness()` doesn't
 have the chained sepia/saturate/hue-rotate fragility that bit the Kraken's
 filter on iOS (see that section) -- it's simple, well-defined, linear math,
 not several functions composed on top of each other.
+
+Level 9's `Mosasaurus` is a raster illustration, user-provided (not
+sourced/licensed the way the Kraken/PhyloPic assets were -- verify
+provenance before reusing it elsewhere). Went through two other approaches
+first (a hand-authored vector redraw, then a recolored PhyloPic silhouette
+-- see git history) before landing here on "just use the PNG the user
+actually likes the look of." `src/assets/mosasaurus.png` is a processed
+derivative of that PNG, not the original file itself: the source had **no
+real alpha transparency** despite looking like it had a transparent
+checkerboard background -- every pixel's alpha was 255, and the
+"checkerboard" was literally baked into the pixels as opaque light-grey/
+white squares (confirmed by checking the alpha channel's histogram, not by
+eyeballing the preview). Background flood-filled to transparent from the
+image border inward, matching *either* of the checkerboard's two
+near-white/grey tones (safe here since the art's own outline never touches
+the canvas edge, and its own light colors -- belly, teeth -- are clearly
+blue/cream-tinted rather than neutral grey, so they don't get caught by a
+strict near-grey color test even before connectivity is considered), then
+cropped to content and downscaled to 300px wide (~51KB) -- deliberately
+small since file size was the priority for this one, at some cost to
+crispness on very large/high-DPI displays. Imported as a URL like
+SharkPrincess.tsx, not `?raw`, so Vite emits it as its own cacheable file.
+
+Deliberately drawn much bigger in `Mosasaurus.tsx` than every other
+predator (width 200 vs. Shark's 159) -- it's meant to look imposing. That
+size, plus starting much farther off-screen (`startX` 460 vs. everyone
+else's 350 in `BattleScene.tsx`) for a longer runway, means a plain linear
+approach (what every other predator uses) makes each round-to-round step a
+big, fast jump: the same handful of progress fractions now span a much
+larger pixel range. Two earlier fixes were tried and abandoned before
+landing on the current one (see git history): shrinking the sprite down to
+a normal-sized footprint (worked, but the user preferred it big), and a
+7-point hand-tuned checkpoint table (worked, but its uneven segment slopes
+made consecutive steps move at wildly different effective speeds, which
+read as janky on mobile). The current fix is a single continuous easing
+formula -- `0.2 * t + 0.8 * t ** 3` (`PREDATOR_APPROACH.mosasaurus.ease` in
+`BattleScene.tsx`) -- applied only to the Mosasaurus's progress before the
+shared linear `sharkX` math: no seams between differently-sloped segments
+for steps to look inconsistent across, just one smooth curve that keeps
+every round's step small and reserves most of the closing distance for the
+very last one (round 5's reveal), which then reads as a dramatic final
+lunge rather than a steady creep. The pure cube this started as
+(`t ** 3`) has a slope of exactly zero at t=0, which made round 1's move a
+couple of imperceptible pixels; blending in 20% linear gives it a nonzero
+slope at the start so that first move actually reads as movement, without
+the cube's dominance over the rest of the curve. Tuned/verified by actually
+playing through 5 rounds (clicking real cards, not the `?debug=1`
+outcome-jump buttons) and screenshotting every `playing` *and* `reveal`
+phase -- the debug buttons skip the `reveal` phase entirely, which turned
+out to hide a real jump (sharkProgress advances by a full 1/5th of the way
+there, not the smaller step within-round answering causes) that earlier
+verification passes never accounted for.
+
+Its `<image>` x offset centers it on the local origin (`-width/2`), same
+convention as Shark/Piranha/SharkPrincess -- each one's art is cropped
+tight to its own content, so centering the box lines up roughly the right
+amount of open jaw with the shared final-contact position (`sharkX=150`)
+for a believable bite. An earlier revision had this off-center by 30
+units (`x={-130}` for a 200-wide box, instead of `-100`), which put the
+puffer under the Mosasaurus's mid-body/flippers at that position instead
+of near its mouth -- caught by `/code-review` actually rendering the final
+frame and comparing bounding boxes against the Shark's, not by inspecting
+the numbers alone.
 
 ## Conventions
 
