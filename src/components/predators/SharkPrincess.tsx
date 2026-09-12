@@ -1,22 +1,21 @@
-import sharkPrincessArt from "../../assets/shark-princess.png";
+import sharkPrincessArtwork from "../../assets/shark-princess.svg?raw";
 
-// Level 3 (previously a recolored Shark playing the orca, see git history)
-// -- a cheerful crowned whale shark, provided by the user as a large raster
-// illustration with a white background (src/assets/shark-princess.png is the
-// processed result: background removed, cropped to content, downscaled; see
-// AGENTS.md for details and why it isn't the original file). Imported as a
-// URL (not `?raw` like Kraken.tsx) so Vite emits it as its own cacheable
-// file instead of inlining a ~300KB base64 string into the JS bundle.
+// Level 3's cheerful crowned whale shark -- real vector art (unlike the
+// raster PNG this used at first, see git history for why that didn't
+// stick), embedded the same way as Kraken.tsx: `?raw` + dangerouslySetInnerHTML.
+// The source's internal gradient ids were hand-prefixed (sp-body, sp-fin,
+// etc.) the same way Kraken's were, so they can't collide with another
+// embedded SVG's own same-named ids if one ever ends up in the DOM at once.
 export function SharkPrincess() {
   return (
     <g className="shark-princess">
-      <image
-        href={sharkPrincessArt}
+      <svg
         x={-54}
-        y={-30}
+        y={-34}
         width={108}
-        height={60.5}
-        preserveAspectRatio="xMidYMid meet"
+        height={68}
+        viewBox="0 0 1200 760"
+        dangerouslySetInnerHTML={{ __html: sharkPrincessArtwork }}
       />
     </g>
   );

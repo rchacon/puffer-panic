@@ -123,20 +123,14 @@ check that page before reusing this icon anywhere beyond this one spot.
 
 Level 3's `SharkPrincess` (`src/components/predators/SharkPrincess.tsx`) is a
 cheerful crowned whale shark, user-provided (not sourced/licensed the way the
-Kraken assets were -- verify provenance before reusing it anywhere else).
-The original was a ~1.5MB PNG with a solid white background wrapped in an SVG
-file; `src/assets/shark-princess.png` is a processed derivative, not that
-original file: background flood-filled to transparent from the image's
-border inward (safe here because the art's outline never touches the
-canvas edge -- a naive "make white pixels transparent" would have also
-punched holes in the legitimate white belly/spots), then cropped to content
-and downscaled to 700px wide (comfortably covers the scene's realistic
-on-screen size at up to 3x device pixel ratio -- see `.scene__svg`'s CSS in
-`index.css`, it's rendered at `width: 100%` of a 720px-max-width container).
-Imported as a URL (`import x from "./shark-princess.png"`), not `?raw` like
-the Kraken SVG, so Vite emits it as its own cacheable file rather than
-inlining a large base64 string into the JS bundle -- worth doing for any
-future raster predator art, not just this one.
+Kraken assets were -- verify provenance before reusing it anywhere else). An
+earlier version of this asset was a raster PNG that needed background
+removal/cropping (see git history); `src/assets/shark-princess.svg` is real
+vector art instead, embedded the same way as the Kraken (`?raw` +
+`dangerouslySetInnerHTML`). Its internal gradient ids were hand-prefixed
+(`sp-body`, `sp-fin`, etc.), same reason as the Kraken's `kraken-` prefix --
+avoids colliding with another embedded SVG's same-named ids if two ever end
+up in the DOM together.
 
 ## Conventions
 
