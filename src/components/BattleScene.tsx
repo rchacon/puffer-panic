@@ -34,6 +34,36 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
             <stop offset="0" stopColor="#37b0dd" />
             <stop offset="1" stopColor="#0a3a63" />
           </linearGradient>
+          {/* Recolors the Kraken's mostly-grey vendored art purple (see
+              .kraken in index.css for why: sepia injects chroma a plain
+              hue-rotate can't). Built from the same primitives the CSS
+              `filter: sepia(1) saturate(3) hue-rotate(220deg) brightness(0.64)`
+              shorthand expands to, but spelled out explicitly with
+              color-interpolation-filters="sRGB" forced -- reported as
+              rendering grey instead of purple on iOS Safari/Chrome (same
+              WebKit engine), which strongly suggests that combo was
+              landing in linearRGB there instead. Chaining 4 shorthand
+              filter functions on near-zero-chroma source art is fragile
+              even when color space matches: there's very little chroma
+              for rounding differences between engines to work with. This
+              removes the ambiguity outright instead of guessing further --
+              unverified on a real device, since none is available here. */}
+          <filter id="krakenPurple" colorInterpolationFilters="sRGB">
+            <feColorMatrix
+              type="matrix"
+              values="0.393 0.769 0.189 0 0
+                      0.349 0.686 0.168 0 0
+                      0.272 0.534 0.131 0 0
+                      0     0     0     1 0"
+            />
+            <feColorMatrix type="saturate" values="3" />
+            <feColorMatrix type="hueRotate" values="220" />
+            <feComponentTransfer>
+              <feFuncR type="linear" slope="0.64" />
+              <feFuncG type="linear" slope="0.64" />
+              <feFuncB type="linear" slope="0.64" />
+            </feComponentTransfer>
+          </filter>
         </defs>
 
         <rect width="400" height="200" fill="url(#sea)" />
