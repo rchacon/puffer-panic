@@ -8,7 +8,7 @@ export type PredatorKind =
   | "piranha"
   | "anglerfish"
   | "catfish"
-  | "orca"
+  | "sharkprincess"
   | "megalodon"
   | "mosasaurus"
   | "kraken";
@@ -16,7 +16,7 @@ export type PredatorKind =
 export interface PredatorLevel {
   level: number; // 1-10
   kind: PredatorKind;
-  /** How many instances BattleScene renders (only >1 for levels 2-4). */
+  /** How many instances BattleScene renders (only >1 for levels 2, 4, 7). */
   count: number;
   /** Ready-to-use sentence subject, e.g. "The shark", "The two sharks". */
   label: string;
@@ -25,11 +25,11 @@ export interface PredatorLevel {
 export const PREDATOR_LEVELS: PredatorLevel[] = [
   { level: 1, kind: "shark", count: 1, label: "The shark" },
   { level: 2, kind: "shark", count: 2, label: "The two sharks" },
-  { level: 3, kind: "eel", count: 3, label: "The three electric eels" },
+  { level: 3, kind: "sharkprincess", count: 1, label: "The Shark Princess" },
   { level: 4, kind: "piranha", count: 4, label: "The four piranhas" },
   { level: 5, kind: "anglerfish", count: 1, label: "The anglerfish" },
   { level: 6, kind: "catfish", count: 1, label: "The Tapah catfish" },
-  { level: 7, kind: "orca", count: 1, label: "The orca" },
+  { level: 7, kind: "eel", count: 3, label: "The three electric eels" },
   { level: 8, kind: "megalodon", count: 1, label: "The Megalodon" },
   { level: 9, kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
   { level: 10, kind: "kraken", count: 1, label: "The Kraken" },

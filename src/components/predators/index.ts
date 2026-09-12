@@ -5,7 +5,7 @@ import { Eel } from "./Eel";
 import { Piranha } from "./Piranha";
 import { Anglerfish } from "./Anglerfish";
 import { TapahCatfish } from "./TapahCatfish";
-import { Orca } from "./Orca";
+import { SharkPrincess } from "./SharkPrincess";
 import { Megalodon } from "./Megalodon";
 import { Mosasaurus } from "./Mosasaurus";
 import { Kraken } from "./Kraken";
@@ -16,7 +16,7 @@ export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
   piranha: Piranha,
   anglerfish: Anglerfish,
   catfish: TapahCatfish,
-  orca: Orca,
+  sharkprincess: SharkPrincess,
   megalodon: Megalodon,
   mosasaurus: Mosasaurus,
   kraken: Kraken,
@@ -30,8 +30,8 @@ export interface SchoolOffset {
 
 /**
  * Per-instance position jitter for a "school" of `count` predators (levels
- * 2-4), applied relative to the shared approach position so the group
- * retreats/flees together on an outcome while keeping its formation.
+ * 2, 4 and 7), applied relative to the shared approach position so the
+ * group retreats/flees together on an outcome while keeping its formation.
  */
 const SCHOOL_OFFSETS: Record<number, SchoolOffset[]> = {
   1: [{ dx: 0, dy: 0, scale: 1 }],
