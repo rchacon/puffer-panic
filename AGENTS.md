@@ -26,9 +26,9 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
   flat-SVG technique as `Shark.tsx`/`Puffer.tsx`). `Megalodon` reuses `Shark`
-  recolored/rescaled rather than new art. `Kraken` and `SharkPrincess` are
-  the two exceptions, both vendored/user-provided raster or vector art
-  rather than hand-drawn -- see "Predator escalation" below.
+  recolored/rescaled rather than new art. `Kraken`, `SharkPrincess` and
+  `Piranha` are the exceptions, all vendored/user-provided raster or vector
+  art rather than hand-drawn -- see "Predator escalation" below.
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
   silence if a file is missing or autoplay is blocked.
 - `src/shared/` &mdash; plain `.mjs` (not `.ts`) helpers needed by both the app
@@ -155,6 +155,41 @@ comfortably covers the scene's realistic on-screen size at up to 3x device
 pixel ratio; `.scene__svg` renders at `width: 100%` of a 720px-max-width
 container). Imported as a URL, not `?raw`, so Vite emits it as its own
 cacheable file instead of inlining a base64 string into the JS bundle.
+
+Level 4's `Piranha` (school of 4, see `getSchoolOffsets`) is vendored real
+vector art -- "piranha" by liakad on OpenClipart
+(openclipart.org/detail/4631/piranha-by-liakad), public domain
+(`src/assets/piranha.svg`'s own `<metadata>` carries the CC0-equivalent
+license block; keep it if this file is ever re-saved by a tool that strips
+metadata). Recolored by hand from its original teal palette to a grey body
+with a red belly (a red-bellied piranha, *Pygocentrus nattereri*): the
+original's gradient/fill hex values were swapped for grey equivalents at the
+same luminance stops (preserves the existing rounded-body shading, just
+desaturated), and a new belly-patch `<path>` + gradient (`#piranha-belly`)
+was added, hand-traced from the body outline's own bottom-edge bezier
+segments (see `path10475` in the source) so it actually follows the body's
+silhouette rather than being an approximate blob, then closed with a
+freehand return curve back up into the body interior and filled
+red-fading-to-transparent so it blends into the grey above it rather than
+having a hard seam.
+
+Unlike Kraken/SharkPrincess (rendered once), `Piranha` renders `count` times
+at once (a school) -- the same vendored markup, ids and all, gets injected
+into the DOM several times simultaneously via `dangerouslySetInnerHTML`.
+A static id prefix baked into the file (like the Kraken's `kraken-`) doesn't
+help there, since every instance would still carry the *same* prefix.
+`Piranha.tsx` instead rewrites every `id="..."` (and matching
+`url(#...)`/`xlink:href="#..."`) to a per-instance-unique suffix at render
+time (`useId()` + a small regex pass, memoized), so no two piranhas on
+screen ever share a gradient/filter id. Any future vendored asset that can
+render more than once at a time needs the same treatment -- a static prefix
+alone only solves collisions *between* different creatures, not against
+copies of itself. That said, `scopeIds()`'s pattern-matching only covers the
+double-quoted `id="..."`, `url(#...)` and `(xlink:)href="#..."` forms an
+Inkscape export actually uses -- it won't catch single-quoted attributes, an
+id referenced from a `<style>` block, or a SMIL `begin="other.click"`-style
+reference. Fine for piranha.svg/kraken.svg as they stand; check for those
+before reusing it on a differently-authored source file.
 
 ## Conventions
 
