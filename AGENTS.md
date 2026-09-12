@@ -123,14 +123,35 @@ check that page before reusing this icon anywhere beyond this one spot.
 
 Level 3's `SharkPrincess` (`src/components/predators/SharkPrincess.tsx`) is a
 cheerful crowned whale shark, user-provided (not sourced/licensed the way the
-Kraken assets were -- verify provenance before reusing it anywhere else). An
-earlier version of this asset was a raster PNG that needed background
-removal/cropping (see git history); `src/assets/shark-princess.svg` is real
-vector art instead, embedded the same way as the Kraken (`?raw` +
-`dangerouslySetInnerHTML`). Its internal gradient ids were hand-prefixed
-(`sp-body`, `sp-fin`, etc.), same reason as the Kraken's `kraken-` prefix --
-avoids colliding with another embedded SVG's same-named ids if two ever end
-up in the DOM together.
+Kraken assets were -- verify provenance before reusing it anywhere else).
+`src/assets/shark-princess.png` is a processed derivative, not whatever file
+was last provided -- check git history before assuming the current one is
+the original. Two things this asset has swung between are worth knowing if
+it changes again:
+- A true hand-authored vector redraw (small, infinitely crisp, embedded
+  `?raw` like the Kraken) doesn't reliably look like a provided reference
+  image -- it's a fresh illustration in the same spirit, not a trace of it.
+- A "vector" that's actually a per-pixel trace of a raster source (every
+  pixel/run of pixels encoded as its own tiny filled path,
+  `shape-rendering="crispEdges"`) looks identical to the source but is
+  *worse* than a plain raster on every axis: bigger file (a 768x512 trace
+  ran 1.4MB, next to ~330KB for the equivalent PNG), no real vector benefit
+  (doesn't scale cleanly -- hard pixel edges, no antialiasing), and it's
+  still not really vector art despite the `.svg` extension.
+
+  If a provided "SVG" balloons past a few hundred KB, it's almost certainly
+  one of these two raster-in-disguise cases (this one, or the earlier
+  base64-PNG-in-an-`<image>` wrapper) -- open it and check before assuming
+  it's cheap to embed like the Kraken's real vector art.
+
+Current version: rasterized from the pixel-traced source above (Chrome
+headless, transparent background) then downscaled ~2x with Lanczos
+resampling -- which both shrinks the file and manufactures smooth
+antialiased edges the crispEdges trace didn't have -- to 700px wide (~330KB,
+comfortably covers the scene's realistic on-screen size at up to 3x device
+pixel ratio; `.scene__svg` renders at `width: 100%` of a 720px-max-width
+container). Imported as a URL, not `?raw`, so Vite emits it as its own
+cacheable file instead of inlining a base64 string into the JS bundle.
 
 ## Conventions
 
