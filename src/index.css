@@ -244,6 +244,15 @@ body {
   filter: url(#krakenPurple);
 }
 
+.megalodon {
+  /* Darkens the vendored (grey/white) Shark art for the "bigger, older,
+     scarier" megalodon look, since its colors aren't simple fill props
+     to override any more (see Megalodon.tsx). A single brightness() has
+     none of the chained sepia/hue-rotate fragility the Kraken's filter
+     ran into on iOS -- it's simple, well-defined, linear math. */
+  filter: brightness(0.62);
+}
+
 .scene__puffer-bob {
   /* fill-box keeps every scale/rotate pivoting on the fish's own centre so
      it grows and pulses in place instead of flying toward the viewBox origin. */

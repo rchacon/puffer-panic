@@ -25,10 +25,13 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
-  flat-SVG technique as `Shark.tsx`/`Puffer.tsx`). `Megalodon` reuses `Shark`
-  recolored/rescaled rather than new art. `Kraken`, `SharkPrincess` and
-  `Piranha` are the exceptions, all vendored/user-provided raster or vector
-  art rather than hand-drawn -- see "Predator escalation" below.
+  flat-SVG technique as `Puffer.tsx`). `Megalodon` reuses `Shark` rescaled
+  and darkened via CSS filter rather than new art. `Shark.tsx` (one level
+  up, in `src/components/`), `Kraken`, `SharkPrincess` and `Piranha` are
+  vendored/user-provided raster or vector art rather than hand-drawn -- see
+  "Predator escalation" below.
+  `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
+  (see there).
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
   silence if a file is missing or autoplay is blocked.
 - `src/shared/` &mdash; plain `.mjs` (not `.ts`) helpers needed by both the app
@@ -173,23 +176,55 @@ freehand return curve back up into the body interior and filled
 red-fading-to-transparent so it blends into the grey above it rather than
 having a hard seam.
 
-Unlike Kraken/SharkPrincess (rendered once), `Piranha` renders `count` times
-at once (a school) -- the same vendored markup, ids and all, gets injected
-into the DOM several times simultaneously via `dangerouslySetInnerHTML`.
-A static id prefix baked into the file (like the Kraken's `kraken-`) doesn't
-help there, since every instance would still carry the *same* prefix.
-`Piranha.tsx` instead rewrites every `id="..."` (and matching
-`url(#...)`/`xlink:href="#..."`) to a per-instance-unique suffix at render
-time (`useId()` + a small regex pass, memoized), so no two piranhas on
-screen ever share a gradient/filter id. Any future vendored asset that can
-render more than once at a time needs the same treatment -- a static prefix
-alone only solves collisions *between* different creatures, not against
-copies of itself. That said, `scopeIds()`'s pattern-matching only covers the
-double-quoted `id="..."`, `url(#...)` and `(xlink:)href="#..."` forms an
-Inkscape export actually uses -- it won't catch single-quoted attributes, an
-id referenced from a `<style>` block, or a SMIL `begin="other.click"`-style
-reference. Fine for piranha.svg/kraken.svg as they stand; check for those
-before reusing it on a differently-authored source file.
+Level 1/2's `Shark` (reused unmodified for level 2's two-shark school, and
+by `Megalodon`, see below) is also vendored real vector art -- recolored to
+a great white: swapped its original two teal shades for grey (back/fins)
+and near-white (belly), same "swap the hex values" approach as the
+Piranha. Its black outline wasn't a plain `stroke` to just dial down --
+the source is a single filled black path (an "outline stroke" already
+converted to a filled shape, likely by whatever tool exported it), so
+there's no `stroke-width` to edit. Thinned instead with an SVG
+`<feMorphology operator="erode">` filter baked into `shark.svg` itself
+(`radius="2"`) applied to that path. Trade-off worth knowing: eroding a
+uniformly-filled outline shrinks thin details (the gill-slit lines, the
+lateral line) much more aggressively than the thick outer border, since
+erosion removes the same absolute width from every edge regardless of the
+shape's local thickness -- a bigger radius reads as a "cleaner" thinner
+outer border but starts eating the thin lines down to a ragged, gap-y
+sliver (visible at full native resolution, but not at the tiny size this
+actually renders at in-game -- check any radius change at gameplay scale,
+not just the source file). Provenance/license not verified for this one
+(user-provided, like SharkPrincess) -- check before reusing elsewhere.
+
+Both `Piranha` and `Shark` render `count` times at once (schools of 4 and
+2 respectively, see `getSchoolOffsets`) -- the same vendored markup, ids
+and all, gets injected into the DOM several times simultaneously via
+`dangerouslySetInnerHTML`. Unlike Kraken/SharkPrincess (always rendered
+once), a static id prefix baked into the file (like the Kraken's
+`kraken-`) doesn't help there, since every instance would still carry the
+*same* prefix. Both instead go through `useScopedSvg()`
+(`src/components/scopeIds.ts`, shared rather than duplicated) which
+rewrites every `id="..."` (and matching `url(#...)`/`xlink:href="#..."`)
+to a per-instance-unique suffix at render time (`useId()` + a small regex
+pass, memoized), so no two instances on screen ever share a gradient/
+filter id. Any future vendored asset that can render more than once at a
+time needs the same treatment -- a static prefix alone only solves
+collisions *between* different creatures, not against copies of itself.
+That said, `scopeIds()`'s pattern-matching only covers the double-quoted
+`id="..."`, `url(#...)` and `(xlink:)href="#..."` forms an Inkscape/
+Illustrator export actually uses -- it won't catch single-quoted
+attributes, an id referenced from a `<style>` block, or a SMIL
+`begin="other.click"`-style reference. Fine for piranha.svg/shark.svg/
+kraken.svg as they stand; check for those before reusing it on a
+differently-authored source file.
+
+Megalodon (level 8) reuses `Shark`'s vendored art scaled up, darkened via
+the `.megalodon` CSS filter (`brightness(0.62)`) rather than the fill-prop
+overrides the old hand-drawn Shark took -- there's no per-shape fill to
+override any more, just one baked-in image. A lone `brightness()` doesn't
+have the chained sepia/saturate/hue-rotate fragility that bit the Kraken's
+filter on iOS (see that section) -- it's simple, well-defined, linear math,
+not several functions composed on top of each other.
 
 ## Conventions
 
