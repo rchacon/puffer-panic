@@ -25,14 +25,24 @@ const PREDATOR_Y = 94;
 // this has no seams between differently-sloped segments for consecutive
 // steps to look inconsistent across, so it doesn't have the mobile
 // "jumpiness" that table caused.
+//
+// A pure cube (progress**3) pushes the round 1 move down to a couple of
+// pixels -- imperceptible, reads as not moving at all. Blending in a small
+// linear component keeps that first move visible (the linear term's slope
+// is nonzero at t=0, unlike the cube's) while the cube term still
+// dominates for the rest of the approach, so later rounds still build up
+// gradually and contact still lands on the final reveal, not sooner.
 const MOSASAURUS_APPROACH_EXPONENT = 3;
+const MOSASAURUS_LINEAR_BLEND = 0.2;
+
+function mosasaurusApproach(t: number): number {
+  return MOSASAURUS_LINEAR_BLEND * t + (1 - MOSASAURUS_LINEAR_BLEND) * t ** MOSASAURUS_APPROACH_EXPONENT;
+}
 
 export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
   const startX = predator.kind === "mosasaurus" ? 460 : 350;
   const approachProgress =
-    predator.kind === "mosasaurus"
-      ? sharkProgress ** MOSASAURUS_APPROACH_EXPONENT
-      : sharkProgress;
+    predator.kind === "mosasaurus" ? mosasaurusApproach(sharkProgress) : sharkProgress;
   const sharkX = startX - approachProgress * (startX - 150);
   const className = outcome ? `scene scene--${outcome}` : "scene";
   const Creature = PREDATOR_COMPONENTS[predator.kind];
