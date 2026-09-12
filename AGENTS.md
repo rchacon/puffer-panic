@@ -25,11 +25,13 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
-  flat-SVG technique as `Puffer.tsx`). `Megalodon` reuses `Shark` rescaled
-  and darkened via CSS filter rather than new art. `Shark.tsx` (one level
-  up, in `src/components/`), `Kraken`, `SharkPrincess`, `Piranha` and
-  `Mosasaurus` are vendored/user-provided raster or vector art rather than
-  hand-drawn -- see "Predator escalation" below.
+  flat-SVG technique as `Eel.tsx`/`Anglerfish.tsx`/`TapahCatfish.tsx`).
+  `Megalodon` reuses `Shark` rescaled and darkened via CSS filter rather
+  than new art. `Shark.tsx` (one level up, in `src/components/`), `Kraken`,
+  `SharkPrincess`, `Piranha` and `Mosasaurus` are vendored/user-provided
+  raster or vector art rather than hand-drawn -- see "Predator escalation"
+  below. `Puffer.tsx` (also one level up -- the protagonist, not a
+  `predators/` entry) is likewise now vendored vector art, not hand-drawn.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
   (see there).
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
@@ -288,6 +290,33 @@ puffer under the Mosasaurus's mid-body/flippers at that position instead
 of near its mouth -- caught by `/code-review` actually rendering the final
 frame and comparing bounding boxes against the Shark's, not by inspecting
 the numbers alone.
+
+`Puffer` (the protagonist, not a `predators/` entry -- always rendered via
+`BattleScene`'s own `<Puffer />`, not the `PREDATOR_COMPONENTS` map) was
+originally the one hand-drawn creature left (a ring of 12 `<line>` spikes
+around two circles); it's now `src/assets/pufferfish.svg`, vendored real
+vector art from SVG Repo (the file's own header comment says so, but SVG
+Repo blocks automated fetches with a bot-detection checkpoint like the
+kraken-icon -- downloaded by hand, exact page/license not independently
+verified, check before reusing elsewhere). A flat cartoon "polka-dot"
+style rather than the old spiky silhouette; already drawn facing right
+(toward the predator) in its native orientation, no mirroring needed.
+
+Its source `<svg>` root carried `height="800px" width="800px"` alongside
+its `viewBox="0 0 512.001 512.001"` -- the same class of bug as the
+Mosasaurus PhyloPic silhouette's pt-unit clipping (see above), just with
+`px` instead of `pt`: nested inside the wrapper via
+`dangerouslySetInnerHTML`, those absolute pixel dimensions scale
+independently of the outer wrapper's own viewBox, rendering content
+~1.56x oversized and silently clipped by the nested `<svg>`'s default
+`overflow: hidden`. Fixed the same way: deleted `width`/`height` from the
+vendored file, kept only `viewBox`. Worth checking on *any* newly
+vendored SVG before assuming it'll just work inside this project's
+wrapper-`<svg>`-plus-`dangerouslySetInnerHTML` pattern -- Shark.svg
+happens to have unitless `width`/`height` that already equal its
+`viewBox` numbers (so no mismatch), which is what let it slip by
+unnoticed for as long as it did; that's a coincidence of that one file,
+not a property of the pattern.
 
 ## Conventions
 
