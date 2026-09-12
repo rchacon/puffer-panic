@@ -16,10 +16,10 @@ export function Shark() {
   return (
     <g className="shark">
       <svg
-        x={-53}
-        y={-24}
-        width={106}
-        height={48}
+        x={-79.5}
+        y={-36}
+        width={159}
+        height={72}
         viewBox="0 0 1462.5 662.5"
         dangerouslySetInnerHTML={{ __html: scopedArtwork }}
       />
