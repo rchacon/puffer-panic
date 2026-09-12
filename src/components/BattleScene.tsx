@@ -15,8 +15,25 @@ const PUFFER_X = 96;
 const PUFFER_Y = 116;
 const PREDATOR_Y = 94;
 
+// Mosasaurus is deliberately drawn much bigger than every other predator
+// (see Mosasaurus.tsx) and starts much farther off the right edge -- a
+// plain linear approach at that scale makes each round-to-round step a big,
+// fast-looking jump (the bigger the runway, the bigger each equal-progress
+// slice of it is). A single smooth power curve keeps every step small and
+// only closes most of the distance on the very last one -- unlike a
+// hand-tuned multi-point checkpoint table (the previous approach here),
+// this has no seams between differently-sloped segments for consecutive
+// steps to look inconsistent across, so it doesn't have the mobile
+// "jumpiness" that table caused.
+const MOSASAURUS_APPROACH_EXPONENT = 3;
+
 export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
-  const sharkX = 350 - sharkProgress * 200;
+  const startX = predator.kind === "mosasaurus" ? 460 : 350;
+  const approachProgress =
+    predator.kind === "mosasaurus"
+      ? sharkProgress ** MOSASAURUS_APPROACH_EXPONENT
+      : sharkProgress;
+  const sharkX = startX - approachProgress * (startX - 150);
   const className = outcome ? `scene scene--${outcome}` : "scene";
   const Creature = PREDATOR_COMPONENTS[predator.kind];
   const offsets = getSchoolOffsets(predator.count);
