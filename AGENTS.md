@@ -121,7 +121,7 @@ blocks automated fetches with a bot-detection checkpoint, so this was
 downloaded by hand and its exact license wasn't independently re-verified --
 check that page before reusing this icon anywhere beyond this one spot.
 
-Level 7's `SharkPrincess` (`src/components/predators/SharkPrincess.tsx`) is a
+Level 3's `SharkPrincess` (`src/components/predators/SharkPrincess.tsx`) is a
 cheerful crowned whale shark, user-provided (not sourced/licensed the way the
 Kraken assets were -- verify provenance before reusing it anywhere else).
 The original was a ~1.5MB PNG with a solid white background wrapped in an SVG
