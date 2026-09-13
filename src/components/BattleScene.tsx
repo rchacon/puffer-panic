@@ -100,7 +100,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           {/* Anglerfish-only backdrop -- same idea as #sea, considerably
               darker/deeper so the level reads as murky abyss instead of a
               sunlit reef (see the isMurky comment above). */}
-          <linearGradient id="seaSpooky" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="seaMurky" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#0e2537" />
             <stop offset="1" stopColor="#020810" />
           </linearGradient>
@@ -136,7 +136,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           </filter>
         </defs>
 
-        <rect width="400" height="200" fill={isMurky ? "url(#seaSpooky)" : "url(#sea)"} />
+        <rect width="400" height="200" fill={isMurky ? "url(#seaMurky)" : "url(#sea)"} />
         {/* Dimmed as one group, rather than each piece separately, so the
             seabed sinks into the murk together instead of any one piece
             (the sand's warm tan especially) still popping against it. */}
