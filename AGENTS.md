@@ -26,10 +26,10 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
   flat-SVG technique as `Eel.tsx`/`Anglerfish.tsx`/`TapahCatfish.tsx`).
-  `Megalodon` reuses `Shark` rescaled and darkened via CSS filter rather
-  than new art. `Shark.tsx` (one level up, in `src/components/`), `Kraken`,
-  `SharkPrincess`, `Piranha` and `Mosasaurus` are vendored/user-provided
-  raster or vector art rather than hand-drawn -- see "Predator escalation"
+  `Shark.tsx` (one level up, in `src/components/`), `Kraken`,
+  `SharkPrincess`, `Piranha`, `Mosasaurus` and `Megalodon` are
+  vendored/user-provided raster or vector art rather than hand-drawn --
+  see "Predator escalation"
   below. `Puffer.tsx` (also one level up -- the protagonist, not a
   `predators/` entry) is likewise now vendored vector art, not hand-drawn.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
@@ -271,8 +271,8 @@ freehand return curve back up into the body interior and filled
 red-fading-to-transparent so it blends into the grey above it rather than
 having a hard seam.
 
-Level 1/2's `Shark` (reused unmodified for level 2's two-shark school, and
-by `Megalodon`, see below) is also vendored real vector art -- recolored to
+Level 1/2's `Shark` (reused unmodified for level 2's two-shark school) is
+also vendored real vector art -- recolored to
 a great white: swapped its original two teal shades for grey (back/fins)
 and near-white (belly), same "swap the hex values" approach as the
 Piranha. Its black outline wasn't a plain `stroke` to just dial down --
@@ -312,14 +312,6 @@ attributes, an id referenced from a `<style>` block, or a SMIL
 `begin="other.click"`-style reference. Fine for piranha.svg/shark.svg/
 kraken.svg as they stand; check for those before reusing it on a
 differently-authored source file.
-
-Megalodon (level 5) reuses `Shark`'s vendored art scaled up, darkened via
-the `.megalodon` CSS filter (`brightness(0.62)`) rather than the fill-prop
-overrides the old hand-drawn Shark took -- there's no per-shape fill to
-override any more, just one baked-in image. A lone `brightness()` doesn't
-have the chained sepia/saturate/hue-rotate fragility that bit the Kraken's
-filter on iOS (see that section) -- it's simple, well-defined, linear math,
-not several functions composed on top of each other.
 
 Level 9's `Mosasaurus` is a raster illustration, user-provided (not
 sourced/licensed the way the Kraken/PhyloPic assets were -- verify
