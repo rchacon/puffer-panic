@@ -30,20 +30,20 @@ export function Rocks() {
   return (
     <g className="rocks">
       <svg
-        x={38}
-        y={166}
-        width={34}
-        height={34}
-        viewBox="0 0 128 128"
-        dangerouslySetInnerHTML={{ __html: smallRock }}
-      />
-      <svg
         x={68}
         y={148}
         width={52}
         height={52}
         viewBox="0 0 128 128"
         dangerouslySetInnerHTML={{ __html: bigRock }}
+      />
+      <svg
+        x={38}
+        y={166}
+        width={34}
+        height={34}
+        viewBox="0 0 128 128"
+        dangerouslySetInnerHTML={{ __html: smallRock }}
       />
     </g>
   );
