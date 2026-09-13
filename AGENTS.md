@@ -389,21 +389,27 @@ trick the small Rock uses), but unlike that rock, Coral's own artwork
 fills almost all the way to its box's bottom edge with no empty margin to
 spare, so sitting it low enough to duck under the Puffer's reach buried
 most of it in the sand -- looked sunk/cut off by the frame rather than
-resting on top of it. Both are tuned to visually rest right at the seabed
-`<path>`'s own curve at their respective x position, using the curve's
-own quadratic-bezier parameterization (it simplifies to a linear `x(t)`,
-since each segment's control point sits at the exact horizontal midpoint
-of its endpoints) rather than eyeballing it -- worth redoing that math,
-not guessing, if either ever moves again. The two needed different tuning
-despite the same technique: Kelp's own artwork has a fair amount of empty
-viewBox space below its drawn shadow (unlike Coral's or the Rocks',
-which each fill almost their entire box), so its *shadow*, not its box's
-bottom edge, is what actually needs to land on the curve -- solved by
-rendering the scene with the seabed curve's own y=160/180/200 values drawn
-in as temporary reference gridlines (`Runtime.evaluate` appending
-`<line>` elements directly into the live `.scene__svg`) and reading off
-the pixel gap, rather than assuming the box-bottom math that works for
-the other, tightly-cropped assets also holds here.
+resting on top of it. Both are positioned relative to the seabed
+`<path>`'s own curve at their respective x position, using the curve's own
+quadratic-bezier parameterization (it simplifies to a linear `x(t)`, since
+each segment's control point sits at the exact horizontal midpoint of its
+endpoints) rather than eyeballing it -- worth redoing that math, not
+guessing, if either ever moves again. First tuned to land exactly *on*
+that curve, which read as too precise/flat once actually seen -- like the
+Rocks (sunk in well past their own local sand line, not merely touching
+it), Coral and Kelp are each sunk a bit further in past the curve too,
+and *not* by the same amount as each other, for a bit of natural
+variation rather than a uniform planting depth. The two needed different
+handling to get there despite the same underlying technique: Kelp's own
+artwork has a fair amount of empty viewBox space below its drawn shadow
+(unlike Coral's or the Rocks', which each fill almost their entire box),
+so it's its *shadow*, not its box's bottom edge, that actually needs to
+sit past the curve -- worked out by rendering the scene with the seabed
+curve's own y=160/180/200 values drawn in as temporary reference
+gridlines (`Runtime.evaluate` appending `<line>` elements directly into
+the live `.scene__svg`) and reading off the pixel gap, rather than
+assuming the box-bottom math that works for the other, tightly-cropped
+assets also holds here.
 
 ## Conventions
 

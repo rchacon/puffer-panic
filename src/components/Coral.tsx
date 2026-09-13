@@ -29,12 +29,15 @@ const coralArtwork = stripRootSvgDimensions(rawCoralArtwork);
 // box's bottom edge (no empty margin to spare), so sitting it low enough
 // to duck under the Puffer's reach buried most of the coral in the sand,
 // reading as sunk/cut-off by the frame rather than resting on top of it.
+// Sunk partway into the sand rather than sitting flush on its surface
+// (like the Rocks -- see Rocks.tsx for their own, deeper sink) -- a
+// believable amount of embedding, not the exact curve line.
 export function Coral() {
   return (
     <g className="coral">
       <svg
         x={140}
-        y={150}
+        y={159}
         width={34}
         height={34}
         viewBox="0 0 511.997 511.997"

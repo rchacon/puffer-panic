@@ -25,17 +25,19 @@ const kelpArtwork = stripRootSvgDimensions(rawKelpArtwork);
 // Its own artwork has a fair amount of empty viewBox space below its
 // drawn shadow (unlike Coral/Rock's, which each fill almost their entire
 // box) -- naively bottom-aligning the box to the sand left a visible gap
-// of water between the shadow and the sand surface. y is tuned so the
-// *shadow*, not the box edge, lands on the seabed `<path>`'s own curve at
-// this x (solved the same way Rocks.tsx documents: the curve simplifies
-// to a linear x(t), and this x falls on the second `T` segment, whose
-// implicit reflected control point is (300,200)).
+// of water between the shadow and the sand surface. y accounts for that
+// gap so the *shadow*, not the box edge, is what's sunk into the seabed
+// `<path>`'s own curve at this x (solved the same way Rocks.tsx documents:
+// the curve simplifies to a linear x(t), and this x falls on the second
+// `T` segment, whose implicit reflected control point is (300,200)) --
+// by a different amount than Coral's own sink, not perfectly matched, for
+// a bit of natural variation between the two.
 export function Kelp() {
   return (
     <g className="kelp" opacity={0.92}>
       <svg
         x={180}
-        y={150}
+        y={155}
         width={48}
         height={48}
         viewBox="0 0 250 250"
