@@ -135,8 +135,10 @@ extra title-card flourish -- `App.tsx`'s `handleStart` detects it via
 The Kraken's own artwork (`src/components/predators/Kraken.tsx`) is a
 vendored illustration, not hand-drawn like the others -- see that file's
 header comment for why it isn't mirrored/rotated like you'd expect, and
-for why it's sized 1.3x its original footprint (a later tweak, after the
-Kraken already shipped, to make the final boss feel bigger).
+for why it's sized 1.5x its original footprint (a later tweak, after the
+Kraken already shipped, to make the final boss feel bigger -- tentacle
+tips are left to run off the scene's edges at this size rather than
+shrunk/repositioned to avoid it).
 
 `ShipWreck.tsx` also got a later fix: its hull sat a few units above the
 sand's own wavy curve, a gap easy to miss in isolation but visible once
