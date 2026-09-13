@@ -61,13 +61,19 @@ export const PREDATOR_LEVELS: PredatorLevel[] = [
     kind: "sharkprincess",
     count: 3,
     // Order is also draw order (later = on top): the two brothers first
-    // (smaller, tucked behind), the Princess last (full size, in front --
-    // she's the one this level is actually named for).
+    // (smaller, tucked behind), the Princess last -- same position/scale
+    // (dx=0, dy=0, scale=1) as her solo level-3 appearance, not just
+    // "full size" in the abstract, so the two actually look identical in
+    // size. The brothers are small and spread further apart than the
+    // first attempt at this: at a bigger scale/tighter spacing they
+    // overlapped her enough to make her read as smaller than she actually
+    // is, even though her own scale was already 1 -- the occlusion was
+    // the problem, not her size.
     kinds: ["shark", "shark", "sharkprincess"],
     offsets: [
-      { dx: 16, dy: -34, scale: 0.55 },
-      { dx: 12, dy: 34, scale: 0.55 },
-      { dx: -8, dy: 0, scale: 1 },
+      { dx: 24, dy: -44, scale: 0.4 },
+      { dx: 20, dy: 44, scale: 0.4 },
+      { dx: 0, dy: 0, scale: 1 },
     ],
     label: "The Shark Princess and her two brothers",
   },

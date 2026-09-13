@@ -102,15 +102,21 @@ Both are read by index in lockstep in `BattleScene.tsx`
 (`getInstanceKinds(predator)` for the kind, `predator.offsets ??
 getSchoolOffsets(predator.count)` for the position), and array order is
 also *draw* order -- later entries render on top. Level 4 uses that to
-keep the Princess full-size and drawn last (in front), with her two
-brother sharks smaller (`scale: 0.55`) and drawn first (behind her) --
-tucking them in low next to her the way the generic 3-slot school
-formation would (reusing `getSchoolOffsets(3)` as-is) looked wrong once
-actually rendered: at that formation's near-equal scaling all three read
-as the same size, and whichever was drawn last (arbitrary array order)
-ended up looking like the "main" one rather than the Princess specifically.
-`predators.test.ts` pins both the kind order and the relative scale so a
-future edit to either can't silently swap who's in front.
+give the Princess the exact same `{dx: 0, dy: 0, scale: 1}` position/size
+her solo level-3 appearance uses (not just "full size" in the abstract --
+matching level 3's own numbers directly), drawn last (in front), with her
+two brother sharks small (`scale: 0.4`) and spread well apart from her
+(drawn first, behind her). Tucking them in low next to her at a bigger
+scale, the first attempt at this, looked wrong once actually rendered
+two different ways: reusing the generic 3-slot school formation
+(`getSchoolOffsets(3)`) as-is made all three read as the same size; a
+custom formation that still kept the brothers large and close (`scale:
+0.55`, tight spacing) fixed that but let them visually overlap/crowd the
+Princess enough that she read as smaller than her level-3 self, even
+though her own `scale` was already `1` both times -- the occlusion was
+the actual problem, not her size. `predators.test.ts` pins both the kind
+order and the relative scale so a future edit to either can't silently
+swap who's in front.
 
 The defeat/victory voice cue names the actual predator: `useGame.start(pool,
 predatorLevel)` stashes the level in a ref purely so `outcomeAudioCue()` in
