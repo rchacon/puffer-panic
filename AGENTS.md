@@ -322,6 +322,24 @@ already equal its own `viewBox` numbers in the same unitless units, so
 removing them changes nothing) -- do this for any new vendored SVG too,
 rather than hand-checking whether it needs it first.
 
+`Puffer.tsx` also adds a white eye glint and a small smile on top of the
+vendored art, string-appended into its own markup (right before its
+closing `</svg>`, so the new shapes share its `0 0 512.001 512.001`
+viewBox directly) rather than edited into the source file or drawn as a
+separate positioned overlay. The source's outline -- pupil included -- is
+one giant compound path, not individually addressable sub-shapes, so
+there's no single "pupil path" to recolor or resize; adding new shapes on
+top sidesteps that entirely. Placed by eye against a large (~550px)
+rendered preview of the *modified* string (not the tiny in-game size, and
+not the unmodified source), since coordinate-hunting for the pupil's own
+position via pixel analysis of a screenshot turned out unreliable (a
+polka dot happened to sit close enough to the true pupil to be mistaken
+for it) -- the glint is anchored off the source's own easy-to-read
+`<circle cx="456" cy="172" r="32"/>` (the eye socket, the only
+plainly-coordinated element near the eye) instead, close enough at this
+render size that a few units of offset from the actual pupil don't read
+as wrong.
+
 `BattleScene`'s seabed `<path>` and the `Rocks` component next to it
 (`src/components/Rocks.tsx`, same absolute-scene-coordinates technique as
 `ShipWreck`) are the one piece of scenery that isn't per-predator --
