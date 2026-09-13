@@ -186,6 +186,15 @@ pixel ratio; `.scene__svg` renders at `width: 100%` of a 720px-max-width
 container). Imported as a URL, not `?raw`, so Vite emits it as its own
 cacheable file instead of inlining a base64 string into the JS bundle.
 
+Sized 1.5x its original footprint in `SharkPrincess.tsx` (162 wide, up
+from 108) -- she's a whale shark, the largest fish species alive, and the
+original box was actually smaller than the plain Shark's 159, undersold
+for what she's meant to be. No special-casing needed in `BattleScene.tsx`
+for this, unlike the much-larger Mosasaurus (level 9) -- verified
+round-by-round via headless Chrome that the shared linear approach still
+reads fine at this size, no early-contact or off-screen-runway issues to
+work around.
+
 Level 4's `Piranha` (school of 4, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart
 (openclipart.org/detail/4631/piranha-by-liakad), public domain
