@@ -76,6 +76,14 @@ describe("App - predator escalation", () => {
 
   function playThroughOneGame() {
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
+    // Some levels (Kraken, Megalodon) show a boss intro before the round
+    // cards exist -- advance past it (long enough to cover either's
+    // duration; a no-op if there's no intro showing, since a longer wait
+    // than a since-fired timer needs is harmless) before assuming the
+    // battle scene has started.
+    act(() => {
+      vi.advanceTimersByTime(2500);
+    });
     answerAllRounds();
     fireEvent.click(screen.getByRole("button", { name: /play again/i }));
   }
@@ -124,5 +132,27 @@ describe("App - predator escalation", () => {
     // Exactly one game began: round 1, not reset past it by a stray restart.
     expect(screen.getByText(/Round 1 \/ 5/)).toBeInTheDocument();
     expect(document.querySelectorAll(".kraken")).toHaveLength(1);
+  });
+
+  it("shows a dramatic intro before the Megalodon (level 5) begins", () => {
+    render(<App />);
+
+    for (let i = 0; i < 4; i++) playThroughOneGame();
+
+    // 5th start -> level 5, the Megalodon. The intro plays first; the
+    // round itself hasn't started yet.
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+    expect(screen.getByText(/bigger boat/i)).toBeInTheDocument();
+    expect(document.querySelector(".megalodon-intro__icon")).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /megalodon/i })).not.toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(2500);
+    });
+
+    expect(screen.queryByText(/bigger boat/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: /megalodon swimming toward a puffer fish/i }),
+    ).toBeInTheDocument();
   });
 });
