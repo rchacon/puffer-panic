@@ -272,6 +272,23 @@ body {
   }
 }
 
+.eel__glow {
+  /* Blurred so the marks bloom into a soft glow instead of just changing
+     color, and pulsed quickly (much quicker than the Anglerfish's slow,
+     leisurely lure) since this is meant to read as current, not a lure. */
+  filter: blur(1.2px);
+  animation: eelPulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes eelPulse {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .scene__puffer-bob {
   /* fill-box keeps every scale/rotate pivoting on the fish's own centre so
      it grows and pulses in place instead of flying toward the viewBox origin. */
@@ -722,7 +739,8 @@ body {
   .scene--victory .scene__puffer-bob,
   .scene__bubbles circle,
   .scene--victory .scene__burst-spin,
-  .anglerfish__lure-glow {
+  .anglerfish__lure-glow,
+  .eel__glow {
     animation: none;
   }
   .scene__puffer {

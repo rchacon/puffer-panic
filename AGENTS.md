@@ -285,6 +285,23 @@ specifically for this (see its own comment there) rather than reusing
 the generic count-3 formation the table used to have, which was tuned
 for a different (smaller, tighter) look.
 
+`Eel.tsx` also layers a second image, `electric-eel-glow.png`, on top of
+the body art and pulses it (`.eel__glow` in index.css, a much quicker
+0.9s cycle than the Anglerfish's leisurely lure -- meant to read as
+current, not a lure) so the body's own "lightning" marks actually look
+electric instead of static. That file is a derivative of
+`electric-eel.png` itself, not new art: every pixel classified as one of
+the body art's own yellow tones (`r>230, g>210, b<200, r-b>40` against
+the *processed* PNG, so this has to be regenerated if the body art is
+ever reprocessed) was kept at its original color with everything else
+made transparent, then one connected component -- large and
+circle-filled enough to be the eye's iris rather than a thin zigzag
+stroke or a small dot -- was explicitly dropped so the eye doesn't pulse
+along with the actual marks. Same size/position as the body image so it
+lines up pixel-for-pixel without needing its own offset. Small enough
+(~1.5KB) that Vite inlines it as a data URI rather than emitting a
+separate file (the same &lt;4KB threshold every build tool defaults to).
+
 Level 7's `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart
 (openclipart.org/detail/4631/piranha-by-liakad), public domain
