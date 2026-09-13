@@ -254,7 +254,7 @@ round-by-round via headless Chrome that the shared linear approach still
 reads fine at this size, no early-contact or off-screen-runway issues to
 work around.
 
-Level 6's `Eel` (school of 6, see `getSchoolOffsets`) is a raster
+Level 6's `Eel` (school of 3, see `getSchoolOffsets`) is a raster
 illustration, user-provided (not sourced/licensed the way the
 Kraken/PhyloPic assets were -- verify provenance before reusing it
 elsewhere), replacing the old hand-drawn S-curve. Unlike the
@@ -275,6 +275,15 @@ drawn nose-left; centering the image on the local origin (same
 convention as every other raster predator) puts its head/mouth near the
 shared left edge every other creature's nose lands on, without needing a
 hand-picked offset.
+
+The school size itself was tuned live (started at the original 6, tried
+4 and 5 along the way) before settling on 3: with more instances spread
+enough to stay individually readable, at least one ended up far enough
+above/below the puffer's own height to read as less threatening than the
+rest. `SCHOOL_OFFSETS[3]` in `predators/index.ts` was widened/shrunk
+specifically for this (see its own comment there) rather than reusing
+the generic count-3 formation the table used to have, which was tuned
+for a different (smaller, tighter) look.
 
 Level 7's `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart

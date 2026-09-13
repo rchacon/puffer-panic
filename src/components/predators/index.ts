@@ -46,10 +46,17 @@ const SCHOOL_OFFSETS: Record<number, SchoolOffset[]> = {
     { dx: 9, dy: -21, scale: 0.92 },
     { dx: -15, dy: 21, scale: 0.92 },
   ],
+  // Tuned live against the electric eel level (the only current count-3
+  // user) -- deliberately wider/smaller than 4's own numbers below despite
+  // having fewer instances, since the eel art reads well at a distance and
+  // the goal here was keeping every instance's mouth close to the
+  // school's shared vertical center (so none of them reads as less of a
+  // threat by sitting far above/below the puffer's own height), not
+  // following 1/2/4/6/7's tighter-as-count-grows spacing trend.
   3: [
-    { dx: 10, dy: -20, scale: 0.8 },
-    { dx: -6, dy: 2, scale: 0.85 },
-    { dx: 6, dy: 22, scale: 0.8 },
+    { dx: 24, dy: -40, scale: 0.62 },
+    { dx: -22, dy: 0, scale: 0.62 },
+    { dx: 20, dy: 40, scale: 0.62 },
   ],
   4: [
     { dx: 18, dy: -32, scale: 0.72 },
