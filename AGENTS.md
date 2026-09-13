@@ -93,6 +93,25 @@ line change. The counter is **session-only** (a plain `useState`, not
 persisted) -- unlike the word selection, reloading the page resets it to
 level 1.
 
+Level 4 (the Shark Princess's escort) is the one level that mixes
+creatures instead of rendering `count` copies of one `kind` -- two
+`PredatorLevel` fields exist just for this: `kinds` (per-instance kind,
+same length as `count`) and `offsets` (per-instance position/scale,
+overriding the generic same-size `getSchoolOffsets(count)` formation).
+Both are read by index in lockstep in `BattleScene.tsx`
+(`getInstanceKinds(predator)` for the kind, `predator.offsets ??
+getSchoolOffsets(predator.count)` for the position), and array order is
+also *draw* order -- later entries render on top. Level 4 uses that to
+keep the Princess full-size and drawn last (in front), with her two
+brother sharks smaller (`scale: 0.55`) and drawn first (behind her) --
+tucking them in low next to her the way the generic 3-slot school
+formation would (reusing `getSchoolOffsets(3)` as-is) looked wrong once
+actually rendered: at that formation's near-equal scaling all three read
+as the same size, and whichever was drawn last (arbitrary array order)
+ended up looking like the "main" one rather than the Princess specifically.
+`predators.test.ts` pins both the kind order and the relative scale so a
+future edit to either can't silently swap who's in front.
+
 The defeat/victory voice cue names the actual predator: `useGame.start(pool,
 predatorLevel)` stashes the level in a ref purely so `outcomeAudioCue()` in
 `outcome.ts` can pick `defeat-<level>.mp3` / `victory-<level>.mp3` at the end
