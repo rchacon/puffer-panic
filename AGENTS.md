@@ -25,11 +25,12 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
-  flat-SVG technique as `Eel.tsx`/`TapahCatfish.tsx`). `Shark.tsx` (one
-  level up, in `src/components/`), `Kraken`, `SharkPrincess`, `Piranha`,
-  `Mosasaurus`, `Megalodon` and `Anglerfish` are vendored/user-provided
-  raster or vector art rather than hand-drawn -- see "Predator escalation"
-  below. `Puffer.tsx` (also one level up -- the protagonist, not a
+  flat-SVG technique as `TapahCatfish.tsx`, currently unused -- `catfish`
+  isn't in `PREDATOR_LEVELS`). `Shark.tsx` (one level up, in
+  `src/components/`), `Kraken`, `SharkPrincess`, `Piranha`, `Mosasaurus`,
+  `Megalodon`, `Anglerfish` and `Eel` are vendored/user-provided raster or
+  vector art rather than hand-drawn -- see "Predator escalation" below.
+  `Puffer.tsx` (also one level up -- the protagonist, not a
   `predators/` entry) is likewise now vendored vector art, not hand-drawn.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
   (see there).
@@ -252,6 +253,64 @@ for this, unlike the much-larger Mosasaurus (level 9) -- verified
 round-by-round via headless Chrome that the shared linear approach still
 reads fine at this size, no early-contact or off-screen-runway issues to
 work around.
+
+Level 6's `Eel` (school of 3, see `getSchoolOffsets`) is a raster
+illustration, user-provided (not sourced/licensed the way the
+Kraken/PhyloPic assets were -- verify provenance before reusing it
+elsewhere), replacing the old hand-drawn S-curve. Unlike the
+Anglerfish/Mosasaurus/SharkPrincess PNGs before it, this source
+(1774x887) had **real per-pixel alpha transparency already** -- confirmed
+by checking `im.mode`/the alpha channel's actual extrema (0 and 255, not
+a flat 255), not just the visible checkerboard -- so no flood-fill
+rescue was needed. Cropped to its alpha bounding box (plus a small pad),
+downscaled to 285px wide (~50KB), then palette-quantized to 128 colors
+with dithering (same `Image.quantize(..., method=Image.FASTOCTREE,
+dither=Image.FLOYDSTEINBERG)` call as the Anglerfish, alpha re-attached
+after) for another ~25% off, down to ~38.5KB total from the original
+~937KB. Checked for banding at 3x zoom on the glowing dorsal stripe and
+body shading first; found none, same reason as the Anglerfish -- flat
+cartoon cel-shading, not a smooth photographic gradient. Imported as a
+URL, not `?raw`, so Vite emits it as its own cacheable file. Already
+drawn nose-left; centering the image on the local origin (same
+convention as every other raster predator) puts its head/mouth near the
+shared left edge every other creature's nose lands on, without needing a
+hand-picked offset.
+
+The school size itself was tuned live (started at the original 6, tried
+4 and 5 along the way) before settling on 3: with more instances spread
+enough to stay individually readable, at least one ended up far enough
+above/below the puffer's own height to read as less threatening than the
+rest. `SCHOOL_OFFSETS[3]` in `predators/index.ts` was widened/shrunk
+specifically for this (see its own comment there) rather than reusing
+the generic count-3 formation the table used to have, which was tuned
+for a different (smaller, tighter) look.
+
+`Eel.tsx` also layers a second image, `electric-eel-glow.png`, on top of
+the body art and pulses it (`.eel__glow` in index.css, a much quicker
+0.9s cycle than the Anglerfish's leisurely lure -- meant to read as
+current, not a lure) so the body's own "lightning" marks actually look
+electric instead of static. That file is a derivative of the body art:
+every pixel classified as one of its own yellow tones (`r>230, g>210,
+b<200, r-b>40` against the *processed* `electric-eel.png`, so both this
+and the next step have to be redone if the body art is ever
+reprocessed) was kept at its original bright color with everything else
+made transparent, then one connected component -- large and
+circle-filled enough to be the eye's iris rather than a thin zigzag
+stroke or a small dot -- was explicitly dropped so the eye doesn't pulse
+along with the actual marks. Same size/position as the body image so it
+lines up pixel-for-pixel without needing its own offset. Small enough
+(~1.5KB) that Vite inlines it as a data URI rather than emitting a
+separate file (the same &lt;4KB threshold every build tool defaults to).
+
+`electric-eel.png` itself was then edited a second time: every one of
+those same marked pixels had its color scaled way down (`r*0.3, g*0.25,
+b*0.3`) to a dull, unlit amber-on-slate instead of full brightness.
+Layering a pulsing bright overlay on top of marks that were already
+fully lit underneath (the first version of this) barely registered --
+the base art never got any dimmer than the glow's own dimmest point, so
+the "pulse" was really just a faint bloom on top of an already-bright
+line. Dimming the base first makes the two layers' opacity swing (0.15
+to 1, wider than initially tried too) read as an actual on/off flicker.
 
 Level 7's `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart
