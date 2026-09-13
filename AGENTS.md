@@ -289,11 +289,11 @@ for a different (smaller, tighter) look.
 the body art and pulses it (`.eel__glow` in index.css, a much quicker
 0.9s cycle than the Anglerfish's leisurely lure -- meant to read as
 current, not a lure) so the body's own "lightning" marks actually look
-electric instead of static. That file is a derivative of
-`electric-eel.png` itself, not new art: every pixel classified as one of
-the body art's own yellow tones (`r>230, g>210, b<200, r-b>40` against
-the *processed* PNG, so this has to be regenerated if the body art is
-ever reprocessed) was kept at its original color with everything else
+electric instead of static. That file is a derivative of the body art:
+every pixel classified as one of its own yellow tones (`r>230, g>210,
+b<200, r-b>40` against the *processed* `electric-eel.png`, so both this
+and the next step have to be redone if the body art is ever
+reprocessed) was kept at its original bright color with everything else
 made transparent, then one connected component -- large and
 circle-filled enough to be the eye's iris rather than a thin zigzag
 stroke or a small dot -- was explicitly dropped so the eye doesn't pulse
@@ -301,6 +301,16 @@ along with the actual marks. Same size/position as the body image so it
 lines up pixel-for-pixel without needing its own offset. Small enough
 (~1.5KB) that Vite inlines it as a data URI rather than emitting a
 separate file (the same &lt;4KB threshold every build tool defaults to).
+
+`electric-eel.png` itself was then edited a second time: every one of
+those same marked pixels had its color scaled way down (`r*0.3, g*0.25,
+b*0.3`) to a dull, unlit amber-on-slate instead of full brightness.
+Layering a pulsing bright overlay on top of marks that were already
+fully lit underneath (the first version of this) barely registered --
+the base art never got any dimmer than the glow's own dimmest point, so
+the "pulse" was really just a faint bloom on top of an already-bright
+line. Dimming the base first makes the two layers' opacity swing (0.15
+to 1, wider than initially tried too) read as an actual on/off flicker.
 
 Level 7's `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart

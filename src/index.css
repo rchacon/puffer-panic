@@ -275,17 +275,25 @@ body {
 .eel__glow {
   /* Blurred so the marks bloom into a soft glow instead of just changing
      color, and pulsed quickly (much quicker than the Anglerfish's slow,
-     leisurely lure) since this is meant to read as current, not a lure. */
-  filter: blur(1.2px);
+     leisurely lure) since this is meant to read as current, not a lure.
+     electric-eel.png's own marks are now drawn dim/unlit (see AGENTS.md)
+     specifically so this layer pulsing from nearly invisible to a bright,
+     oversized bloom reads as a real on/off flicker instead of a subtle
+     brightness wobble on marks that were already fully lit underneath. */
+  transform-box: fill-box;
+  transform-origin: center;
+  filter: blur(2.5px) brightness(1.4);
   animation: eelPulse 0.9s ease-in-out infinite alternate;
 }
 
 @keyframes eelPulse {
   from {
-    opacity: 0.4;
+    opacity: 0.15;
+    transform: scale(0.94);
   }
   to {
     opacity: 1;
+    transform: scale(1.08);
   }
 }
 
