@@ -72,11 +72,11 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   // itself at full, undimmed brightness -- only the backdrop goes dark, so
   // the lure's glow (see Anglerfish.tsx) actually has murk to stand out
   // against instead of competing with a bright reef.
-  const isSpooky = predator.kind === "anglerfish";
+  const isMurky = predator.kind === "anglerfish";
   const className = [
     "scene",
     outcome && `scene--${outcome}`,
-    isSpooky && "scene--anglerfish",
+    isMurky && "scene--anglerfish",
   ]
     .filter(Boolean)
     .join(" ");
@@ -98,7 +98,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           </linearGradient>
           {/* Anglerfish-only backdrop -- same idea as #sea, considerably
               darker/deeper so the level reads as murky abyss instead of a
-              sunlit reef (see the isSpooky comment above). */}
+              sunlit reef (see the isMurky comment above). */}
           <linearGradient id="seaSpooky" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#0e2537" />
             <stop offset="1" stopColor="#020810" />
@@ -135,11 +135,11 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           </filter>
         </defs>
 
-        <rect width="400" height="200" fill={isSpooky ? "url(#seaSpooky)" : "url(#sea)"} />
+        <rect width="400" height="200" fill={isMurky ? "url(#seaSpooky)" : "url(#sea)"} />
         {/* Dimmed as one group, rather than each piece separately, so the
             seabed sinks into the murk together instead of any one piece
             (the sand's warm tan especially) still popping against it. */}
-        <g opacity={isSpooky ? 0.4 : 1}>
+        <g opacity={isMurky ? 0.4 : 1}>
           <path
             d="M0 186 Q 100 172 200 186 T 400 184 V200 H0 Z"
             fill="#d9b988"
@@ -150,7 +150,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
               past where any sunlight reaches, so the Anglerfish's abyss
               skips them outright instead of just dimming them like the
               rest of the seabed. */}
-          {!isSpooky && (
+          {!isMurky && (
             <>
               <Coral />
               <Kelp />

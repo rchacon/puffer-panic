@@ -298,7 +298,7 @@ cacheable file.
 This level is also the one deliberately dark one: an anglerfish's whole
 gimmick is ambushing prey with a bioluminescent lure in lightless deep
 water, which the shared sunlit `#sea` gradient and reef scenery every other
-level uses undercuts. `BattleScene.tsx`'s `isSpooky` flag (true only when
+level uses undercuts. `BattleScene.tsx`'s `isMurky` flag (true only when
 `predator.kind === "anglerfish"`) swaps in a much darker `#seaSpooky`
 gradient, dims the sand/`Rocks` as one group (so no single piece keeps
 popping against the murk), and skips `Coral`/`Kelp` outright rather than
