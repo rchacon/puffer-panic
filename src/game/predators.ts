@@ -72,7 +72,7 @@ export const PREDATOR_LEVELS: PredatorLevel[] = [
     kinds: ["shark", "shark", "sharkprincess"],
     offsets: [
       { dx: 24, dy: -44, scale: 0.4 },
-      { dx: 20, dy: 44, scale: 0.4 },
+      { dx: 20, dy: 56, scale: 0.4 },
       { dx: 0, dy: 0, scale: 1 },
     ],
     label: "The Shark Princess and her two brothers",
