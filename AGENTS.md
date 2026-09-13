@@ -25,11 +25,12 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
-  flat-SVG technique as `Eel.tsx`/`TapahCatfish.tsx`). `Shark.tsx` (one
-  level up, in `src/components/`), `Kraken`, `SharkPrincess`, `Piranha`,
-  `Mosasaurus`, `Megalodon` and `Anglerfish` are vendored/user-provided
-  raster or vector art rather than hand-drawn -- see "Predator escalation"
-  below. `Puffer.tsx` (also one level up -- the protagonist, not a
+  flat-SVG technique as `TapahCatfish.tsx`, currently unused -- `catfish`
+  isn't in `PREDATOR_LEVELS`). `Shark.tsx` (one level up, in
+  `src/components/`), `Kraken`, `SharkPrincess`, `Piranha`, `Mosasaurus`,
+  `Megalodon`, `Anglerfish` and `Eel` are vendored/user-provided raster or
+  vector art rather than hand-drawn -- see "Predator escalation" below.
+  `Puffer.tsx` (also one level up -- the protagonist, not a
   `predators/` entry) is likewise now vendored vector art, not hand-drawn.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
   (see there).
@@ -252,6 +253,28 @@ for this, unlike the much-larger Mosasaurus (level 9) -- verified
 round-by-round via headless Chrome that the shared linear approach still
 reads fine at this size, no early-contact or off-screen-runway issues to
 work around.
+
+Level 6's `Eel` (school of 6, see `getSchoolOffsets`) is a raster
+illustration, user-provided (not sourced/licensed the way the
+Kraken/PhyloPic assets were -- verify provenance before reusing it
+elsewhere), replacing the old hand-drawn S-curve. Unlike the
+Anglerfish/Mosasaurus/SharkPrincess PNGs before it, this source
+(1774x887) had **real per-pixel alpha transparency already** -- confirmed
+by checking `im.mode`/the alpha channel's actual extrema (0 and 255, not
+a flat 255), not just the visible checkerboard -- so no flood-fill
+rescue was needed. Cropped to its alpha bounding box (plus a small pad),
+downscaled to 285px wide (~50KB), then palette-quantized to 128 colors
+with dithering (same `Image.quantize(..., method=Image.FASTOCTREE,
+dither=Image.FLOYDSTEINBERG)` call as the Anglerfish, alpha re-attached
+after) for another ~25% off, down to ~38.5KB total from the original
+~937KB. Checked for banding at 3x zoom on the glowing dorsal stripe and
+body shading first; found none, same reason as the Anglerfish -- flat
+cartoon cel-shading, not a smooth photographic gradient. Imported as a
+URL, not `?raw`, so Vite emits it as its own cacheable file. Already
+drawn nose-left; centering the image on the local origin (same
+convention as every other raster predator) puts its head/mouth near the
+shared left edge every other creature's nose lands on, without needing a
+hand-picked offset.
 
 Level 7's `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart
