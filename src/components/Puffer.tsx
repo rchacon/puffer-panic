@@ -6,24 +6,34 @@ import { stripRootSvgDimensions } from "./vendoredSvg";
 // before nesting this inside the wrapper below.
 const strippedPufferArtwork = stripRootSvgDimensions(rawPufferArtwork);
 
-// A friendlier face than the source draws on its own: a white eye glint
-// and a small smile, appended as new shapes rather than editing the
-// source's own paths (its outline -- eye pupil included -- is one giant
-// compound path, not individually addressable sub-shapes; adding on top
-// is far less risky than trying to isolate and rewrite a piece of it).
-// Coordinates are in the source's own viewBox (0 0 512.001 512.001):
-// the eye glint is placed relative to the source's own
-// `<circle cx="456" cy="172" r="32"/>` (the only element with a plain,
-// easy-to-read coordinate near the eye -- the pupil itself isn't one),
-// and the smile is placed by eye against a rendered preview, not derived
-// from any other element's coordinates. Appended into the *source's own*
-// nested `<svg>` (by string-inserting before its closing tag) rather than
-// added as sibling JSX, so it shares that inner coordinate space directly
-// without needing its own separate positioned wrapper.
+// A friendlier face than the source draws on its own: a white eye glint,
+// and its neutral/frown mouth actually replaced by a smile (not just a
+// smile added alongside it -- the two read as a mustache-and-mouth combo
+// otherwise). Its outline -- eye pupil and mouth included -- is one giant
+// compound path, not individually addressable sub-shapes, so there's no
+// "mouth path" to delete; instead an opaque patch in the source's own
+// flat local fill color (#FFD77D, confirmed by sampling a rendered
+// preview -- solid, not part of a gradient, so a flat patch has no visible
+// seam) is drawn first to cover the original mouth, then the smile on top
+// of that patch. All three shapes are appended as new elements rather
+// than editing the source's own paths.
+//
+// Coordinates are in the source's own viewBox (0 0 512.001 512.001),
+// found by rendering the source with a temporary labeled coordinate grid
+// overlaid (10-unit spacing) and reading the pupil/mouth positions off of
+// it directly -- pixel-measuring a plain screenshot and converting back to
+// viewBox units (via the polka-dot grid's known spacing) turned out
+// unreliable: a dot happened to sit close enough to the true pupil to be
+// mistaken for it, and the mouth patch sized from that estimate missed
+// the actual mouth shape entirely on the first attempt. Appended into the
+// *source's own* nested `<svg>` (by string-inserting before its closing
+// tag) rather than added as sibling JSX, so they share that inner
+// coordinate space directly without needing their own positioned wrapper.
 const FRIENDLY_FACE =
-  '<circle cx="448" cy="164" r="7" fill="#ffffff"/>' +
-  '<path d="M460,244 Q480,264 502,242" fill="none" stroke="#1a1a1a" ' +
-  'stroke-width="10" stroke-linecap="round"/>';
+  '<ellipse cx="468" cy="232" rx="29" ry="14" fill="#FFD77D"/>' +
+  '<circle cx="446" cy="180" r="7" fill="#ffffff"/>' +
+  '<path d="M440,226 Q468,246 496,224" fill="none" stroke="#1a1a1a" ' +
+  'stroke-width="8" stroke-linecap="round"/>';
 const pufferArtwork = strippedPufferArtwork.replace(
   /<\/svg>\s*$/,
   `${FRIENDLY_FACE}</svg>`,

@@ -322,23 +322,36 @@ already equal its own `viewBox` numbers in the same unitless units, so
 removing them changes nothing) -- do this for any new vendored SVG too,
 rather than hand-checking whether it needs it first.
 
-`Puffer.tsx` also adds a white eye glint and a small smile on top of the
-vendored art, string-appended into its own markup (right before its
-closing `</svg>`, so the new shapes share its `0 0 512.001 512.001`
-viewBox directly) rather than edited into the source file or drawn as a
-separate positioned overlay. The source's outline -- pupil included -- is
-one giant compound path, not individually addressable sub-shapes, so
-there's no single "pupil path" to recolor or resize; adding new shapes on
-top sidesteps that entirely. Placed by eye against a large (~550px)
-rendered preview of the *modified* string (not the tiny in-game size, and
-not the unmodified source), since coordinate-hunting for the pupil's own
-position via pixel analysis of a screenshot turned out unreliable (a
-polka dot happened to sit close enough to the true pupil to be mistaken
-for it) -- the glint is anchored off the source's own easy-to-read
-`<circle cx="456" cy="172" r="32"/>` (the eye socket, the only
-plainly-coordinated element near the eye) instead, close enough at this
-render size that a few units of offset from the actual pupil don't read
-as wrong.
+`Puffer.tsx` also adds a white eye glint and replaces the source's own
+neutral/frown mouth with a smile, string-appended into its own markup
+(right before its closing `</svg>`, so the new shapes share its
+`0 0 512.001 512.001` viewBox directly) rather than edited into the
+source file or drawn as a separate positioned overlay. The source's
+outline -- pupil and mouth included -- is one giant compound path (three
+subpaths total for the whole file: the main silhouette, one small detail
+near a fin, and everything else -- pupil, mouth, gill lines -- fused into
+a single ~4800-character path via connecting bridges, not cleanly
+separable sub-shapes), so there's no "mouth path" to delete or redraw in
+place; instead an opaque ellipse in the source's own flat local fill
+color (`#FFD77D`, confirmed solid -- not part of a gradient -- by
+sampling a rendered preview, so a flat patch leaves no visible seam)
+covers the original mouth first, then the smile draws on top of that
+patch. (A first attempt drew the smile *next to* the original mouth
+instead of replacing it, which read as a mustache-and-mouth combo, not a
+smile -- covering the original first and drawing on top is what actually
+gets a replacement rather than an addition.)
+
+Coordinates for all of this were found by rendering the source with a
+temporary labeled coordinate grid overlaid (10-unit spacing, drawn the
+same string-append way) and reading the pupil/mouth positions directly
+off of it, at a large (~550px) rendered size -- not the tiny in-game
+size, and not by pixel-measuring a plain screenshot and converting back
+to viewBox units, which turned out unreliable twice over (a polka dot
+sat close enough to the true pupil to be mistaken for it, and the mouth
+patch sized from that same estimate missed the actual mouth shape
+entirely on the first attempt). The coordinate grid technique is the one
+worth reusing for any future tweak here -- render with grid lines and
+read the numbers, don't estimate from an unlabeled screenshot.
 
 `BattleScene`'s seabed `<path>` and the `Rocks` component next to it
 (`src/components/Rocks.tsx`, same absolute-scene-coordinates technique as
