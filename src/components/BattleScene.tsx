@@ -64,7 +64,23 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   const startX = approach?.startX ?? DEFAULT_START_X;
   const approachProgress = approach?.ease ? approach.ease(sharkProgress) : sharkProgress;
   const sharkX = startX - approachProgress * (startX - 150);
-  const className = outcome ? `scene scene--${outcome}` : "scene";
+  // The Anglerfish is a deep-sea ambush hunter -- its whole gimmick is
+  // luring prey in the dark, which the shallow, sunlit sea gradient every
+  // other level shares undercuts. Darkening the water/seabed just for this
+  // level, rather than a CSS filter over the whole scene, leaves room to
+  // dim the Puffer and the Anglerfish's own body separately (see
+  // .scene--anglerfish in index.css) while exempting the lure's glow (see
+  // Anglerfish.tsx) from that dimming -- a single scene-wide filter
+  // couldn't tell the glow apart from the rest of the Anglerfish it's
+  // layered on top of.
+  const isMurky = predator.kind === "anglerfish";
+  const className = [
+    "scene",
+    outcome && `scene--${outcome}`,
+    isMurky && "scene--anglerfish",
+  ]
+    .filter(Boolean)
+    .join(" ");
   const offsets = predator.offsets ?? getSchoolOffsets(predator.count);
   const instanceKinds = getInstanceKinds(predator);
 
@@ -80,6 +96,13 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#37b0dd" />
             <stop offset="1" stopColor="#0a3a63" />
+          </linearGradient>
+          {/* Anglerfish-only backdrop -- same idea as #sea, considerably
+              darker/deeper so the level reads as murky abyss instead of a
+              sunlit reef (see the isMurky comment above). */}
+          <linearGradient id="seaMurky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#0e2537" />
+            <stop offset="1" stopColor="#020810" />
           </linearGradient>
           {/* Recolors the Kraken's mostly-grey vendored art purple (see
               .kraken in index.css for why: sepia injects chroma a plain
@@ -113,15 +136,28 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           </filter>
         </defs>
 
-        <rect width="400" height="200" fill="url(#sea)" />
-        <path
-          d="M0 186 Q 100 172 200 186 T 400 184 V200 H0 Z"
-          fill="#d9b988"
-          opacity="0.85"
-        />
-        <Rocks />
-        <Coral />
-        <Kelp />
+        <rect width="400" height="200" fill={isMurky ? "url(#seaMurky)" : "url(#sea)"} />
+        {/* Dimmed as one group, rather than each piece separately, so the
+            seabed sinks into the murk together instead of any one piece
+            (the sand's warm tan especially) still popping against it. */}
+        <g opacity={isMurky ? 0.4 : 1}>
+          <path
+            d="M0 186 Q 100 172 200 186 T 400 184 V200 H0 Z"
+            fill="#d9b988"
+            opacity="0.85"
+          />
+          <Rocks />
+          {/* Coral and Kelp are photosynthetic -- neither grows this deep,
+              past where any sunlight reaches, so the Anglerfish's abyss
+              skips them outright instead of just dimming them like the
+              rest of the seabed. */}
+          {!isMurky && (
+            <>
+              <Coral />
+              <Kelp />
+            </>
+          )}
+        </g>
         {predator.kind === "kraken" && <ShipWreck />}
         {predator.kind === "megalodon" && <FishingBoat />}
 

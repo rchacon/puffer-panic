@@ -25,11 +25,10 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
-  flat-SVG technique as `Eel.tsx`/`Anglerfish.tsx`/`TapahCatfish.tsx`).
-  `Shark.tsx` (one level up, in `src/components/`), `Kraken`,
-  `SharkPrincess`, `Piranha`, `Mosasaurus` and `Megalodon` are
-  vendored/user-provided raster or vector art rather than hand-drawn --
-  see "Predator escalation"
+  flat-SVG technique as `Eel.tsx`/`TapahCatfish.tsx`). `Shark.tsx` (one
+  level up, in `src/components/`), `Kraken`, `SharkPrincess`, `Piranha`,
+  `Mosasaurus`, `Megalodon` and `Anglerfish` are vendored/user-provided
+  raster or vector art rather than hand-drawn -- see "Predator escalation"
   below. `Puffer.tsx` (also one level up -- the protagonist, not a
   `predators/` entry) is likewise now vendored vector art, not hand-drawn.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
@@ -270,6 +269,56 @@ silhouette rather than being an approximate blob, then closed with a
 freehand return curve back up into the body interior and filled
 red-fading-to-transparent so it blends into the grey above it rather than
 having a hard seam.
+
+Level 8's `Anglerfish` (`src/components/predators/Anglerfish.tsx`) is a
+raster illustration, user-provided (not sourced/licensed the way the
+Kraken/PhyloPic assets were -- verify provenance before reusing it
+elsewhere), replacing the old hand-drawn version. `src/assets/anglerfish.png`
+is a processed derivative, not the original file -- the source (1536x1024,
+~1.75MB) had **no real alpha transparency** despite looking like it did,
+same trap as the Mosasaurus/SharkPrincess PNGs before it: plain `RGB` mode
+with no alpha channel at all, the checkerboard baked into opaque
+near-white pixels (confirmed by checking `im.mode` and the alpha channel,
+not by eyeballing the preview). Background flood-filled to transparent
+from the image border inward (matching near-neutral-grey/white pixels,
+same technique as those two), cropped to content, downscaled to 220px
+wide, and additionally palette-quantized to 128 colors with dithering
+(`Image.quantize(..., method=Image.FASTOCTREE, dither=Image.FLOYDSTEINBERG)`)
+before re-attaching the alpha channel -- a technique not used for the
+earlier PNGs, tried here because "as game-optimized as you can" was an
+explicit ask. Checked for visible banding at 3x zoom on the smoothest
+gradient areas (the body shading) before trusting it; found none, likely
+because the source's own shading is already flat/cartoon-style with few
+distinct gradient stops, not a smooth photographic gradient that
+quantization would visibly band on. Result: 1.75MB &rarr; ~34.6KB (about
+98% smaller), smaller than the Mosasaurus's 51KB despite more visual
+detail. Imported as a URL, not `?raw`, so Vite emits it as its own
+cacheable file.
+
+This level is also the one deliberately dark one: an anglerfish's whole
+gimmick is ambushing prey with a bioluminescent lure in lightless deep
+water, which the shared sunlit `#sea` gradient and reef scenery every other
+level uses undercuts. `BattleScene.tsx`'s `isMurky` flag (true only when
+`predator.kind === "anglerfish"`) swaps in a much darker `#seaMurky`
+gradient, dims the sand/`Rocks` as one group (so no single piece keeps
+popping against the murk), and skips `Coral`/`Kelp` outright rather than
+just dimming them -- both are photosynthetic and wouldn't grow this deep.
+The Puffer and the Anglerfish's own body (`.scene__puffer-bob` and the new
+`.anglerfish__body` class on its `<image>`) are dimmed to near-silhouettes
+via `filter: brightness(0.32)`, scoped to `.scene--anglerfish` so no other
+level is affected. The lure itself is exempted from all of this and drawn
+at full brightness -- a small hand-drawn glow (a blurred halo circle plus a
+brighter core, pulsing via `.anglerfish__lure-glow`'s `lureGlow` keyframe)
+layered on top of the flat PNG, which isn't lit in the source art. Its
+position (`LURE_X`/`LURE_Y` in `Anglerfish.tsx`) was found the same way as
+Megalodon's nose/gills: flood-fill the source PNG for its brightest yellow
+pixels (there are several -- the esca bulb, the dorsal spines' smaller
+tips, and the eye's pale cream -- so the bulb's own cluster had to be
+picked out specifically) and take that cluster's bounding-box center, then
+convert through the `<image>`'s own `preserveAspectRatio="xMidYMid meet"`
+scale/centering math to land in the component's local coordinate space.
+End effect: everything in the scene fades into the dark except one glowing
+point, which is the point.
 
 Level 1/2's `Shark` (reused unmodified for level 2's two-shark school) is
 also vendored real vector art -- recolored to
