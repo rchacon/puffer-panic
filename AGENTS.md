@@ -309,14 +309,41 @@ Mosasaurus PhyloPic silhouette's pt-unit clipping (see above), just with
 `dangerouslySetInnerHTML`, those absolute pixel dimensions scale
 independently of the outer wrapper's own viewBox, rendering content
 ~1.56x oversized and silently clipped by the nested `<svg>`'s default
-`overflow: hidden`. Fixed the same way: deleted `width`/`height` from the
-vendored file, kept only `viewBox`. Worth checking on *any* newly
-vendored SVG before assuming it'll just work inside this project's
-wrapper-`<svg>`-plus-`dangerouslySetInnerHTML` pattern -- Shark.svg
-happens to have unitless `width`/`height` that already equal its
-`viewBox` numbers (so no mismatch), which is what let it slip by
-unnoticed for as long as it did; that's a coincidence of that one file,
-not a property of the pattern.
+`overflow: hidden`. This had already bitten twice by hand-deleting the
+attributes from the vendored file itself (Mosasaurus, then this one), with
+nothing but a comment telling the next person to remember to check --
+`src/components/vendoredSvg.ts`'s `stripRootSvgDimensions()` now does this
+automatically at import time instead, applied to every real vendored SVG
+with a root `<svg>` tag (`Puffer`, `Shark`, `Piranha` -- not `Kraken`/
+`KrakenIntro`'s icon, whose source files are markup *fragments* with no
+root `<svg>` tag at all, so they're structurally immune). Safe to apply
+unconditionally even where it's a no-op (Shark.svg's `width`/`height`
+already equal its own `viewBox` numbers in the same unitless units, so
+removing them changes nothing) -- do this for any new vendored SVG too,
+rather than hand-checking whether it needs it first.
+
+`BattleScene`'s seabed `<path>` and the `Rocks` component next to it
+(`src/components/Rocks.tsx`, same absolute-scene-coordinates technique as
+`ShipWreck`) are the one piece of scenery that isn't per-predator --
+sand-colored rather than the original dark green, present at every level.
+`Rocks` went through two versions (see git history): a hand-drawn pair of
+flat-color ellipses (dropped after a highlight shape that touched the
+silhouette's own edge read as a separate cap sitting on top, a hard seam,
+not a soft sheen -- worth remembering if scenery ever goes back to
+hand-drawn shapes), then the current one, vendored real vector art (a
+detailed shaded boulder, "🪨" Rock from the Noto Emoji set via SVG Repo,
+same bot-detection-checkpoint provenance caveat as the Puffer/kraken-icon)
+rendered twice at different sizes side by side. Its root `<svg>` also
+carried the same `width`/`height`-vs-`viewBox` mismatch Puffer's did,
+handled the same way via `stripRootSvgDimensions()`; since it renders more
+than once at a time, its gradient ids also need `useScopedSvg()` like
+Piranha/Shark's schools -- called twice here (once per rock instance)
+rather than once, since each call consumes its own `useId()` slot and so
+already returns two independently-suffixed results.
+
+Both rocks are kept on the left half (under/around the Puffer) so they
+never compete for space with the Kraken's `ShipWreck`, which occupies
+roughly x=250-390 on the right.
 
 ## Conventions
 

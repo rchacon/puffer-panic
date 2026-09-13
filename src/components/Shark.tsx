@@ -1,5 +1,11 @@
 import { useScopedSvg } from "./scopeIds";
-import sharkArtwork from "../assets/shark.svg?raw";
+import { stripRootSvgDimensions } from "./vendoredSvg";
+import rawSharkArtwork from "../assets/shark.svg?raw";
+
+// This source's width/height happen to already equal its own viewBox
+// numbers, so stripping them is a no-op here -- done anyway for
+// consistency with every other vendored asset, see vendoredSvg.ts.
+const sharkArtwork = stripRootSvgDimensions(rawSharkArtwork);
 
 // Shark drawn around the origin, nose pointing left (toward the puffer
 // fish). A vendored illustration (recolored to a great white: grey back,

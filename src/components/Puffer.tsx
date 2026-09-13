@@ -1,4 +1,10 @@
-import pufferArtwork from "../assets/pufferfish.svg?raw";
+import rawPufferArtwork from "../assets/pufferfish.svg?raw";
+import { stripRootSvgDimensions } from "./vendoredSvg";
+
+// The source's own root <svg> carries width="800px" height="800px"
+// alongside its viewBox -- see vendoredSvg.ts for why that has to come out
+// before nesting this inside the wrapper below.
+const pufferArtwork = stripRootSvgDimensions(rawPufferArtwork);
 
 // Puffer fish, embedded around the origin -- a vendored illustration (see
 // AGENTS.md for provenance) rather than hand-drawn like the previous spiky
