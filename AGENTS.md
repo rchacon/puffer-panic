@@ -26,10 +26,10 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
   flat-SVG technique as `Eel.tsx`/`Anglerfish.tsx`/`TapahCatfish.tsx`).
-  `Megalodon` reuses `Shark` rescaled and darkened via CSS filter rather
-  than new art. `Shark.tsx` (one level up, in `src/components/`), `Kraken`,
-  `SharkPrincess`, `Piranha` and `Mosasaurus` are vendored/user-provided
-  raster or vector art rather than hand-drawn -- see "Predator escalation"
+  `Shark.tsx` (one level up, in `src/components/`), `Kraken`,
+  `SharkPrincess`, `Piranha`, `Mosasaurus` and `Megalodon` are
+  vendored/user-provided raster or vector art rather than hand-drawn --
+  see "Predator escalation"
   below. `Puffer.tsx` (also one level up -- the protagonist, not a
   `predators/` entry) is likewise now vendored vector art, not hand-drawn.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
@@ -151,6 +151,65 @@ blocks automated fetches with a bot-detection checkpoint, so this was
 downloaded by hand and its exact license wasn't independently re-verified --
 check that page before reusing this icon anywhere beyond this one spot.
 
+The Megalodon (level 5, and every time the cycle comes back around to it)
+is the other boss fight, added well after the Kraken's -- `App.tsx`'s
+`BOSS_INTROS` is a lookup keyed by `PredatorKind` (kraken and megalodon
+both entries) rather than another hardcoded `if` in `handleStart`, so a
+third boss just adds a row. `MegalodonIntro` follows `KrakenIntro`'s exact
+technique (vendored silhouette behind a title line, dark overlay makes it
+readable) but a different mood on purpose: `.megalodon-intro`'s deep
+ocean blue-black background and the text's slow `megalodonLoom` scale-in
+(vs. the Kraken's violent `krakenShake`) match a line delivered quietly
+in dread, not screamed as a battle cry. The silhouette
+(`src/assets/megalodon-icon.svg`, an open shark jaw) is vendored from SVG
+Repo -- same bot-detection-checkpoint provenance caveat as
+`kraken-icon.svg` above.
+
+`megalodon-music.wav` is trimmed from "Oldschool Horror Theme" by
+EmoPreben, CC0, via OpenGameArt:
+https://opengameart.org/content/oldschool-horror-theme -- picked the same
+way `kraken-music.wav` was (RMS-envelope analysis of the source to find
+its loudest sustained ~2.3s stretch, here around the 64s mark, rather
+than guessing), with a short fade-in/fade-out baked in. Imported the same
+way too: lives in `src/assets/`, played via `playUrl()`, not part of the
+`generate-audio.mjs` TTS pipeline. The voice line itself
+(`"You're going to need a bigger boat."`, `bigger-boat.mp3`) *is* part of
+that pipeline -- added as a `CUES` entry in `generate-audio.mjs` like
+`release-the-kraken` -- but was generated as a one-off (the same
+`fetchTts()` call the script itself makes) rather than by running a full
+`npm run audio:gen`, to avoid regenerating and re-committing all 65
+existing clips (mostly byte-different re-encodes of unchanged text, pure
+TTS non-determinism -- see the "Reorder levels 5-8" commit) just to add
+one new file.
+
+The Megalodon's own artwork (`src/components/predators/Megalodon.tsx`)
+used to just reuse `Shark`'s vendored art scaled 1.5x and darkened via a
+`.megalodon` CSS filter (an "it's just a bigger ancient shark" shortcut);
+it's now real vendored vector art of its own
+(`src/assets/megalodon.svg`, user-provided -- no embedded license/author
+metadata the way `piranha.svg`'s does, so treat it like the
+Puffer/Rock/Coral SVG Repo assets and verify provenance before reusing it
+elsewhere), drawn at a scale no other predator gets close to -- large enough that its full body, tail included, never fits
+on screen; only the area from its nose back to about its gills does, and
+that's the actual design goal, not a bug to work around ("I don't even
+want to see the boss's full body... it's ok if we just see tip of nose
+to gills, that's all that will fit"). Its nose/gill positions were found
+by rendering the source with a labeled coordinate grid overlaid (the same
+technique used for the Puffer's mouth-replacement patch) rather than
+guessing: gills sit roughly 226 source-units in from the nose. Unlike the
+Mosasaurus (see below, and issue #15 questioning whether that one ever
+actually needed it), this doesn't need any `PREDATOR_APPROACH`
+special-casing -- the plain shared linear approach already reads as a
+dramatic, gradually-escalating reveal at this scale, verified
+round-by-round via headless Chrome exactly the way the Mosasaurus's
+curve was tuned/verified.
+
+A small hand-drawn wrecked fishing boat (`src/components/FishingBoat.tsx`,
+a nod to the Orca from *Jaws*) sits on the seabed for this level only,
+same absolute-scene-coordinates technique as `ShipWreck.tsx` -- positioned
+where the Megalodon's approach will eventually cover it, which is fine;
+the whole point of a boss this size is that it can.
+
 Level 3's `SharkPrincess` (`src/components/predators/SharkPrincess.tsx`) is a
 cheerful crowned whale shark, user-provided (not sourced/licensed the way the
 Kraken assets were -- verify provenance before reusing it anywhere else).
@@ -212,8 +271,8 @@ freehand return curve back up into the body interior and filled
 red-fading-to-transparent so it blends into the grey above it rather than
 having a hard seam.
 
-Level 1/2's `Shark` (reused unmodified for level 2's two-shark school, and
-by `Megalodon`, see below) is also vendored real vector art -- recolored to
+Level 1/2's `Shark` (reused unmodified for level 2's two-shark school) is
+also vendored real vector art -- recolored to
 a great white: swapped its original two teal shades for grey (back/fins)
 and near-white (belly), same "swap the hex values" approach as the
 Piranha. Its black outline wasn't a plain `stroke` to just dial down --
@@ -253,14 +312,6 @@ attributes, an id referenced from a `<style>` block, or a SMIL
 `begin="other.click"`-style reference. Fine for piranha.svg/shark.svg/
 kraken.svg as they stand; check for those before reusing it on a
 differently-authored source file.
-
-Megalodon (level 5) reuses `Shark`'s vendored art scaled up, darkened via
-the `.megalodon` CSS filter (`brightness(0.62)`) rather than the fill-prop
-overrides the old hand-drawn Shark took -- there's no per-shape fill to
-override any more, just one baked-in image. A lone `brightness()` doesn't
-have the chained sepia/saturate/hue-rotate fragility that bit the Kraken's
-filter on iOS (see that section) -- it's simple, well-defined, linear math,
-not several functions composed on top of each other.
 
 Level 9's `Mosasaurus` is a raster illustration, user-provided (not
 sourced/licensed the way the Kraken/PhyloPic assets were -- verify

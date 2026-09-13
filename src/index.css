@@ -244,15 +244,6 @@ body {
   filter: url(#krakenPurple);
 }
 
-.megalodon {
-  /* Darkens the vendored (grey/white) Shark art for the "bigger, older,
-     scarier" megalodon look, since its colors aren't simple fill props
-     to override any more (see Megalodon.tsx). A single brightness() has
-     none of the chained sepia/hue-rotate fragility the Kraken's filter
-     ran into on iOS -- it's simple, well-defined, linear math. */
-  filter: brightness(0.62);
-}
-
 .scene__puffer-bob {
   /* fill-box keeps every scale/rotate pivoting on the fish's own centre so
      it grows and pulses in place instead of flying toward the viewBox origin. */
@@ -638,6 +629,64 @@ body {
   }
 }
 
+/* ---------- Megalodon intro ---------- */
+.megalodon-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  /* Deep ocean blue-black rather than the Kraken's near-neutral dark --
+     quiet dread, not an attack, is the mood this line calls for. */
+  background: rgba(3, 12, 26, 0.82);
+  animation: krakenFadeIn 0.2s ease-out;
+}
+
+.megalodon-intro__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(72vw, 72vh);
+  height: min(72vw, 72vh);
+  transform: translate(-50%, -50%);
+  fill: #000;
+  opacity: 0.55;
+  z-index: 0;
+}
+
+.megalodon-intro__text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: 18ch;
+  font-size: clamp(1.6rem, 7.5vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: #eaf6ff;
+  text-shadow: 0 0 16px rgba(120, 200, 255, 0.5), 0 4px 0 #001a33;
+  /* Slow loom-in, not a shake -- this line is delivered quietly, not
+     screamed, unlike "RELEASE THE KRAKEN!". */
+  animation: megalodonLoom 2.4s ease-out;
+}
+
+@keyframes megalodonLoom {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .scene__predator-bob,
@@ -654,7 +703,8 @@ body {
   .card--wrong {
     animation: none;
   }
-  .kraken-intro__text {
+  .kraken-intro__text,
+  .megalodon-intro__text {
     animation: none;
   }
 }

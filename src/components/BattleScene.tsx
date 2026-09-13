@@ -2,6 +2,7 @@ import type { Outcome } from "../game/outcome";
 import type { PredatorKind, PredatorLevel } from "../game/predators";
 import { getInstanceKinds } from "../game/predators";
 import { Coral } from "./Coral";
+import { FishingBoat } from "./FishingBoat";
 import { Kelp } from "./Kelp";
 import { Puffer } from "./Puffer";
 import { Rocks } from "./Rocks";
@@ -122,6 +123,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
         <Coral />
         <Kelp />
         {predator.kind === "kraken" && <ShipWreck />}
+        {predator.kind === "megalodon" && <FishingBoat />}
 
         <g className="scene__bubbles" fill="#c7ecff" opacity="0.5">
           <circle cx="58" cy="60" r="3" />
