@@ -93,6 +93,31 @@ line change. The counter is **session-only** (a plain `useState`, not
 persisted) -- unlike the word selection, reloading the page resets it to
 level 1.
 
+Level 4 (the Shark Princess's escort) is the one level that mixes
+creatures instead of rendering `count` copies of one `kind` -- two
+`PredatorLevel` fields exist just for this: `kinds` (per-instance kind,
+same length as `count`) and `offsets` (per-instance position/scale,
+overriding the generic same-size `getSchoolOffsets(count)` formation).
+Both are read by index in lockstep in `BattleScene.tsx`
+(`getInstanceKinds(predator)` for the kind, `predator.offsets ??
+getSchoolOffsets(predator.count)` for the position), and array order is
+also *draw* order -- later entries render on top. Level 4 uses that to
+give the Princess the exact same `{dx: 0, dy: 0, scale: 1}` position/size
+her solo level-3 appearance uses (not just "full size" in the abstract --
+matching level 3's own numbers directly), drawn last (in front), with her
+two brother sharks small (`scale: 0.4`) and spread well apart from her
+(drawn first, behind her). Tucking them in low next to her at a bigger
+scale, the first attempt at this, looked wrong once actually rendered
+two different ways: reusing the generic 3-slot school formation
+(`getSchoolOffsets(3)`) as-is made all three read as the same size; a
+custom formation that still kept the brothers large and close (`scale:
+0.55`, tight spacing) fixed that but let them visually overlap/crowd the
+Princess enough that she read as smaller than her level-3 self, even
+though her own `scale` was already `1` both times -- the occlusion was
+the actual problem, not her size. `predators.test.ts` pins both the kind
+order and the relative scale so a future edit to either can't silently
+swap who's in front.
+
 The defeat/victory voice cue names the actual predator: `useGame.start(pool,
 predatorLevel)` stashes the level in a ref purely so `outcomeAudioCue()` in
 `outcome.ts` can pick `defeat-<level>.mp3` / `victory-<level>.mp3` at the end
@@ -170,7 +195,7 @@ round-by-round via headless Chrome that the shared linear approach still
 reads fine at this size, no early-contact or off-screen-runway issues to
 work around.
 
-Level 4's `Piranha` (school of 4, see `getSchoolOffsets`) is vendored real
+Level 7's `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart
 (openclipart.org/detail/4631/piranha-by-liakad), public domain
 (`src/assets/piranha.svg`'s own `<metadata>` carries the CC0-equivalent
@@ -229,7 +254,7 @@ attributes, an id referenced from a `<style>` block, or a SMIL
 kraken.svg as they stand; check for those before reusing it on a
 differently-authored source file.
 
-Megalodon (level 8) reuses `Shark`'s vendored art scaled up, darkened via
+Megalodon (level 5) reuses `Shark`'s vendored art scaled up, darkened via
 the `.megalodon` CSS filter (`brightness(0.62)`) rather than the fill-prop
 overrides the old hand-drawn Shark took -- there's no per-shape fill to
 override any more, just one baked-in image. A lone `brightness()` doesn't

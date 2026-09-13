@@ -29,9 +29,16 @@ export interface SchoolOffset {
 }
 
 /**
- * Per-instance position jitter for a "school" of `count` predators (levels
- * 2, 4 and 7), applied relative to the shared approach position so the
- * group retreats/flees together on an outcome while keeping its formation.
+ * Per-instance position jitter for a "school" of `count` predators (any
+ * level with `count > 1` -- not hardcoded to specific level numbers here,
+ * since those keep shifting as levels get reordered; check
+ * `PREDATOR_LEVELS` for which levels currently qualify), applied relative
+ * to the shared approach position so the group retreats/flees together on
+ * an outcome while keeping its formation. The Shark Princess's escort
+ * (currently level 4) is the one exception -- it supplies its own
+ * `PredatorLevel.offsets` instead of using this table, since it wants
+ * different relative sizing between its instances, not the uniform sizing
+ * every entry here gives a school of same-kind creatures.
  */
 const SCHOOL_OFFSETS: Record<number, SchoolOffset[]> = {
   1: [{ dx: 0, dy: 0, scale: 1 }],
@@ -49,6 +56,25 @@ const SCHOOL_OFFSETS: Record<number, SchoolOffset[]> = {
     { dx: -12, dy: -9, scale: 0.72 },
     { dx: 15, dy: 15, scale: 0.72 },
     { dx: -9, dy: 37, scale: 0.72 },
+  ],
+  // 6 and 7 continue the same trend as 1-4: wider vertical spread, smaller
+  // scale, dx alternating sign for a staggered (not single-file) look.
+  6: [
+    { dx: 16, dy: -55, scale: 0.55 },
+    { dx: -14, dy: -33, scale: 0.55 },
+    { dx: 12, dy: -11, scale: 0.55 },
+    { dx: -10, dy: 11, scale: 0.55 },
+    { dx: 14, dy: 33, scale: 0.55 },
+    { dx: -12, dy: 55, scale: 0.55 },
+  ],
+  7: [
+    { dx: 18, dy: -60, scale: 0.5 },
+    { dx: -16, dy: -40, scale: 0.5 },
+    { dx: 14, dy: -20, scale: 0.5 },
+    { dx: -8, dy: 0, scale: 0.5 },
+    { dx: 15, dy: 20, scale: 0.5 },
+    { dx: -13, dy: 40, scale: 0.5 },
+    { dx: 10, dy: 60, scale: 0.5 },
   ],
 };
 

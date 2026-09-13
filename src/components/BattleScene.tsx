@@ -1,5 +1,6 @@
 import type { Outcome } from "../game/outcome";
 import type { PredatorKind, PredatorLevel } from "../game/predators";
+import { getInstanceKinds } from "../game/predators";
 import { Coral } from "./Coral";
 import { Kelp } from "./Kelp";
 import { Puffer } from "./Puffer";
@@ -63,8 +64,8 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   const approachProgress = approach?.ease ? approach.ease(sharkProgress) : sharkProgress;
   const sharkX = startX - approachProgress * (startX - 150);
   const className = outcome ? `scene scene--${outcome}` : "scene";
-  const Creature = PREDATOR_COMPONENTS[predator.kind];
-  const offsets = getSchoolOffsets(predator.count);
+  const offsets = predator.offsets ?? getSchoolOffsets(predator.count);
+  const instanceKinds = getInstanceKinds(predator);
 
   return (
     <div className={className}>
@@ -160,13 +161,16 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
         </g>
 
         <g className="scene__predator" transform={`translate(${sharkX} ${PREDATOR_Y})`}>
-          {offsets.map((o, i) => (
-            <g key={i} transform={`translate(${o.dx} ${o.dy}) scale(${o.scale})`}>
-              <g className="scene__predator-bob">
-                <Creature />
+          {offsets.map((o, i) => {
+            const Creature = PREDATOR_COMPONENTS[instanceKinds[i] ?? predator.kind];
+            return (
+              <g key={i} transform={`translate(${o.dx} ${o.dy}) scale(${o.scale})`}>
+                <g className="scene__predator-bob">
+                  <Creature />
+                </g>
               </g>
-            </g>
-          ))}
+            );
+          })}
         </g>
       </svg>
     </div>

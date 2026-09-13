@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPredatorLevel, PREDATOR_LEVELS } from "./predators";
+import { getInstanceKinds, getPredatorLevel, PREDATOR_LEVELS } from "./predators";
 import { getSchoolOffsets, PREDATOR_COMPONENTS } from "../components/predators";
 
 describe("getPredatorLevel", () => {
@@ -26,8 +26,8 @@ describe("PREDATOR_LEVELS", () => {
     expect(PREDATOR_LEVELS.map((p) => p.level)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
-  it("only levels 2, 4 and 7 have more than one instance", () => {
-    const multiLevels = new Set([2, 4, 7]);
+  it("only levels 2, 4, 6 and 7 have more than one instance", () => {
+    const multiLevels = new Set([2, 4, 6, 7]);
     for (const p of PREDATOR_LEVELS) {
       expect(p.count > 1).toBe(multiLevels.has(p.level));
     }
@@ -47,5 +47,42 @@ describe("PREDATOR_LEVELS", () => {
     for (const p of PREDATOR_LEVELS) {
       expect(getSchoolOffsets(p.count)).toHaveLength(p.count);
     }
+  });
+
+  it("every level's instance kinds match its count and have a component", () => {
+    // getInstanceKinds() is what BattleScene actually indexes alongside
+    // getSchoolOffsets() -- a `kinds` array shorter/longer than `count`
+    // (or naming a kind with no illustration) would render the wrong
+    // creature, or none, at some position rather than failing loudly.
+    for (const p of PREDATOR_LEVELS) {
+      const kinds = getInstanceKinds(p);
+      expect(kinds).toHaveLength(p.count);
+      for (const kind of kinds) {
+        expect(PREDATOR_COMPONENTS[kind]).toBeTypeOf("function");
+      }
+    }
+  });
+
+  it("every level's custom offsets (if any) match its count", () => {
+    // Mirrors the school-offset-length check above, for the levels that
+    // opt out of the generic getSchoolOffsets() formation via their own
+    // `offsets` -- BattleScene indexes this by position too, so a
+    // mismatched length would leave some instance without a position.
+    for (const p of PREDATOR_LEVELS) {
+      if (p.offsets) expect(p.offsets).toHaveLength(p.count);
+    }
+  });
+
+  it("the Shark Princess's escort level keeps her bigger and drawn on top", () => {
+    // BattleScene draws `offsets` in array order, later on top -- and
+    // indexes `kinds` in lockstep with it. This pins both assumptions
+    // together so reordering one without the other doesn't silently draw
+    // a brother shark on top at full size instead of the Princess.
+    const level4 = PREDATOR_LEVELS.find((p) => p.level === 4);
+    expect(level4).toBeDefined();
+    expect(getInstanceKinds(level4!)).toEqual(["shark", "shark", "sharkprincess"]);
+    const offsets = level4!.offsets ?? getSchoolOffsets(level4!.count);
+    expect(offsets.at(-1)!.scale).toBeGreaterThan(offsets[0].scale);
+    expect(offsets.at(-1)!.scale).toBeGreaterThan(offsets[1].scale);
   });
 });
