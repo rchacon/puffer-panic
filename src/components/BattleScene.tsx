@@ -123,6 +123,10 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           <circle cx="128" cy="42" r="2" />
           <circle cx="92" cy="150" r="2.5" />
           <circle cx="300" cy="120" r="2.5" />
+          <circle cx="20" cy="110" r="2" />
+          <circle cx="175" cy="95" r="1.8" />
+          <circle cx="200" cy="30" r="2" />
+          <circle cx="350" cy="60" r="2.5" />
         </g>
 
         {outcome === "victory" && (
