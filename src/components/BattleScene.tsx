@@ -66,12 +66,13 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   const sharkX = startX - approachProgress * (startX - 150);
   // The Anglerfish is a deep-sea ambush hunter -- its whole gimmick is
   // luring prey in the dark, which the shallow, sunlit sea gradient every
-  // other level shares undercuts. Darkening the water (and dimming the
-  // seabed scenery sitting in it) just for this level, rather than a CSS
-  // filter over the whole scene, keeps the Puffer and the Anglerfish
-  // itself at full, undimmed brightness -- only the backdrop goes dark, so
-  // the lure's glow (see Anglerfish.tsx) actually has murk to stand out
-  // against instead of competing with a bright reef.
+  // other level shares undercuts. Darkening the water/seabed just for this
+  // level, rather than a CSS filter over the whole scene, leaves room to
+  // dim the Puffer and the Anglerfish's own body separately (see
+  // .scene--anglerfish in index.css) while exempting the lure's glow (see
+  // Anglerfish.tsx) from that dimming -- a single scene-wide filter
+  // couldn't tell the glow apart from the rest of the Anglerfish it's
+  // layered on top of.
   const isMurky = predator.kind === "anglerfish";
   const className = [
     "scene",
