@@ -343,17 +343,22 @@ already returns two independently-suffixed results.
 
 Both rocks are kept on the left half (under/around the Puffer) so they
 never compete for space with the Kraken's `ShipWreck`, which occupies
-roughly x=250-390 on the right. Their top edges are kept below y=160,
-comfortably clear of the Puffer's own lowest reach even at its biggest --
-`pufferScale(score)` maxes out at 2.2 (score 5), and `Puffer.tsx`'s local
-box extends to y=+18, so at `PUFFER_Y=116` its bottom edge can reach
-116+18*2.2=155.6, plus the idle `bob` keyframe's +3px, for 158.6. Since
-that's *below* each rock's top edge, the two can never visually overlap
-regardless of how their x ranges relate -- disjoint y-ranges alone rule it
-out, no need to also dodge the Puffer horizontally. An earlier version had
-the big rock's top at y=148, inside that reach, so it visually clipped
-into the Puffer at high score -- caught by `/code-review` actually
-rendering the victory screen at max score, not by inspecting the numbers.
+roughly x=250-390 on the right. Sized to sit tall and prominent on the
+sand rather than shrunk down -- the big rock's top edge (y=148) is well
+within the Puffer's own reach at high score (`pufferScale(score)` maxes
+out at 2.2 at score 5, and `Puffer.tsx`'s local box extends to y=+18, so
+at `PUFFER_Y=116` its bottom edge can reach 116+18*2.2=155.6, plus the
+idle `bob` keyframe's +3px, for 158.6), so it's kept clear *horizontally*
+instead: pinned to the left edge (x=0-52), safely left of the Puffer's own
+widest reach at that same high score (56.4-135.6). Shrinking/lowering the
+rocks to dodge the Puffer vertically was tried first and technically
+worked, but looked worse -- small and half-buried instead of resting on
+top of the sand. The small rock, further right and lower, doesn't need to
+dodge anything -- its y-range (166-200) is already below the Puffer's max
+reach, so it can't overlap regardless of x. (The overlap itself was caught
+by `/code-review` actually rendering the victory screen at max score, not
+by inspecting the numbers -- worth re-checking with the same technique if
+these ever move again.)
 
 ## Conventions
 

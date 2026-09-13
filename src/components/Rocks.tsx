@@ -20,18 +20,19 @@ const rockArtwork = stripRootSvgDimensions(rawRockArtwork);
 // twice (each call consumes its own `useId()` slot, so the two results
 // are already uniquely suffixed against each other).
 //
-// Both kept on the left half (under/around the puffer) so they never
-// compete with the Kraken's ShipWreck, which occupies roughly x=250-390 on
-// the right. Their top edges are kept below y=160, comfortably clear of
-// the Puffer's own lowest reach even at its biggest -- pufferScale(score)
-// maxes out at 2.2 (score 5), and Puffer.tsx's local box extends to
-// y=+18, so at PUFFER_Y=116 its bottom edge can reach 116+18*2.2=155.6,
-// plus the idle `bob` keyframe's +3px, for 158.6. Since that's *below*
-// each rock's top edge, the two can never visually overlap regardless of
-// how their x ranges relate -- disjoint y-ranges alone rule it out, no
-// need to also dodge the Puffer horizontally. (An earlier version had the
-// big rock's top at y=148, inside that reach -- caught by /code-review
-// actually rendering the victory screen at max score, not by inspection.)
+// Sized to sit tall and prominent on the sand -- the big rock's top edge
+// (y=148) is well within the Puffer's own reach at high score
+// (pufferScale(5)=2.2, Puffer.tsx's local box extends to y=+18, so at
+// PUFFER_Y=116 its bottom edge can reach 116+18*2.2=155.6, plus the idle
+// `bob` keyframe's +3px, for 158.6), so it's kept clear *horizontally*
+// instead: pinned to the left edge (x=0-52), safely left of the Puffer's
+// own widest reach at that same high score (56.4-135.6), rather than
+// pushed down/shrunk to dodge it vertically (tried first, but that made
+// the rocks look small and half-buried instead of resting on top of the
+// sand). The small rock, further right and lower, doesn't need to dodge
+// anything -- its y-range (166-200) is already below the Puffer's max
+// reach (158.6), so it can't overlap regardless of x. Both are also kept
+// well clear of the Kraken's ShipWreck (roughly x=250-390) either way.
 export function Rocks() {
   const bigRock = useScopedSvg(rockArtwork);
   const smallRock = useScopedSvg(rockArtwork);
@@ -39,18 +40,18 @@ export function Rocks() {
   return (
     <g className="rocks">
       <svg
-        x={20}
-        y={163}
-        width={42}
-        height={42}
+        x={0}
+        y={148}
+        width={52}
+        height={52}
         viewBox="0 0 128 128"
         dangerouslySetInnerHTML={{ __html: bigRock }}
       />
       <svg
-        x={66}
-        y={175}
-        width={28}
-        height={28}
+        x={58}
+        y={166}
+        width={34}
+        height={34}
         viewBox="0 0 128 128"
         dangerouslySetInnerHTML={{ __html: smallRock }}
       />
