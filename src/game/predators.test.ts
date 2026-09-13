@@ -26,8 +26,8 @@ describe("PREDATOR_LEVELS", () => {
     expect(PREDATOR_LEVELS.map((p) => p.level)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
-  it("only levels 2, 4, 6 and 7 have more than one instance", () => {
-    const multiLevels = new Set([2, 4, 6, 7]);
+  it("only levels 2, 4, 7 and 8 have more than one instance", () => {
+    const multiLevels = new Set([2, 4, 7, 8]);
     for (const p of PREDATOR_LEVELS) {
       expect(p.count > 1).toBe(multiLevels.has(p.level));
     }
