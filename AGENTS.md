@@ -195,7 +195,7 @@ round-by-round via headless Chrome that the shared linear approach still
 reads fine at this size, no early-contact or off-screen-runway issues to
 work around.
 
-Level 4's `Piranha` (school of 4, see `getSchoolOffsets`) is vendored real
+Level 7's `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart
 (openclipart.org/detail/4631/piranha-by-liakad), public domain
 (`src/assets/piranha.svg`'s own `<metadata>` carries the CC0-equivalent
@@ -254,7 +254,7 @@ attributes, an id referenced from a `<style>` block, or a SMIL
 kraken.svg as they stand; check for those before reusing it on a
 differently-authored source file.
 
-Megalodon (level 8) reuses `Shark`'s vendored art scaled up, darkened via
+Megalodon (level 5) reuses `Shark`'s vendored art scaled up, darkened via
 the `.megalodon` CSS filter (`brightness(0.62)`) rather than the fill-prop
 overrides the old hand-drawn Shark took -- there's no per-shape fill to
 override any more, just one baked-in image. A lone `brightness()` doesn't
