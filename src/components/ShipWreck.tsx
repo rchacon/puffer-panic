@@ -1,10 +1,18 @@
 // A sunken ship, half-buried in the seabed -- background scenery for the
 // Kraken's lair (level 10), the reward for playing 10 games in a row.
 // Positioned in scene-absolute coordinates (not around an origin like the
-// predators/Puffer, since it never moves or scales).
+// predators/Puffer, since it never moves or scales). The whole group is
+// nudged down 9 units from where its paths were originally drawn --
+// without it, the hull's bottom edge sat a few units above the sand's own
+// curve (BattleScene.tsx's wavy sand `<path>`, which dips and rises with
+// x), leaving a sliver of visible water between hull and seabed instead
+// of actually resting on it. No longer dimmed with a group-wide opacity
+// either (it used to render at 0.85) -- that read as translucent/ghostly
+// rather than "sunken", which wasn't the intent; the individual plank-
+// shading/rudder-crack details still carry their own small opacities.
 export function ShipWreck() {
   return (
-    <g className="shipwreck" opacity={0.85}>
+    <g className="shipwreck" transform="translate(0, 9)">
       <path d="M298 178 L303 96 L307 178 Z" fill="#3a2c22" />
       <path d="M303 108 L324 121 L303 127 Z" fill="#2a2018" opacity={0.85} />
       <path

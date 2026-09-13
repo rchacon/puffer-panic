@@ -134,7 +134,19 @@ extra title-card flourish -- `App.tsx`'s `handleStart` detects it via
 `audio/player.ts`) for ~2.1s before the round actually begins (`beginGame`).
 The Kraken's own artwork (`src/components/predators/Kraken.tsx`) is a
 vendored illustration, not hand-drawn like the others -- see that file's
-header comment for why it isn't mirrored/rotated like you'd expect.
+header comment for why it isn't mirrored/rotated like you'd expect, and
+for why it's sized 1.5x its original footprint (a later tweak, after the
+Kraken already shipped, to make the final boss feel bigger -- tentacle
+tips are left to run off the scene's edges at this size rather than
+shrunk/repositioned to avoid it).
+
+`ShipWreck.tsx` also got a later fix: its hull sat a few units above the
+sand's own wavy curve, a gap easy to miss in isolation but visible once
+actually playing (Rocks and the seabed sand sit at a fixed y, but the
+sand curve dips/rises with x -- the wreck's original coordinates were
+picked without checking against it at its specific x-range). Nudged the
+whole group down 9 units, and dropped its group-wide 0.85 opacity, which
+read as translucent/ghostly rather than "resting on the seabed."
 
 `kraken-music.wav` is trimmed (with a baked-in fade-out, no real cut point
 existed in the source -- see the RMS-envelope analysis this was picked from)
