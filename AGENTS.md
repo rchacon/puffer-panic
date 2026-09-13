@@ -249,12 +249,12 @@ Sized 1.5x its original footprint in `SharkPrincess.tsx` (162 wide, up
 from 108) -- she's a whale shark, the largest fish species alive, and the
 original box was actually smaller than the plain Shark's 159, undersold
 for what she's meant to be. No special-casing needed in `BattleScene.tsx`
-for this, unlike the much-larger Mosasaurus (level 9) -- verified
+for this, unlike the much-larger Mosasaurus (level 6) -- verified
 round-by-round via headless Chrome that the shared linear approach still
 reads fine at this size, no early-contact or off-screen-runway issues to
 work around.
 
-Level 6's `Eel` (school of 3, see `getSchoolOffsets`) is a raster
+Level 8's `Eel` (school of 3, see `getSchoolOffsets`) is a raster
 illustration, user-provided (not sourced/licensed the way the
 Kraken/PhyloPic assets were -- verify provenance before reusing it
 elsewhere), replacing the old hand-drawn S-curve. Unlike the
@@ -329,7 +329,7 @@ freehand return curve back up into the body interior and filled
 red-fading-to-transparent so it blends into the grey above it rather than
 having a hard seam.
 
-Level 8's `Anglerfish` (`src/components/predators/Anglerfish.tsx`) is a
+Level 9's `Anglerfish` (`src/components/predators/Anglerfish.tsx`) is a
 raster illustration, user-provided (not sourced/licensed the way the
 Kraken/PhyloPic assets were -- verify provenance before reusing it
 elsewhere), replacing the old hand-drawn version. `src/assets/anglerfish.png`
@@ -399,7 +399,7 @@ actually renders at in-game -- check any radius change at gameplay scale,
 not just the source file). Provenance/license not verified for this one
 (user-provided, like SharkPrincess) -- check before reusing elsewhere.
 
-Both `Piranha` and `Shark` render `count` times at once (schools of 4 and
+Both `Piranha` and `Shark` render `count` times at once (schools of 7 and
 2 respectively, see `getSchoolOffsets`) -- the same vendored markup, ids
 and all, gets injected into the DOM several times simultaneously via
 `dangerouslySetInnerHTML`. Unlike Kraken/SharkPrincess (always rendered
@@ -421,7 +421,7 @@ attributes, an id referenced from a `<style>` block, or a SMIL
 kraken.svg as they stand; check for those before reusing it on a
 differently-authored source file.
 
-Level 9's `Mosasaurus` is a raster illustration, user-provided (not
+Level 6's `Mosasaurus` is a raster illustration, user-provided (not
 sourced/licensed the way the Kraken/PhyloPic assets were -- verify
 provenance before reusing it elsewhere). Went through two other approaches
 first (a hand-authored vector redraw, then a recolored PhyloPic silhouette
