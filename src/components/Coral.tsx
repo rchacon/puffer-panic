@@ -2,11 +2,11 @@ import { stripRootSvgDimensions } from "./vendoredSvg";
 import rawCoralArtwork from "../assets/coral.svg?raw";
 
 // Its source's root <svg> carries width="800px" height="800px" alongside
-// its viewBox (as `height="..." width="..."`, the opposite attribute order
-// from Puffer's/Rock's own copy of the same bug -- stripRootSvgDimensions
-// doesn't care about order, it matches each attribute independently) --
-// see vendoredSvg.ts for why those have to come out before nesting this
-// inside the wrapper below.
+// its viewBox (as `height="..." width="..."`, same attribute order as
+// Puffer's own copy of the same bug, the opposite of Rock's --
+// stripRootSvgDimensions doesn't care about order either way, it matches
+// each attribute independently) -- see vendoredSvg.ts for why those have
+// to come out before nesting this inside the wrapper below.
 const coralArtwork = stripRootSvgDimensions(rawCoralArtwork);
 
 // A branch of coral next to the Rocks/Kelp -- background scenery,
