@@ -360,6 +360,51 @@ by `/code-review` actually rendering the victory screen at max score, not
 by inspecting the numbers -- worth re-checking with the same technique if
 these ever move again.)
 
+`Coral` (`src/components/Coral.tsx`) and `Kelp` (`src/components/Kelp.tsx`)
+round out the same seabed cluster, both also always rendered (not
+per-predator). `Coral` is vendored real vector art from SVG Repo, same
+bot-detection-checkpoint provenance caveat as the Puffer/Rock/kraken-icon;
+its source id was the same generic `Layer_1` the Puffer and Shark SVGs
+also happen to use (an SVG Repo "Mixer Tools" default, apparently) --
+harmless in practice since none of the three ever reference their own id
+via `url(...)`, but renamed to `coral-layer` by hand anyway rather than
+adding a third literal duplicate id to the DOM. `Kelp` is vendored real
+vector art too, but from OpenClipart (`kelpforest.svg`, public domain per
+its own `<cc:license>` metadata block -- an actually-verifiable license,
+unlike the SVG Repo assets). Both run through `stripRootSvgDimensions()`
+regardless of whether it's a no-op for that particular source, the same
+"don't hand-check, just always apply it" reasoning as Shark/Piranha --
+Coral's actually needs it (the same `width`/`height`-vs-`viewBox`
+mismatch as Puffer's, just as `height="..." width="..."`, the opposite
+attribute order, which the shared helper doesn't care about), Kelp's
+doesn't (no `width`/`height` on its root tag at all).
+
+Positioned like a continuous cluster reading left to right -- Rocks, then
+Coral, then Kelp -- rather than scattered independently, so it reads as
+one seabed garden. Both Coral and Kelp are kept past the Puffer's own
+widest reach at high score horizontally (see Rocks.tsx for that reach's
+math), same as the big Rock -- an earlier version tucked Coral in low
+next to the small Rock instead (dodging the Puffer vertically, the same
+trick the small Rock uses), but unlike that rock, Coral's own artwork
+fills almost all the way to its box's bottom edge with no empty margin to
+spare, so sitting it low enough to duck under the Puffer's reach buried
+most of it in the sand -- looked sunk/cut off by the frame rather than
+resting on top of it. Both are tuned to visually rest right at the seabed
+`<path>`'s own curve at their respective x position, using the curve's
+own quadratic-bezier parameterization (it simplifies to a linear `x(t)`,
+since each segment's control point sits at the exact horizontal midpoint
+of its endpoints) rather than eyeballing it -- worth redoing that math,
+not guessing, if either ever moves again. The two needed different tuning
+despite the same technique: Kelp's own artwork has a fair amount of empty
+viewBox space below its drawn shadow (unlike Coral's or the Rocks',
+which each fill almost their entire box), so its *shadow*, not its box's
+bottom edge, is what actually needs to land on the curve -- solved by
+rendering the scene with the seabed curve's own y=160/180/200 values drawn
+in as temporary reference gridlines (`Runtime.evaluate` appending
+`<line>` elements directly into the live `.scene__svg`) and reading off
+the pixel gap, rather than assuming the box-bottom math that works for
+the other, tightly-cropped assets also holds here.
+
 ## Conventions
 
 - **Scripts stay dependency-free.** `scripts/generate-audio.mjs` and
