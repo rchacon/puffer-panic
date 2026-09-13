@@ -1,6 +1,9 @@
 import type { Outcome } from "../game/outcome";
 import type { PredatorKind, PredatorLevel } from "../game/predators";
+import { Coral } from "./Coral";
+import { Kelp } from "./Kelp";
 import { Puffer } from "./Puffer";
+import { Rocks } from "./Rocks";
 import { ShipWreck } from "./ShipWreck";
 import { PREDATOR_COMPONENTS, getSchoolOffsets } from "./predators";
 
@@ -111,9 +114,12 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
         <rect width="400" height="200" fill="url(#sea)" />
         <path
           d="M0 186 Q 100 172 200 186 T 400 184 V200 H0 Z"
-          fill="#0b5a3d"
-          opacity="0.75"
+          fill="#d9b988"
+          opacity="0.85"
         />
+        <Rocks />
+        <Coral />
+        <Kelp />
         {predator.kind === "kraken" && <ShipWreck />}
 
         <g className="scene__bubbles" fill="#c7ecff" opacity="0.5">
@@ -121,6 +127,10 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           <circle cx="128" cy="42" r="2" />
           <circle cx="92" cy="150" r="2.5" />
           <circle cx="300" cy="120" r="2.5" />
+          <circle cx="20" cy="110" r="2" />
+          <circle cx="175" cy="95" r="1.8" />
+          <circle cx="200" cy="30" r="2" />
+          <circle cx="350" cy="60" r="2.5" />
         </g>
 
         {outcome === "victory" && (

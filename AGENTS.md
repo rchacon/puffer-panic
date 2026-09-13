@@ -25,11 +25,13 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
   word chooser.
 - `src/components/predators/` &mdash; one illustration per creature (same
-  flat-SVG technique as `Puffer.tsx`). `Megalodon` reuses `Shark` rescaled
-  and darkened via CSS filter rather than new art. `Shark.tsx` (one level
-  up, in `src/components/`), `Kraken`, `SharkPrincess`, `Piranha` and
-  `Mosasaurus` are vendored/user-provided raster or vector art rather than
-  hand-drawn -- see "Predator escalation" below.
+  flat-SVG technique as `Eel.tsx`/`Anglerfish.tsx`/`TapahCatfish.tsx`).
+  `Megalodon` reuses `Shark` rescaled and darkened via CSS filter rather
+  than new art. `Shark.tsx` (one level up, in `src/components/`), `Kraken`,
+  `SharkPrincess`, `Piranha` and `Mosasaurus` are vendored/user-provided
+  raster or vector art rather than hand-drawn -- see "Predator escalation"
+  below. `Puffer.tsx` (also one level up -- the protagonist, not a
+  `predators/` entry) is likewise now vendored vector art, not hand-drawn.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
   (see there).
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
@@ -288,6 +290,157 @@ puffer under the Mosasaurus's mid-body/flippers at that position instead
 of near its mouth -- caught by `/code-review` actually rendering the final
 frame and comparing bounding boxes against the Shark's, not by inspecting
 the numbers alone.
+
+`Puffer` (the protagonist, not a `predators/` entry -- always rendered via
+`BattleScene`'s own `<Puffer />`, not the `PREDATOR_COMPONENTS` map) was
+originally the one hand-drawn creature left (a ring of 12 `<line>` spikes
+around two circles); it's now `src/assets/pufferfish.svg`, vendored real
+vector art from SVG Repo (the file's own header comment says so, but SVG
+Repo blocks automated fetches with a bot-detection checkpoint like the
+kraken-icon -- downloaded by hand, exact page/license not independently
+verified, check before reusing elsewhere). A flat cartoon "polka-dot"
+style rather than the old spiky silhouette; already drawn facing right
+(toward the predator) in its native orientation, no mirroring needed.
+
+Its source `<svg>` root carried `height="800px" width="800px"` alongside
+its `viewBox="0 0 512.001 512.001"` -- the same class of bug as the
+Mosasaurus PhyloPic silhouette's pt-unit clipping (see above), just with
+`px` instead of `pt`: nested inside the wrapper via
+`dangerouslySetInnerHTML`, those absolute pixel dimensions scale
+independently of the outer wrapper's own viewBox, rendering content
+~1.56x oversized and silently clipped by the nested `<svg>`'s default
+`overflow: hidden`. This had already bitten twice by hand-deleting the
+attributes from the vendored file itself (Mosasaurus, then this one), with
+nothing but a comment telling the next person to remember to check --
+`src/components/vendoredSvg.ts`'s `stripRootSvgDimensions()` now does this
+automatically at import time instead, applied to every real vendored SVG
+with a root `<svg>` tag (`Puffer`, `Shark`, `Piranha` -- not `Kraken`/
+`KrakenIntro`'s icon, whose source files are markup *fragments* with no
+root `<svg>` tag at all, so they're structurally immune). Safe to apply
+unconditionally even where it's a no-op (Shark.svg's `width`/`height`
+already equal its own `viewBox` numbers in the same unitless units, so
+removing them changes nothing) -- do this for any new vendored SVG too,
+rather than hand-checking whether it needs it first.
+
+`Puffer.tsx` also adds a white eye glint and replaces the source's own
+neutral/frown mouth with a smile, string-appended into its own markup
+(right before its closing `</svg>`, so the new shapes share its
+`0 0 512.001 512.001` viewBox directly) rather than edited into the
+source file or drawn as a separate positioned overlay. The source's
+outline -- pupil and mouth included -- is one giant compound path (three
+subpaths total for the whole file: the main silhouette, one small detail
+near a fin, and everything else -- pupil, mouth, gill lines -- fused into
+a single ~4800-character path via connecting bridges, not cleanly
+separable sub-shapes), so there's no "mouth path" to delete or redraw in
+place; instead an opaque ellipse in the source's own flat local fill
+color (`#FFD77D`, confirmed solid -- not part of a gradient -- by
+sampling a rendered preview, so a flat patch leaves no visible seam)
+covers the original mouth first, then the smile draws on top of that
+patch. (A first attempt drew the smile *next to* the original mouth
+instead of replacing it, which read as a mustache-and-mouth combo, not a
+smile -- covering the original first and drawing on top is what actually
+gets a replacement rather than an addition.)
+
+Coordinates for all of this were found by rendering the source with a
+temporary labeled coordinate grid overlaid (10-unit spacing, drawn the
+same string-append way) and reading the pupil/mouth positions directly
+off of it, at a large (~550px) rendered size -- not the tiny in-game
+size, and not by pixel-measuring a plain screenshot and converting back
+to viewBox units, which turned out unreliable twice over (a polka dot
+sat close enough to the true pupil to be mistaken for it, and the mouth
+patch sized from that same estimate missed the actual mouth shape
+entirely on the first attempt). The coordinate grid technique is the one
+worth reusing for any future tweak here -- render with grid lines and
+read the numbers, don't estimate from an unlabeled screenshot.
+
+`BattleScene`'s seabed `<path>` and the `Rocks` component next to it
+(`src/components/Rocks.tsx`, same absolute-scene-coordinates technique as
+`ShipWreck`) are the one piece of scenery that isn't per-predator --
+sand-colored rather than the original dark green, present at every level.
+`Rocks` went through two versions (see git history): a hand-drawn pair of
+flat-color ellipses (dropped after a highlight shape that touched the
+silhouette's own edge read as a separate cap sitting on top, a hard seam,
+not a soft sheen -- worth remembering if scenery ever goes back to
+hand-drawn shapes), then the current one, vendored real vector art (a
+detailed shaded boulder, "🪨" Rock from the Noto Emoji set via SVG Repo,
+same bot-detection-checkpoint provenance caveat as the Puffer/kraken-icon)
+rendered twice at different sizes side by side. Its root `<svg>` also
+carried the same `width`/`height`-vs-`viewBox` mismatch Puffer's did,
+handled the same way via `stripRootSvgDimensions()`; since it renders more
+than once at a time, its gradient ids also need `useScopedSvg()` like
+Piranha/Shark's schools -- called twice here (once per rock instance)
+rather than once, since each call consumes its own `useId()` slot and so
+already returns two independently-suffixed results.
+
+Both rocks are kept on the left half (under/around the Puffer) so they
+never compete for space with the Kraken's `ShipWreck`, which occupies
+roughly x=250-390 on the right. Sized to sit tall and prominent on the
+sand rather than shrunk down -- the big rock's top edge (y=148) is well
+within the Puffer's own reach at high score (`pufferScale(score)` maxes
+out at 2.2 at score 5, and `Puffer.tsx`'s local box extends to y=+18, so
+at `PUFFER_Y=116` its bottom edge can reach 116+18*2.2=155.6, plus the
+idle `bob` keyframe's +3px, for 158.6), so it's kept clear *horizontally*
+instead: pinned to the left edge (x=0-52), safely left of the Puffer's own
+widest reach at that same high score (56.4-135.6). Shrinking/lowering the
+rocks to dodge the Puffer vertically was tried first and technically
+worked, but looked worse -- small and half-buried instead of resting on
+top of the sand. The small rock, further right and lower, doesn't need to
+dodge anything -- its y-range (166-200) is already below the Puffer's max
+reach, so it can't overlap regardless of x. (The overlap itself was caught
+by `/code-review` actually rendering the victory screen at max score, not
+by inspecting the numbers -- worth re-checking with the same technique if
+these ever move again.)
+
+`Coral` (`src/components/Coral.tsx`) and `Kelp` (`src/components/Kelp.tsx`)
+round out the same seabed cluster, both also always rendered (not
+per-predator). `Coral` is vendored real vector art from SVG Repo, same
+bot-detection-checkpoint provenance caveat as the Puffer/Rock/kraken-icon;
+its source id was the same generic `Layer_1` the Puffer and Shark SVGs
+also happen to use (an SVG Repo "Mixer Tools" default, apparently) --
+harmless in practice since none of the three ever reference their own id
+via `url(...)`, but renamed to `coral-layer` by hand anyway rather than
+adding a third literal duplicate id to the DOM. `Kelp` is vendored real
+vector art too, but from OpenClipart (`kelpforest.svg`, public domain per
+its own `<cc:license>` metadata block -- an actually-verifiable license,
+unlike the SVG Repo assets). Both run through `stripRootSvgDimensions()`
+regardless of whether it's a no-op for that particular source, the same
+"don't hand-check, just always apply it" reasoning as Shark/Piranha --
+Coral's actually needs it (the same `width`/`height`-vs-`viewBox`
+mismatch as Puffer's, just as `height="..." width="..."`, the opposite
+attribute order, which the shared helper doesn't care about), Kelp's
+doesn't (no `width`/`height` on its root tag at all).
+
+Positioned like a continuous cluster reading left to right -- Rocks, then
+Coral, then Kelp -- rather than scattered independently, so it reads as
+one seabed garden. Both Coral and Kelp are kept past the Puffer's own
+widest reach at high score horizontally (see Rocks.tsx for that reach's
+math), same as the big Rock -- an earlier version tucked Coral in low
+next to the small Rock instead (dodging the Puffer vertically, the same
+trick the small Rock uses), but unlike that rock, Coral's own artwork
+fills almost all the way to its box's bottom edge with no empty margin to
+spare, so sitting it low enough to duck under the Puffer's reach buried
+most of it in the sand -- looked sunk/cut off by the frame rather than
+resting on top of it. Both are positioned relative to the seabed
+`<path>`'s own curve at their respective x position, using the curve's own
+quadratic-bezier parameterization (it simplifies to a linear `x(t)`, since
+each segment's control point sits at the exact horizontal midpoint of its
+endpoints) rather than eyeballing it -- worth redoing that math, not
+guessing, if either ever moves again. First tuned to land exactly *on*
+that curve, which read as too precise/flat once actually seen -- like the
+Rocks (sunk in well past their own local sand line, not merely touching
+it), Coral and Kelp are each sunk a bit further in past the curve too,
+and *not* by the same amount as each other, for a bit of natural
+variation rather than a uniform planting depth. The two needed different
+handling to get there despite the same underlying technique: Kelp's own
+artwork has a fair amount of empty viewBox space below its drawn shadow
+(unlike Coral's or the Rocks', which each fill almost their entire box),
+so it's its *shadow*, not its box's bottom edge, that actually needs to
+sit past the curve -- worked out by rendering the scene with the seabed
+curve's own y=160/180/200 values drawn in as temporary reference
+gridlines (`Runtime.evaluate` appending `<line>` elements directly into
+the live `.scene__svg`) and reading off the pixel gap, rather than
+assuming the box-bottom math that works for the other, tightly-cropped
+assets also holds here.
 
 ## Conventions
 

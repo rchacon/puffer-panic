@@ -1,5 +1,11 @@
 import { useScopedSvg } from "../scopeIds";
-import piranhaArtwork from "../../assets/piranha.svg?raw";
+import { stripRootSvgDimensions } from "../vendoredSvg";
+import rawPiranhaArtwork from "../../assets/piranha.svg?raw";
+
+// This source has no width/height on its root <svg> to begin with, so
+// stripping is a no-op here -- done anyway for consistency with every
+// other vendored asset, see vendoredSvg.ts.
+const piranhaArtwork = stripRootSvgDimensions(rawPiranhaArtwork);
 
 // Level 4's piranha (school of 4) -- a vendored illustration, not hand-drawn
 // like Eel/Anglerfish/TapahCatfish/Mosasaurus. Recolored from its original
