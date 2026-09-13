@@ -244,6 +244,34 @@ body {
   filter: url(#krakenPurple);
 }
 
+.scene--anglerfish .scene__puffer-bob,
+.scene--anglerfish .anglerfish__body {
+  /* Dim both fish to near-silhouettes so the lure's glow (left at full
+     brightness -- see .anglerfish__lure-glow below) is the one thing that
+     actually grabs the eye in the dark, the way a real lure works. */
+  filter: brightness(0.32);
+}
+
+.anglerfish__lure-glow {
+  /* fill-box + center origin so the pulse scales the glow around its own
+     circles instead of the scene's (0,0) origin -- same trick as
+     .scene__predator-bob's bob keyframe. */
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lureGlow 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes lureGlow {
+  from {
+    opacity: 0.55;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
 .scene__puffer-bob {
   /* fill-box keeps every scale/rotate pivoting on the fish's own centre so
      it grows and pulses in place instead of flying toward the viewBox origin. */
@@ -693,7 +721,8 @@ body {
   .scene__puffer-bob,
   .scene--victory .scene__puffer-bob,
   .scene__bubbles circle,
-  .scene--victory .scene__burst-spin {
+  .scene--victory .scene__burst-spin,
+  .anglerfish__lure-glow {
     animation: none;
   }
   .scene__puffer {

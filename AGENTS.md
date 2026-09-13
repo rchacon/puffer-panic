@@ -295,6 +295,31 @@ quantization would visibly band on. Result: 1.75MB &rarr; ~34.6KB (about
 detail. Imported as a URL, not `?raw`, so Vite emits it as its own
 cacheable file.
 
+This level is also the one deliberately dark one: an anglerfish's whole
+gimmick is ambushing prey with a bioluminescent lure in lightless deep
+water, which the shared sunlit `#sea` gradient and reef scenery every other
+level uses undercuts. `BattleScene.tsx`'s `isSpooky` flag (true only when
+`predator.kind === "anglerfish"`) swaps in a much darker `#seaSpooky`
+gradient, dims the sand/`Rocks` as one group (so no single piece keeps
+popping against the murk), and skips `Coral`/`Kelp` outright rather than
+just dimming them -- both are photosynthetic and wouldn't grow this deep.
+The Puffer and the Anglerfish's own body (`.scene__puffer-bob` and the new
+`.anglerfish__body` class on its `<image>`) are dimmed to near-silhouettes
+via `filter: brightness(0.32)`, scoped to `.scene--anglerfish` so no other
+level is affected. The lure itself is exempted from all of this and drawn
+at full brightness -- a small hand-drawn glow (a blurred halo circle plus a
+brighter core, pulsing via `.anglerfish__lure-glow`'s `lureGlow` keyframe)
+layered on top of the flat PNG, which isn't lit in the source art. Its
+position (`LURE_X`/`LURE_Y` in `Anglerfish.tsx`) was found the same way as
+Megalodon's nose/gills: flood-fill the source PNG for its brightest yellow
+pixels (there are several -- the esca bulb, the dorsal spines' smaller
+tips, and the eye's pale cream -- so the bulb's own cluster had to be
+picked out specifically) and take that cluster's bounding-box center, then
+convert through the `<image>`'s own `preserveAspectRatio="xMidYMid meet"`
+scale/centering math to land in the component's local coordinate space.
+End effect: everything in the scene fades into the dark except one glowing
+point, which is the point.
+
 Level 1/2's `Shark` (reused unmodified for level 2's two-shark school) is
 also vendored real vector art -- recolored to
 a great white: swapped its original two teal shades for grey (back/fins)
