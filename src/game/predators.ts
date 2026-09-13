@@ -77,12 +77,12 @@ export const PREDATOR_LEVELS: PredatorLevel[] = [
     ],
     label: "The Shark Princess and her two brothers",
   },
-  { level: 5, kind: "piranha", count: 4, label: "The four piranhas" },
-  { level: 6, kind: "anglerfish", count: 1, label: "The anglerfish" },
-  { level: 7, kind: "eel", count: 3, label: "The three electric eels" },
-  { level: 8, kind: "megalodon", count: 1, label: "The Megalodon" },
+  { level: 5, kind: "megalodon", count: 1, label: "The Megalodon" }, // boss fight
+  { level: 6, kind: "eel", count: 6, label: "The six electric eels" },
+  { level: 7, kind: "piranha", count: 7, label: "The seven piranhas" },
+  { level: 8, kind: "anglerfish", count: 1, label: "The anglerfish" },
   { level: 9, kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
-  { level: 10, kind: "kraken", count: 1, label: "The Kraken" },
+  { level: 10, kind: "kraken", count: 1, label: "The Kraken" }, // final boss fight
 ];
 
 /**
