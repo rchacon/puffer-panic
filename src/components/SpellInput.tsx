@@ -1,0 +1,89 @@
+import { useEffect, useRef, useState } from "react";
+import type { Phase } from "../game/useGame";
+
+interface Props {
+  target: string;
+  phase: Phase;
+  onSubmit: (word: string) => void;
+}
+
+// Hard Mode's answer input -- spell the word instead of picking a card.
+// Deliberately NOT a hand-built on-screen key grid: a real (visually
+// hidden) text <input> gets native keyboard handling on desktop and the
+// device's own software keyboard on phones/tablets for free, backspace
+// included, instead of reimplementing either. The tile row is the only
+// thing actually shown; it's just a styled reflection of the input's own
+// value, and clicking/tapping it focuses the input (same "hidden input,
+// styled label carries the look" technique .wordpicker__chip already uses).
+export function SpellInput({ target, phase, onSubmit }: Props) {
+  const [typed, setTyped] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isPlaying = phase === "playing";
+  const isReveal = phase === "reveal";
+  const isFull = typed.length === target.length;
+  const mismatched = isReveal && typed !== target.toLowerCase();
+
+  // Autofocus at the start of each round -- App.tsx remounts this
+  // component per round (key={roundIndex}), so this only ever fires once
+  // per round, right as it becomes playable.
+  useEffect(() => {
+    if (isPlaying) inputRef.current?.focus();
+  }, [isPlaying]);
+
+  const submit = () => {
+    if (!isPlaying || !isFull) return;
+    onSubmit(typed);
+  };
+
+  return (
+    <div className="spellinput">
+      <div className="spellinput__tiles" onClick={() => inputRef.current?.focus()}>
+        {Array.from({ length: target.length }, (_, i) => {
+          const letter = typed[i];
+          let className = "spellinput__tile";
+          if (isReveal && letter) {
+            className +=
+              letter === target[i].toLowerCase()
+                ? " spellinput__tile--correct"
+                : " spellinput__tile--wrong";
+          }
+          return (
+            <span key={i} className={className}>
+              {letter ? letter.toUpperCase() : ""}
+            </span>
+          );
+        })}
+      </div>
+
+      <input
+        ref={inputRef}
+        className="spellinput__input"
+        type="text"
+        inputMode="text"
+        autoCapitalize="none"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
+        maxLength={target.length}
+        value={typed}
+        onChange={(e) => setTyped(e.target.value.replace(/[^a-zA-Z]/g, "").toLowerCase())}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") submit();
+        }}
+        disabled={!isPlaying}
+        aria-label={`Spell the word, ${target.length} letters`}
+      />
+
+      {mismatched && <p className="spellinput__reveal">{target.toUpperCase()}</p>}
+
+      <button
+        type="button"
+        className="spellinput__check"
+        disabled={!isPlaying || !isFull}
+        onClick={submit}
+      >
+        Check
+      </button>
+    </div>
+  );
+}

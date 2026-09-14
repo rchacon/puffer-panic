@@ -6,6 +6,7 @@ import { getPredatorLevel } from "./game/predators";
 import type { PredatorKind } from "./game/predators";
 import { WORDS } from "./data/words";
 import { loadSelection, saveSelection } from "./data/wordSelection";
+import { loadMode, saveMode, type Mode } from "./data/modeSelection";
 import { playCue, playUrl } from "./audio/player";
 import krakenMusic from "./assets/kraken-music.wav";
 import megalodonMusic from "./assets/megalodon-music.wav";
@@ -13,6 +14,7 @@ import { StartScreen } from "./components/StartScreen";
 import { BattleScene } from "./components/BattleScene";
 import { PromptBar } from "./components/PromptBar";
 import { CardRow } from "./components/CardRow";
+import { SpellInput } from "./components/SpellInput";
 import { ResultScreen } from "./components/ResultScreen";
 import { DebugPanel } from "./components/DebugPanel";
 import { KrakenIntro } from "./components/KrakenIntro";
@@ -65,6 +67,15 @@ export default function App() {
   const updateSelectedWords = (next: string[]) => {
     setSelectedWords(next);
     saveSelection(next);
+  };
+
+  // Persisted per-player preference (like word selection), not session-only
+  // like predator escalation -- how someone wants to play, not part of any
+  // one game's own escalating difficulty.
+  const [mode, setMode] = useState<Mode>(() => loadMode());
+  const updateMode = (next: Mode) => {
+    setMode(next);
+    saveMode(next);
   };
 
   // Session-only: escalates the antagonist each time a game is actually
@@ -120,6 +131,8 @@ export default function App() {
           allWords={WORDS}
           selected={selectedWords}
           onSelectedChange={updateSelectedWords}
+          mode={mode}
+          onModeChange={updateMode}
           disabled={activeBossIntro !== null}
         />
       ) : (
@@ -147,13 +160,22 @@ export default function App() {
                 total={TOTAL_ROUNDS}
                 onReplay={game.replay}
               />
-              <CardRow
-                options={round.options}
-                phase={state.phase}
-                pickedIndex={state.pickedIndex}
-                correctIndex={round.correctIndex}
-                onPick={game.answer}
-              />
+              {mode === "easy" ? (
+                <CardRow
+                  options={round.options}
+                  phase={state.phase}
+                  pickedIndex={state.pickedIndex}
+                  correctIndex={round.correctIndex}
+                  onPick={game.answer}
+                />
+              ) : (
+                <SpellInput
+                  key={state.roundIndex}
+                  target={round.target}
+                  phase={state.phase}
+                  onSubmit={game.answerTyped}
+                />
+              )}
             </>
           )}
         </>

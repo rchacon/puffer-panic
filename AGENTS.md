@@ -16,14 +16,17 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   - `outcome.ts` &mdash; `getOutcome(score)`, `pufferScale(score)`,
     `outcomeText(outcome, predatorLabel)`, `TOTAL_ROUNDS`.
   - `useGame.ts` &mdash; the `start | playing | reveal | result` state machine.
-    `start(pool?)` takes the chosen word list.
+    `start(pool?)` takes the chosen word list. `answer(index)` (Easy Mode)
+    and `answerTyped(word)` (Hard Mode) both resolve through one private
+    `resolveAnswer` helper -- see "Game modes" below.
   - `predators.ts` &mdash; `PREDATOR_LEVELS` (10 rows) and
     `getPredatorLevel(playCount)`; see "Predator escalation" below.
 - `src/components/` &mdash; presentational. `BattleScene` owns the `<svg>` and
   renders whichever creature(s) `predators.ts` resolved, via
   `predators/index.ts`'s `PREDATOR_COMPONENTS` map, plus `Puffer`;
-  `CardRow` / `FlashCard` are the answers; `WordPicker` is the start-screen
-  word chooser.
+  `CardRow` / `FlashCard` are Easy Mode's answers, `SpellInput` is Hard
+  Mode's (see "Game modes" below); `WordPicker` is the start-screen word
+  chooser and `ModeToggle` the Easy/Hard chooser next to it.
 - `src/components/predators/` &mdash; one illustration per creature (same
   flat-SVG technique as `TapahCatfish.tsx`, currently unused -- `catfish`
   isn't in `PREDATOR_LEVELS`). `Shark.tsx` (one level up, in
@@ -44,6 +47,8 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
 - `src/data/words.ts` &mdash; the word bank (one double-quoted literal per word).
 - `src/data/wordSelection.ts` &mdash; load/save the chosen words in
   `localStorage["puffer-panic:selected-words"]`, falling back to the full bank.
+- `src/data/modeSelection.ts` &mdash; load/save the chosen game mode in
+  `localStorage["puffer-panic:mode"]`, falling back to `"easy"`.
 - `public/audio/*.mp3` &mdash; committed voice clips.
 - `public/favicon.svg` &mdash; synced by hand from `puffer-website`
   (`../puffer-website/public/favicon.svg`, the marketing site repo) so the
@@ -80,6 +85,60 @@ at the site root, so a running copy can be identified with
 - The start screen `WordPicker` chooses which words are in play (min `MIN_WORDS`
   = 3, default all). Still 5 rounds always: with a small pool `buildRounds`
   repeats target words but never twice in a row.
+
+## Game modes
+
+Two modes, chosen on the start screen via `ModeToggle` (an always-visible
+Easy/Hard pill pair, `src/components/ModeToggle.tsx`) and persisted per
+player in `localStorage["puffer-panic:mode"]` (`src/data/modeSelection.ts`,
+`loadMode`/`saveMode`) -- like the word selection, **not** session-only like
+predator escalation, since it's a standing preference about how someone
+wants to play, not part of any one game's escalating difficulty.
+
+- **Easy Mode** (the original, only mode before this) -- three flash cards
+  (`CardRow`/`FlashCard`), tap the one that spells the target word.
+- **Hard Mode** (`src/components/SpellInput.tsx`) -- spell the target word
+  instead. Deliberately **not** a hand-built on-screen key grid: a real
+  (visually hidden) text `<input>` does the actual typing, so it gets a
+  physical keyboard's native key handling on desktop and the device's own
+  software keyboard on phones/tablets for free -- backspace included --
+  instead of reimplementing either. A row of blank tiles (one per letter of
+  the target word) is the only thing actually shown; it fills in as the
+  hidden input's value changes, and clicking/tapping a tile focuses that
+  input (same "hidden input, styled element carries the look" technique
+  `.wordpicker__chip` already uses for its checkboxes). Submitting is
+  explicit -- a Check button (enabled once every tile is filled) or Enter on
+  the input -- rather than auto-submitting the instant the last tile fills,
+  so a kid can still backspace-correct a mis-tap even after typing the last
+  letter, before committing. During the reveal, each tile colors green/red
+  against the target the same way `.card--correct`/`.card--wrong` color the
+  cards in Easy Mode, and -- mirroring how `CardRow` always highlights the
+  correct card even on a wrong pick -- shows the correct spelling
+  underneath if the attempt didn't fully match.
+
+**This is a UI-only fork, not a rules change.** `Round` (`rounds.ts`) is
+unchanged and still always carries `target`/`options`/`correctIndex`
+regardless of mode -- Hard Mode's `SpellInput` just never reads `options`/
+`correctIndex`. `outcome.ts`, scoring, `TOTAL_ROUNDS`, and the shark/puffer
+escalation are all untouched; see "Game rules" above, which still fully
+describes both modes. `useGame.ts`'s `answer(index)` (Easy) and
+`answerTyped(word)` (Hard) both funnel into one private `resolveAnswer`
+helper that does the actual scoring/cue/advance-or-finish work, so the two
+entry points are provably equivalent past that point -- see
+`useGame.test.ts`'s `answerTyped` tests, which assert the same
+victory/defeat cue behavior `answer`'s own tests already cover.
+
+Both modes reuse the existing `prompt-<word>.mp3` voice clips unchanged
+(the spoken prompt is the same question either way -- "Which one spells
+`<word>`?" reads a little oddly with no cards on screen in Hard Mode, but
+the word itself is still said clearly, which is what actually matters) and
+the existing `correct.mp3`/`wrong.mp3` cues via the shared `resolveAnswer`
+tail -- no new audio was generated for Hard Mode.
+
+Confirmed non-goals for v1, so they're not oversights: no per-letter audio
+cue (only the existing correct/wrong cue on submit); no Wordle-style
+key-memory coloring (there's no on-screen keyboard to color in the first
+place).
 
 ## Predator escalation
 

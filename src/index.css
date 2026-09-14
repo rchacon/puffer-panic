@@ -206,6 +206,45 @@ body {
   outline-offset: 2px;
 }
 
+/* ---------- Mode toggle ---------- */
+.modetoggle {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.modetoggle__option {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid var(--card-edge);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  background: #fff;
+  color: var(--ink);
+  transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.modetoggle__option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.modetoggle__option:has(input:checked) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.modetoggle__option:has(input:focus-visible) {
+  outline: 3px solid #0b3a5b;
+  outline-offset: 2px;
+}
+
 /* ---------- Battle scene ---------- */
 .scene {
   width: 100%;
@@ -531,6 +570,93 @@ body {
   }
 }
 
+/* ---------- Spelling input (Hard Mode) ---------- */
+.spellinput {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.spellinput__tiles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  cursor: text;
+}
+
+.spellinput__tile {
+  width: 44px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--card-edge);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+
+.spellinput__tile--correct {
+  background: #e3fbec;
+  border-color: var(--good);
+  animation: pop 0.3s ease;
+}
+
+.spellinput__tile--wrong {
+  background: #ffe9e4;
+  border-color: var(--bad);
+  animation: shake 0.35s ease;
+}
+
+/* Not display:none -- that would drop it from the tab order and (on
+   phones) stop it from bringing up the device's own keyboard. Visually
+   invisible, but still focusable/typeable; the tiles above are the only
+   thing actually shown, styled from this input's own value. */
+.spellinput__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.spellinput__reveal {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+
+.spellinput__check {
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: clamp(1rem, 3.6vw, 1.25rem);
+  padding: 12px 32px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #d15a24;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.spellinput__check:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #d15a24;
+}
+
+.spellinput__check:disabled {
+  background: #b9c6cf;
+  box-shadow: 0 6px 0 #93a3ad;
+  cursor: not-allowed;
+}
+
 /* ---------- Result ---------- */
 .result {
   width: 100%;
@@ -755,7 +881,9 @@ body {
     transition: transform 0.3s ease-out;
   }
   .card--correct,
-  .card--wrong {
+  .card--wrong,
+  .spellinput__tile--correct,
+  .spellinput__tile--wrong {
     animation: none;
   }
   .kraken-intro__text,

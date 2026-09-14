@@ -37,6 +37,18 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: /start/i })).toBeDisabled();
     expect(screen.getByText(/pick at least 3 words/i)).toBeInTheDocument();
   });
+
+  it("shows a spelling input instead of three cards in Hard Mode", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("radio", { name: "Hard" }));
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+
+    expect(screen.getByLabelText(/spell the word/i)).toBeInTheDocument();
+    expect(
+      screen.queryAllByRole("button", { name: /choose the word/i }),
+    ).toHaveLength(0);
+  });
 });
 
 describe("App - predator escalation", () => {
@@ -154,5 +166,58 @@ describe("App - predator escalation", () => {
     expect(
       screen.getByRole("img", { name: /megalodon swimming toward a puffer fish/i }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("App - Hard Mode full playthrough", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("wins a full game by spelling each round's actual target word", () => {
+    // The target word isn't shown anywhere in the DOM in Hard Mode (no
+    // cards to give it away) -- recover it from the prompt audio's own URL
+    // (/audio/prompt-<word>.mp3) instead. Spying on window.Audio's
+    // constructor (as useGame.test.ts does) doesn't work reliably here:
+    // audio/player.ts caches Audio elements by src, and this suite's own
+    // predator-escalation tests above already play through the full
+    // default word bank many times over, so most/all prompt clips are
+    // already cached before this test even starts -- their constructor
+    // never fires again. HTMLMediaElement.prototype.play() runs every
+    // time regardless of whether the element was newly constructed or
+    // reused from cache, so spy on that instead and read the element's
+    // own `src` off of it.
+    const playedSrcs: string[] = [];
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(function (
+      this: HTMLMediaElement,
+    ) {
+      playedSrcs.push(this.src);
+      return Promise.resolve();
+    });
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("radio", { name: "Hard" }));
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+
+    for (let round = 0; round < 5; round++) {
+      const promptSrc = [...playedSrcs].reverse().find((src) => src.includes("/audio/prompt-"))!;
+      const word = promptSrc.match(/prompt-([a-z]+)\.mp3$/i)![1];
+
+      const input = screen.getByLabelText(/spell the word/i);
+      fireEvent.change(input, { target: { value: word } });
+      fireEvent.click(screen.getByRole("button", { name: /check/i }));
+
+      act(() => {
+        vi.advanceTimersByTime(1600);
+      });
+    }
+
+    expect(screen.getByText(/PUFFER POWER/i)).toBeInTheDocument();
   });
 });
