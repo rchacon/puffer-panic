@@ -8,11 +8,19 @@ import bloopSpectrogram from "../assets/bloop-spectrogram.jpg";
 // point of this boss is the real thing, not a drawn stand-in for it. No
 // spoken voice line either, for the same reason: App.tsx plays the
 // recording itself instead (BOSS_INTROS.bloop has no voiceCue).
+//
+// The small caption line under the title is the same "this is real, not
+// drawn/synthesized" point made explicit in words -- "summer 1997" rather
+// than a specific day since that's what NOAA's own page actually says
+// (pmel.noaa.gov/acoustics/sounds/bloop.html gives no exact date, just
+// "recorded in the summer of 1997"); a made-up day would undercut the
+// whole "this part is real" point of adding it.
 export function BloopIntro() {
   return (
     <div className="bloop-intro" role="alert">
       <img className="bloop-intro__spectrogram" src={bloopSpectrogram} alt="" aria-hidden="true" />
       <p className="bloop-intro__text">The loudest sound ever heard in the ocean.</p>
+      <p className="bloop-intro__caption">Recorded by NOAA, summer 1997</p>
     </div>
   );
 }
