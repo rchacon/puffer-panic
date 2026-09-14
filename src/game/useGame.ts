@@ -75,6 +75,7 @@ export interface Game {
   state: GameState;
   start: (pool?: string[], predatorLevel?: number) => void;
   answer: (index: number) => void;
+  answerTyped: (word: string) => void;
   replay: () => void;
   restart: () => void;
   debugOutcome: (score: number, predatorLevel?: number) => void;
@@ -101,14 +102,20 @@ export function useGame(): Game {
     void playPrompt(rounds[0].target);
   }, []);
 
-  const answer = useCallback(
-    (index: number) => {
-      if (state.phase !== "playing") return;
-      const round = state.rounds[state.roundIndex];
-      const correct = index === round.correctIndex;
-      dispatch({ type: "answer", correct, pickedIndex: index });
-      // A short "Oops." on a wrong pick (no "try again" -- there's no retry);
-      // the correct card is highlighted during the reveal either way.
+  // Shared tail for both answer-input modes (Easy Mode's card tap and Hard
+  // Mode's typed spelling, see answer()/answerTyped() below) -- everything
+  // past "was this correct, and what (if anything) did the player pick" is
+  // identical regardless of how that was decided: dispatch the reveal, play
+  // the correct/wrong cue, then either advance to the next round or finish
+  // the game after REVEAL_MS. `pickedIndex` is `-1` for a typed answer --
+  // it's only ever read by CardRow/FlashCard to highlight a specific card,
+  // which never renders in Hard Mode.
+  const resolveAnswer = useCallback(
+    (correct: boolean, pickedIndex: number) => {
+      dispatch({ type: "answer", correct, pickedIndex });
+      // A short "Oops." on a wrong answer (no "try again" -- there's no
+      // retry); the correct answer is highlighted during the reveal either
+      // way.
       void playCue(correct ? "correct" : "wrong");
 
       const isLast = state.roundIndex === state.rounds.length - 1;
@@ -125,7 +132,28 @@ export function useGame(): Game {
         }
       }, REVEAL_MS);
     },
-    [state.phase, state.roundIndex, state.rounds, state.score],
+    [state.roundIndex, state.rounds, state.score],
+  );
+
+  const answer = useCallback(
+    (index: number) => {
+      if (state.phase !== "playing") return;
+      const round = state.rounds[state.roundIndex];
+      resolveAnswer(index === round.correctIndex, index);
+    },
+    [state.phase, state.roundIndex, state.rounds, resolveAnswer],
+  );
+
+  const answerTyped = useCallback(
+    (word: string) => {
+      if (state.phase !== "playing") return;
+      const round = state.rounds[state.roundIndex];
+      // Defensive -- SpellInput only ever calls this once every tile is
+      // filled, so a length mismatch shouldn't happen in practice.
+      if (word.length !== round.target.length) return;
+      resolveAnswer(word.trim().toLowerCase() === round.target.toLowerCase(), -1);
+    },
+    [state.phase, state.roundIndex, state.rounds, resolveAnswer],
   );
 
   const replay = useCallback(() => {
@@ -170,6 +198,7 @@ export function useGame(): Game {
     state,
     start,
     answer,
+    answerTyped,
     replay,
     restart,
     debugOutcome,
