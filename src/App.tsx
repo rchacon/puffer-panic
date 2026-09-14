@@ -10,6 +10,7 @@ import { loadMode, saveMode, type Mode } from "./data/modeSelection";
 import { playCue, playUrl } from "./audio/player";
 import krakenMusic from "./assets/kraken-music.wav";
 import megalodonMusic from "./assets/megalodon-music.wav";
+import bloopSound from "./assets/bloop-sound.wav";
 import { StartScreen } from "./components/StartScreen";
 import { BattleScene } from "./components/BattleScene";
 import { PromptBar } from "./components/PromptBar";
@@ -19,6 +20,7 @@ import { ResultScreen } from "./components/ResultScreen";
 import { DebugPanel } from "./components/DebugPanel";
 import { KrakenIntro } from "./components/KrakenIntro";
 import { MegalodonIntro } from "./components/MegalodonIntro";
+import { BloopIntro } from "./components/BloopIntro";
 
 const DEBUG =
   typeof window !== "undefined" &&
@@ -26,17 +28,19 @@ const DEBUG =
 
 interface BossIntro {
   Component: ComponentType;
-  voiceCue: string;
+  /** Omitted for a boss whose intro doesn't need a spoken line -- the
+   *  Bloop plays its own real recording instead (see `music` there). */
+  voiceCue?: string;
   music?: { url: string; volume: number };
   durationMs: number;
 }
 
 // Title-card flourish played before round 1 of a "boss" game -- currently
-// the Kraken (level 10) and the Megalodon (level 5), and every time the
-// cycle comes back around to either. A lookup keyed by kind instead of
-// one hardcoded `if` per boss (this is already the second one) so a
-// future boss just adds a row here, not another copy of the whole
-// intro/timer/guard flow in handleStart below.
+// the Kraken (level 11), the Megalodon (level 5) and the Bloop (level 9),
+// and every time the cycle comes back around to any of them. A lookup
+// keyed by kind instead of one hardcoded `if` per boss so a future boss
+// just adds a row here, not another copy of the whole intro/timer/guard
+// flow in handleStart below.
 const BOSS_INTROS: Partial<Record<PredatorKind, BossIntro>> = {
   kraken: {
     Component: KrakenIntro,
@@ -55,6 +59,16 @@ const BOSS_INTROS: Partial<Record<PredatorKind, BossIntro>> = {
     // reasoning as the Kraken's own music.
     music: { url: megalodonMusic, volume: 0.6 },
     durationMs: 2400,
+  },
+  bloop: {
+    Component: BloopIntro,
+    // No voiceCue -- the actual NOAA recording (see AGENTS.md for
+    // provenance) plays instead of a synthesized line, at full volume
+    // since it's the point of this boss, not background ambience under
+    // one. durationMs covers its own ~4.7s (trimmed, fades baked in) plus
+    // a beat of margin after the fade-out finishes.
+    music: { url: bloopSound, volume: 0.9 },
+    durationMs: 4900,
   },
 };
 
@@ -110,7 +124,7 @@ export default function App() {
     const bossIntro = BOSS_INTROS[nextPredator.kind];
     if (bossIntro) {
       setActiveBossIntro(bossIntro);
-      void playCue(bossIntro.voiceCue);
+      if (bossIntro.voiceCue) void playCue(bossIntro.voiceCue);
       if (bossIntro.music) void playUrl(bossIntro.music.url, bossIntro.music.volume);
       introTimer.current = setTimeout(() => {
         setActiveBossIntro(null);

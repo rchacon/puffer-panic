@@ -8,6 +8,7 @@ import { TapahCatfish } from "./TapahCatfish";
 import { SharkPrincess } from "./SharkPrincess";
 import { Megalodon } from "./Megalodon";
 import { Mosasaurus } from "./Mosasaurus";
+import { Bloop } from "./Bloop";
 import { Kraken } from "./Kraken";
 
 export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
@@ -19,6 +20,7 @@ export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
   sharkprincess: SharkPrincess,
   megalodon: Megalodon,
   mosasaurus: Mosasaurus,
+  bloop: Bloop,
   kraken: Kraken,
 };
 
