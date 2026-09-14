@@ -937,6 +937,51 @@ body {
   opacity: 0.75;
 }
 
+/* ---------- Amargasaurus intro ---------- */
+.amargasaurus-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  /* Warm, sunlit green-brown rather than any of the other bosses' cold
+     ocean darks -- this level is the one departure from open water, a
+     bright shallow lake and grassland, and the overlay stays true to
+     that even during the intro. */
+  background: rgba(20, 28, 10, 0.78);
+  animation: krakenFadeIn 0.2s ease-out;
+}
+
+.amargasaurus-intro__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(72vw, 72vh);
+  height: min(72vw, 72vh);
+  transform: translate(-50%, -50%);
+  fill: #000;
+  opacity: 0.55;
+  z-index: 0;
+}
+
+.amargasaurus-intro__text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: 20ch;
+  font-size: clamp(1.6rem, 7.5vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: #e7f3c9;
+  text-shadow: 0 0 16px rgba(180, 220, 100, 0.5), 0 4px 0 #1f2a0a;
+  /* Same slow loom-in as the Megalodon's -- this line is delivered with
+     quiet wonder watching the herd, not shouted as a battle cry. */
+  animation: megalodonLoom 2.4s ease-out;
+}
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .scene__predator-bob,
@@ -959,7 +1004,8 @@ body {
   }
   .kraken-intro__text,
   .megalodon-intro__text,
-  .bloop-intro__text {
+  .bloop-intro__text,
+  .amargasaurus-intro__text {
     animation: none;
   }
 }

@@ -12,6 +12,7 @@ export type PredatorKind =
   | "megalodon"
   | "mosasaurus"
   | "bloop"
+  | "amargasaurus"
   | "kraken";
 
 /** Per-instance position jitter -- same shape as (and structurally
@@ -25,7 +26,7 @@ export interface PredatorOffset {
 }
 
 export interface PredatorLevel {
-  level: number; // 1-11
+  level: number; // 1-12
   /** Primary kind -- drives the approach curve lookup, ShipWreck/Kraken
    *  check, and (for a mixed-kind level like the Shark Princess's escort)
    *  is the one `kinds` doesn't need to repeat for every instance. */
@@ -84,7 +85,8 @@ export const PREDATOR_LEVELS: PredatorLevel[] = [
   { level: 8, kind: "eel", count: 3, label: "The three electric eels" },
   { level: 9, kind: "anglerfish", count: 1, label: "The anglerfish" },
   { level: 10, kind: "bloop", count: 1, label: "The Bloop" }, // boss fight
-  { level: 11, kind: "kraken", count: 1, label: "The Kraken" }, // final boss fight
+  { level: 11, kind: "amargasaurus", count: 1, label: "The Amargasaurus" },
+  { level: 12, kind: "kraken", count: 1, label: "The Kraken" }, // final boss fight
 ];
 
 /**

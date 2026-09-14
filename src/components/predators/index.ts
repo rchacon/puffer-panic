@@ -9,9 +9,16 @@ import { SharkPrincess } from "./SharkPrincess";
 import { Megalodon } from "./Megalodon";
 import { Mosasaurus } from "./Mosasaurus";
 import { Bloop } from "./Bloop";
+import { Amargasaurus } from "./Amargasaurus";
 import { Kraken } from "./Kraken";
 
-export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
+// `progress` is only read by Amargasaurus (see that file) -- every other
+// component here is a plain zero-prop function, which TypeScript still
+// accepts as a `ComponentType<{ progress?: number }>` (a function
+// declared to take fewer parameters than a type calls for is assignable
+// to it, same as any other callback-shaped type in TS), so this one
+// shared prop type doesn't need a per-kind special case.
+export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType<{ progress?: number }>> = {
   shark: Shark,
   eel: Eel,
   piranha: Piranha,
@@ -21,6 +28,7 @@ export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
   megalodon: Megalodon,
   mosasaurus: Mosasaurus,
   bloop: Bloop,
+  amargasaurus: Amargasaurus,
   kraken: Kraken,
 };
 

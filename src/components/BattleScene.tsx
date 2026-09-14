@@ -1,6 +1,7 @@
 import type { Outcome } from "../game/outcome";
 import type { PredatorKind, PredatorLevel } from "../game/predators";
 import { getInstanceKinds } from "../game/predators";
+import { AmargasaurusBackground } from "./AmargasaurusBackground";
 import { Coral } from "./Coral";
 import { FishingBoat } from "./FishingBoat";
 import { Kelp } from "./Kelp";
@@ -19,6 +20,11 @@ interface Props {
 const PUFFER_X = 96;
 const PUFFER_Y = 116;
 const PREDATOR_Y = 94;
+
+// Where the Amargasaurus level's land meets its shallow water -- see
+// `isShore` below and AmargasaurusBackground.tsx, which solves its own
+// vertical placement against this same line.
+const SHORE_HORIZON_Y = 70;
 
 const DEFAULT_START_X = 350;
 
@@ -57,6 +63,17 @@ const PREDATOR_APPROACH: Partial<Record<PredatorKind, PredatorApproach>> = {
     startX: 460,
     ease: (t) => 0.2 * t + 0.8 * t ** 3,
   },
+  // The Amargasaurus never swims toward the puffer at all -- it's a
+  // stationary lakeside grazer, not a hunter closing in. `ease: () => 0`
+  // pins sharkX at `startX` for every round (the shared math below,
+  // `startX - approachProgress*(startX-150)`, collapses to a constant
+  // when approachProgress is always 0), so its only per-round change is
+  // the progress-driven head dip its own component handles internally --
+  // see Amargasaurus.tsx.
+  amargasaurus: {
+    startX: 300,
+    ease: () => 0,
+  },
 };
 
 export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
@@ -74,6 +91,14 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   // couldn't tell the glow apart from the rest of the Anglerfish it's
   // layered on top of.
   const isMurky = predator.kind === "anglerfish";
+  // The Amargasaurus level is a deliberate departure from every ocean
+  // level before it -- the Puffer's swept into shallow water at a
+  // lakeshore, with land (and a second, distant Amargasaurus drinking)
+  // visible above the waterline instead of open sea in every direction.
+  // Same per-kind backdrop-swap pattern as `isMurky` above: this rect
+  // fill and the seabed-decoration skip below both key off it instead of
+  // a scattered `predator.kind === "amargasaurus"` check each time.
+  const isShore = predator.kind === "amargasaurus";
   const className = [
     "scene",
     outcome && `scene--${outcome}`,
@@ -93,7 +118,13 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
         return (
           <g key={i} transform={`translate(${o.dx} ${o.dy}) scale(${o.scale})`}>
             <g className="scene__predator-bob">
-              <Creature />
+              {/* Every predator but the Amargasaurus ignores this --
+                  see Amargasaurus.tsx for the one that reads it. Passed
+                  as the raw, un-eased sharkProgress (not the local
+                  `approachProgress`) so it still reflects actual round
+                  completion regardless of this kind's own `ease: () => 0`
+                  approach override above. */}
+              <Creature progress={sharkProgress} />
             </g>
           </g>
         );
@@ -120,6 +151,20 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           <linearGradient id="seaMurky" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#0e2537" />
             <stop offset="1" stopColor="#020810" />
+          </linearGradient>
+          {/* Amargasaurus-only backdrop -- a shallow lake, not the open
+              ocean every other level swims in. A bright sky above the
+              horizon (id="lakeSky") and a much lighter, shallower water
+              gradient below it (id="lakeWater") than #sea's deep-blue
+              falloff -- there's a visible sandy bottom close by, not miles
+              of open water. */}
+          <linearGradient id="lakeSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#bfe6f5" />
+            <stop offset="1" stopColor="#e8f3d9" />
+          </linearGradient>
+          <linearGradient id="lakeWater" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#8fd4c8" />
+            <stop offset="1" stopColor="#1f7a8c" />
           </linearGradient>
           {/* Recolors the Kraken's mostly-grey vendored art purple (see
               .kraken in index.css for why: sepia injects chroma a plain
@@ -153,7 +198,41 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           </filter>
         </defs>
 
-        <rect width="400" height="200" fill={isMurky ? "url(#seaMurky)" : "url(#sea)"} />
+        {isShore ? (
+          <>
+            <rect width="400" height={SHORE_HORIZON_Y} fill="url(#lakeSky)" />
+            {/* Two overlapping hill layers, not one -- a flat single
+                horizon read as a cutout backdrop with nothing behind it.
+                The far hill is paler/flatter (more sky-tinted, standing
+                further back); the near one is smaller, richer, and its
+                base slightly overlaps the horizon into the water below,
+                giving the shoreline itself some depth instead of a
+                perfectly straight line -- the layered "things visible at
+                different depths above the water" look the user asked for
+                (their own Mario Wonder background comparison). */}
+            <path
+              d="M0 52 Q 90 30 180 46 T 400 40 V70 H0 Z"
+              fill="#a9c98f"
+              opacity="0.75"
+            />
+            <path
+              d="M0 66 Q 70 50 160 60 T 340 58 L 400 64 V72 H0 Z"
+              fill="#7fae5f"
+            />
+            <rect
+              y={SHORE_HORIZON_Y}
+              width="400"
+              height={200 - SHORE_HORIZON_Y}
+              fill="url(#lakeWater)"
+            />
+            {/* Drawn after the water, not before -- its feet sit a couple
+                of units below the horizon line (see AmargasaurusBackground.tsx),
+                which would otherwise get clipped by the opaque water fill. */}
+            <AmargasaurusBackground />
+          </>
+        ) : (
+          <rect width="400" height="200" fill={isMurky ? "url(#seaMurky)" : "url(#sea)"} />
+        )}
         {/* Dimmed as one group, rather than each piece separately, so the
             seabed sinks into the murk together instead of any one piece
             (the sand's warm tan especially) still popping against it. */}
@@ -165,11 +244,13 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           />
           <Rocks />
           {/* Coral and Kelp are skipped outright (not just dimmed like the
-              rest of the seabed) for two different reasons: the Anglerfish
-              is photosynthetic reef life, and neither grows this deep past
-              where any sunlight reaches; the Bloop just reads better
-              against open, uncluttered seabed at the scale it's drawn. */}
-          {!isMurky && predator.kind !== "bloop" && (
+              rest of the seabed) for three different reasons: the
+              Anglerfish is photosynthetic reef life, and neither grows
+              this deep past where any sunlight reaches; the Bloop just
+              reads better against open, uncluttered seabed at the scale
+              it's drawn; the Amargasaurus level is a shallow freshwater
+              lake, not a reef, so neither grows there at all. */}
+          {!isMurky && predator.kind !== "bloop" && !isShore && (
             <>
               <Coral />
               <Kelp />
