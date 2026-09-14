@@ -68,11 +68,11 @@ export function SpellInput({ target, phase, onSubmit }: Props) {
       {isPlaying && typed.length === 0 && (
         // Tappable itself (not just descriptive) -- a tap on this text is
         // just as much a real user gesture as one on the tiles above, so it
-        // focuses the input the same way. Worded as "a cell" rather than
+        // focuses the input the same way. Worded as "a tile" rather than
         // "here" so it doesn't read as "tap this text" when it's actually
         // any of the tiles that does it (this text included, now).
         <p className="spellinput__hint" onClick={focusInput}>
-          Tap a cell to type
+          Tap a tile to type
         </p>
       )}
 
