@@ -292,27 +292,47 @@ checkerboard baked into opaque near-white pixels, not a real alpha
 channel), fixed the same way (flood-fill from the border), then
 palette-quantized to 128 colors with dithering like the Anglerfish/Eel
 (checked for banding on the smoothest shaded area first; none, same flat
-cel-shading reason as those two), then downscaled to 600px wide despite
-being drawn far bigger on screen than any other predator -- tried
-leaving it at native resolution first given the scale, but "reduce it as
-much as you can" was the explicit ask here, same as the Mosasaurus's own
-"deliberately small, at some cost to crispness" tradeoff below. 600px was
-picked empirically, not guessed: 450px and 350px were visibly blurry
-(soft teeth/eye edges) in an actual in-game screenshot at this creature's
-huge display scale, not just in isolation, while 600px still reads sharp
-there. 1.63MB down to ~85KB.
+cel-shading reason as those two).
 
-Sized even more extreme than the Megalodon -- so huge that not even
-"nose to gills" fits, just a fraction of the open jaw and one eye. The
-brief was explicitly "it's ok if a lot of the bloop is off frame, most
-important is to see its eye," so the positioning anchors on the eye
-instead of the nose: the pupil (a solid near-black blob, found by
-color-thresholding it apart from the mouth interior's own dark navy, then
-taking that cluster's bounding-box center -- same coordinate-hunting
-approach as the Megalodon's nose/gills) sits at this component's local
-origin, the same shared reference point every other creature's mouth
-lands on at the closest approach. No `PREDATOR_APPROACH` special-casing
-needed here either, same as the Megalodon.
+Went through two different framings before landing on the current one.
+The first brief called for something even more extreme than the
+Megalodon -- so huge that not even "nose to gills" fits, just a fraction
+of the open jaw and one eye ("it's ok if a lot of the bloop is off frame,
+most important is to see its eye"). At that scale (`width={1400}`, close
+to 4x the Kraken's) even the *default* approach position put its mouth
+over the puffer at round 1 -- anchoring on the eye instead of the
+frontmost point (the pupil, a solid near-black blob found by
+color-thresholding it apart from the mouth interior's own dark navy) left
+~366 local units of open mouth overhanging further left than the anchor
+itself, well past what the Megalodon's own huge scale ever has to account
+for (its anchor *is* its frontmost point, nothing overhangs past it), and
+needed a much larger `PREDATOR_APPROACH.startX` (650) to give that
+overhang room to close in gradually rather than starting the round
+already covering the puffer. That, in turn, made 505KB (the size after
+the flood-fill/quantize pass above) worth shrinking further -- but 600px
+turned out visibly blurry on a real device even though it read as sharp
+in a development screenshot, and only 900px (~154KB) actually held up.
+
+The second, current brief reversed course entirely: scale it down
+dramatically instead, so the *whole* creature -- not just the eye and a
+fraction of the jaw -- is visible, at least vertically (left-right
+cropping is still fine, same as every other predator). `Bloop.tsx` is
+now sized to its own vertical extent instead of "however wide the art
+is": `height={180}` fits inside the scene's 200-unit height with a
+little margin at `PREDATOR_Y=94` (94-90=4 to 94+90=184), so nothing is
+ever cropped top-to-bottom. Horizontally it's still anchored on the eye
+(the same pupil-detection coordinates as before, just rescaled) for
+consistency with how every other predator's mouth/nose lands on the
+shared approach point -- but at this much smaller size the "366-unit
+overhang" problem the first framing had doesn't recur (the whole art is
+only ~98 units wide behind that anchor now, in the same ballpark as
+Piranha's or Shark's own nose offset), so the custom `PREDATOR_APPROACH`
+entry from the first framing was removed; the plain default approach
+reads fine. The smaller display size also meant the source image itself
+could shrink back down without any of the blur the same 600px version
+had at the old, much bigger display size -- confirmed the same way (an
+actual in-game screenshot, not an isolated crop) before trusting it.
+1.63MB down to ~85KB.
 
 Unlike the Kraken/Megalodon, the Bloop's intro (`BloopIntro.tsx`) has no
 spoken voice line -- `BOSS_INTROS.bloop` in `App.tsx` omits `voiceCue`
