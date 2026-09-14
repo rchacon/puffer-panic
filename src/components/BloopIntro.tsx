@@ -20,7 +20,15 @@ export function BloopIntro() {
     <div className="bloop-intro" role="alert">
       <img className="bloop-intro__spectrogram" src={bloopSpectrogram} alt="" aria-hidden="true" />
       <p className="bloop-intro__text">The loudest sound ever heard in the ocean.</p>
-      <p className="bloop-intro__caption">Recorded by NOAA, summer 1997</p>
+      {/* Forced onto two lines (not just relying on the text wrapping
+          naturally) so "summer 1997" reliably lands lower on the
+          spectrogram, over its more reddish band -- the yellow caption
+          text was hard to read against the yellow band it sat on before. */}
+      <p className="bloop-intro__caption">
+        Recorded by NOAA
+        <br />
+        summer 1997
+      </p>
     </div>
   );
 }
