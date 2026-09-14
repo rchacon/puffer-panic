@@ -84,6 +84,23 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   const offsets = predator.offsets ?? getSchoolOffsets(predator.count);
   const instanceKinds = getInstanceKinds(predator);
 
+  // Built once, placed either before or after the puffer below depending
+  // on kind -- see the draw-order comment at its call site.
+  const predatorGroup = (
+    <g className="scene__predator" transform={`translate(${sharkX} ${PREDATOR_Y})`}>
+      {offsets.map((o, i) => {
+        const Creature = PREDATOR_COMPONENTS[instanceKinds[i] ?? predator.kind];
+        return (
+          <g key={i} transform={`translate(${o.dx} ${o.dy}) scale(${o.scale})`}>
+            <g className="scene__predator-bob">
+              <Creature />
+            </g>
+          </g>
+        );
+      })}
+    </g>
+  );
+
   return (
     <div className={className}>
       <svg
@@ -147,11 +164,12 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
             opacity="0.85"
           />
           <Rocks />
-          {/* Coral and Kelp are photosynthetic -- neither grows this deep,
-              past where any sunlight reaches, so the Anglerfish's abyss
-              skips them outright instead of just dimming them like the
-              rest of the seabed. */}
-          {!isMurky && (
+          {/* Coral and Kelp are skipped outright (not just dimmed like the
+              rest of the seabed) for two different reasons: the Anglerfish
+              is photosynthetic reef life, and neither grows this deep past
+              where any sunlight reaches; the Bloop just reads better
+              against open, uncluttered seabed at the scale it's drawn. */}
+          {!isMurky && predator.kind !== "bloop" && (
             <>
               <Coral />
               <Kelp />
@@ -189,6 +207,16 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           </g>
         )}
 
+        {/* Draw order matters here: whichever renders second sits on top.
+            Every other predator draws on top of the puffer (puffer first
+            below), same as it's always been. The Bloop is the one
+            exception -- it draws first/behind instead, so as it closes in
+            and its wide-open mouth overlaps the puffer's own position, the
+            puffer stays visible sitting inside/against the dark mouth
+            interior instead of getting covered by the jaw -- the effect of
+            swimming into the mouth, not just being chased by it. */}
+        {predator.kind === "bloop" && predatorGroup}
+
         <g
           className="scene__puffer"
           transform={`translate(${PUFFER_X} ${PUFFER_Y}) scale(${pufferScale})`}
@@ -198,18 +226,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
           </g>
         </g>
 
-        <g className="scene__predator" transform={`translate(${sharkX} ${PREDATOR_Y})`}>
-          {offsets.map((o, i) => {
-            const Creature = PREDATOR_COMPONENTS[instanceKinds[i] ?? predator.kind];
-            return (
-              <g key={i} transform={`translate(${o.dx} ${o.dy}) scale(${o.scale})`}>
-                <g className="scene__predator-bob">
-                  <Creature />
-                </g>
-              </g>
-            );
-          })}
-        </g>
+        {predator.kind !== "bloop" && predatorGroup}
       </svg>
     </div>
   );

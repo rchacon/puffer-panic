@@ -334,6 +334,20 @@ had at the old, much bigger display size -- confirmed the same way (an
 actual in-game screenshot, not an isolated crop) before trusting it.
 1.63MB down to ~85KB.
 
+`BattleScene.tsx` also draws the Bloop in the opposite z-order from every
+other predator: everyone else draws on top of the puffer (puffer first,
+predator second, the default/unconditional order); the Bloop draws first,
+underneath, via a `predatorGroup` built once and placed on whichever side
+of the puffer's own `<g>` the kind calls for. As its wide-open mouth
+closes in and overlaps the puffer's position, this keeps the puffer
+visible sitting inside the dark mouth interior instead of the jaw simply
+covering it -- reads as swimming into the mouth, not just being chased by
+it. `Coral`/`Kelp` are also skipped for this level (same conditional that
+already skips them for the Anglerfish's sunless abyss, extended to check
+`predator.kind !== "bloop"` too) -- a different reason than the
+Anglerfish's (this isn't about depth/sunlight), just a plainer seabed
+reading better at the scale this one's drawn.
+
 Unlike the Kraken/Megalodon, the Bloop's intro (`BloopIntro.tsx`) has no
 spoken voice line -- `BOSS_INTROS.bloop` in `App.tsx` omits `voiceCue`
 (now optional on the `BossIntro` type for exactly this) because the whole
