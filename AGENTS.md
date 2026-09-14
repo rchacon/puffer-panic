@@ -292,10 +292,15 @@ checkerboard baked into opaque near-white pixels, not a real alpha
 channel), fixed the same way (flood-fill from the border), then
 palette-quantized to 128 colors with dithering like the Anglerfish/Eel
 (checked for banding on the smoothest shaded area first; none, same flat
-cel-shading reason as those two) -- 1.63MB down to ~505KB. Unlike every
-other raster predator, this one wasn't downscaled: at the scale it's
-drawn, a chunk of the source's own native resolution is genuinely needed
-to stay sharp.
+cel-shading reason as those two), then downscaled to 600px wide despite
+being drawn far bigger on screen than any other predator -- tried
+leaving it at native resolution first given the scale, but "reduce it as
+much as you can" was the explicit ask here, same as the Mosasaurus's own
+"deliberately small, at some cost to crispness" tradeoff below. 600px was
+picked empirically, not guessed: 450px and 350px were visibly blurry
+(soft teeth/eye edges) in an actual in-game screenshot at this creature's
+huge display scale, not just in isolation, while 600px still reads sharp
+there. 1.63MB down to ~85KB.
 
 Sized even more extreme than the Megalodon -- so huge that not even
 "nose to gills" fits, just a fraction of the open jaw and one eye. The
