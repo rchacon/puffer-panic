@@ -879,6 +879,64 @@ body {
   }
 }
 
+/* ---------- Bloop intro ---------- */
+.bloop-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  /* Near-black -- the deepest, darkest water of any intro, fitting a
+     recording from the bottom of the ocean. */
+  background: rgba(2, 5, 10, 0.88);
+  animation: krakenFadeIn 0.2s ease-out;
+}
+
+.bloop-intro__spectrogram {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(85vw, 85vh);
+  transform: translate(-50%, -50%);
+  opacity: 0.8;
+  z-index: 0;
+  /* The source is a small (237x144) NOAA image blown up well past its
+     native size -- soften the resulting pixelation instead of pretending
+     it isn't there. */
+  filter: blur(1px);
+  border-radius: 8px;
+}
+
+.bloop-intro__text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: 20ch;
+  font-size: clamp(1.4rem, 6.5vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+  /* Warm amber, matching the spectrogram's own hottest (loudest) tones. */
+  color: #ffcf7a;
+  text-shadow: 0 0 18px rgba(255, 180, 80, 0.6), 0 4px 0 #3a1f00;
+  animation: megalodonLoom 2.6s ease-out;
+}
+
+.bloop-intro__caption {
+  position: relative;
+  z-index: 1;
+  margin: 10px 0 0;
+  font-size: clamp(0.8rem, 3vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: #ffcf7a;
+  opacity: 0.75;
+}
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .scene__predator-bob,
@@ -900,7 +958,8 @@ body {
     animation: none;
   }
   .kraken-intro__text,
-  .megalodon-intro__text {
+  .megalodon-intro__text,
+  .bloop-intro__text {
     animation: none;
   }
 }

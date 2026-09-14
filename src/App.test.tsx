@@ -88,24 +88,24 @@ describe("App - predator escalation", () => {
 
   function playThroughOneGame() {
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
-    // Some levels (Kraken, Megalodon) show a boss intro before the round
-    // cards exist -- advance past it (long enough to cover either's
-    // duration; a no-op if there's no intro showing, since a longer wait
-    // than a since-fired timer needs is harmless) before assuming the
-    // battle scene has started.
+    // Some levels (Kraken, Megalodon, Bloop) show a boss intro before the
+    // round cards exist -- advance past it (long enough to cover the
+    // longest of the three, the Bloop's ~4.9s; a no-op if there's no intro
+    // showing, since a longer wait than a since-fired timer needs is
+    // harmless) before assuming the battle scene has started.
     act(() => {
-      vi.advanceTimersByTime(2500);
+      vi.advanceTimersByTime(5100);
     });
     answerAllRounds();
     fireEvent.click(screen.getByRole("button", { name: /play again/i }));
   }
 
-  it("shows a dramatic intro before the Kraken (level 10) begins", () => {
+  it("shows a dramatic intro before the Kraken (level 11) begins", () => {
     render(<App />);
 
-    for (let i = 0; i < 9; i++) playThroughOneGame();
+    for (let i = 0; i < 10; i++) playThroughOneGame();
 
-    // 10th start -> level 10, the Kraken. The intro plays first; the round
+    // 11th start -> level 11, the Kraken. The intro plays first; the round
     // itself hasn't started yet.
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
     expect(screen.getByText(/release the kraken/i)).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe("App - predator escalation", () => {
   it("keeps Start disabled through the Kraken intro so a repeat activation can't double-start the game", () => {
     render(<App />);
 
-    for (let i = 0; i < 9; i++) playThroughOneGame();
+    for (let i = 0; i < 10; i++) playThroughOneGame();
 
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
     const startButton = screen.getByRole("button", { name: /start/i });
@@ -165,6 +165,29 @@ describe("App - predator escalation", () => {
     expect(screen.queryByText(/bigger boat/i)).not.toBeInTheDocument();
     expect(
       screen.getByRole("img", { name: /megalodon swimming toward a puffer fish/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a dramatic intro before the Bloop (level 10) begins", () => {
+    render(<App />);
+
+    for (let i = 0; i < 9; i++) playThroughOneGame();
+
+    // 10th start -> level 10, the Bloop. No spoken voice line for this one
+    // (see BOSS_INTROS.bloop in App.tsx) -- just its own intro card; the
+    // round itself hasn't started yet.
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+    expect(screen.getByText(/loudest sound/i)).toBeInTheDocument();
+    expect(document.querySelector(".bloop-intro__spectrogram")).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /bloop/i })).not.toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+
+    expect(screen.queryByText(/loudest sound/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: /bloop swimming toward a puffer fish/i }),
     ).toBeInTheDocument();
   });
 });
