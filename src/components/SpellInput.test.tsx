@@ -71,4 +71,12 @@ describe("SpellInput", () => {
     expect(getInput()).toBeDisabled();
     expect(screen.getByRole("button", { name: /check/i })).toBeDisabled();
   });
+
+  it("shows a tap hint until the first letter is typed", () => {
+    render(<SpellInput target="cat" phase="playing" onSubmit={vi.fn()} />);
+    expect(screen.getByText(/tap here to type/i)).toBeInTheDocument();
+
+    fireEvent.change(getInput(), { target: { value: "c" } });
+    expect(screen.queryByText(/tap here to type/i)).not.toBeInTheDocument();
+  });
 });

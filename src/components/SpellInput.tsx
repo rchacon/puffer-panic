@@ -25,7 +25,15 @@ export function SpellInput({ target, phase, onSubmit }: Props) {
 
   // Autofocus at the start of each round -- App.tsx remounts this
   // component per round (key={roundIndex}), so this only ever fires once
-  // per round, right as it becomes playable.
+  // per round, right as it becomes playable. Works reliably on desktop and
+  // Android, but NOT on iOS Safari: WebKit only raises the on-screen
+  // keyboard from a focus() call made synchronously inside a real user
+  // gesture (a click/tap handler), not from an effect that runs after
+  // render/commit -- a long-documented restriction, not fixable by timing
+  // this differently. The tile row's own onClick below still focuses the
+  // input from a real tap, so an iPhone/iPad player who doesn't see the
+  // keyboard pop up on its own can just tap the tiles (see
+  // .spellinput__hint, shown for exactly that reason).
   useEffect(() => {
     if (isPlaying) inputRef.current?.focus();
   }, [isPlaying]);
@@ -54,6 +62,10 @@ export function SpellInput({ target, phase, onSubmit }: Props) {
           );
         })}
       </div>
+
+      {isPlaying && typed.length === 0 && (
+        <p className="spellinput__hint">Tap here to type</p>
+      )}
 
       <input
         ref={inputRef}
