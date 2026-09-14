@@ -74,9 +74,15 @@ describe("SpellInput", () => {
 
   it("shows a tap hint until the first letter is typed", () => {
     render(<SpellInput target="cat" phase="playing" onSubmit={vi.fn()} />);
-    expect(screen.getByText(/tap here to type/i)).toBeInTheDocument();
+    expect(screen.getByText(/tap a cell to type/i)).toBeInTheDocument();
 
     fireEvent.change(getInput(), { target: { value: "c" } });
-    expect(screen.queryByText(/tap here to type/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/tap a cell to type/i)).not.toBeInTheDocument();
+  });
+
+  it("focuses the input when the hint itself is tapped, not just the tiles", () => {
+    render(<SpellInput target="cat" phase="playing" onSubmit={vi.fn()} />);
+    fireEvent.click(screen.getByText(/tap a cell to type/i));
+    expect(getInput()).toHaveFocus();
   });
 });

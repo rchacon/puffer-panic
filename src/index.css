@@ -635,12 +635,14 @@ body {
 /* Shown only before the first letter of a round -- iOS Safari won't raise
    its on-screen keyboard from the autofocus effect (see SpellInput.tsx),
    so this tells a player who doesn't see it pop up on its own to just tap
-   the tiles, which focuses the input from a real tap instead. */
+   a tile, which focuses the input from a real tap instead. Tappable
+   itself too (see SpellInput.tsx), hence the pointer cursor. */
 .spellinput__hint {
   margin: 0;
   font-size: 0.95rem;
   color: var(--ink);
   opacity: 0.65;
+  cursor: pointer;
 }
 
 .spellinput__check {

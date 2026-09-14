@@ -43,9 +43,11 @@ export function SpellInput({ target, phase, onSubmit }: Props) {
     onSubmit(typed);
   };
 
+  const focusInput = () => inputRef.current?.focus();
+
   return (
     <div className="spellinput">
-      <div className="spellinput__tiles" onClick={() => inputRef.current?.focus()}>
+      <div className="spellinput__tiles" onClick={focusInput}>
         {Array.from({ length: target.length }, (_, i) => {
           const letter = typed[i];
           let className = "spellinput__tile";
@@ -64,7 +66,14 @@ export function SpellInput({ target, phase, onSubmit }: Props) {
       </div>
 
       {isPlaying && typed.length === 0 && (
-        <p className="spellinput__hint">Tap here to type</p>
+        // Tappable itself (not just descriptive) -- a tap on this text is
+        // just as much a real user gesture as one on the tiles above, so it
+        // focuses the input the same way. Worded as "a cell" rather than
+        // "here" so it doesn't read as "tap this text" when it's actually
+        // any of the tiles that does it (this text included, now).
+        <p className="spellinput__hint" onClick={focusInput}>
+          Tap a cell to type
+        </p>
       )}
 
       <input
