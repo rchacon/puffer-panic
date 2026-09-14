@@ -82,8 +82,8 @@ export const PREDATOR_LEVELS: PredatorLevel[] = [
   { level: 6, kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
   { level: 7, kind: "piranha", count: 7, label: "The seven piranhas" },
   { level: 8, kind: "eel", count: 3, label: "The three electric eels" },
-  { level: 9, kind: "bloop", count: 1, label: "The Bloop" }, // boss fight
-  { level: 10, kind: "anglerfish", count: 1, label: "The anglerfish" },
+  { level: 9, kind: "anglerfish", count: 1, label: "The anglerfish" },
+  { level: 10, kind: "bloop", count: 1, label: "The Bloop" }, // boss fight
   { level: 11, kind: "kraken", count: 1, label: "The Kraken" }, // final boss fight
 ];
 

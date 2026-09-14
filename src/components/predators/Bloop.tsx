@@ -1,6 +1,6 @@
 import bloopArt from "../../assets/bloop.png";
 
-// Level 9's boss fight -- a raster illustration (not vendored/licensed;
+// Level 10's boss fight -- a raster illustration (not vendored/licensed;
 // user-provided, see AGENTS.md), imported as a URL (not `?raw`) so Vite
 // emits it as its own cacheable file. Already drawn nose-left, no
 // mirroring needed.

@@ -36,7 +36,7 @@ interface BossIntro {
 }
 
 // Title-card flourish played before round 1 of a "boss" game -- currently
-// the Kraken (level 11), the Megalodon (level 5) and the Bloop (level 9),
+// the Kraken (level 11), the Megalodon (level 5) and the Bloop (level 10),
 // and every time the cycle comes back around to any of them. A lookup
 // keyed by kind instead of one hardcoded `if` per boss so a future boss
 // just adds a row here, not another copy of the whole intro/timer/guard

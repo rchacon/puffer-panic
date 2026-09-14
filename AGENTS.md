@@ -282,10 +282,10 @@ same absolute-scene-coordinates technique as `ShipWreck.tsx` -- positioned
 where the Megalodon's approach will eventually cover it, which is fine;
 the whole point of a boss this size is that it can.
 
-The Bloop (level 9) is the third boss fight, inserted between the eels and
-the anglerfish (which is why the anglerfish moved from level 9 to 10, and
-the Kraken from 10 to 11 -- see the levels-shift note at the end of this
-section). Its artwork (`src/components/predators/Bloop.tsx`,
+The Bloop (level 10) is the third boss fight, inserted between the
+Anglerfish and the Kraken (originally between the eels and the
+Anglerfish -- levels 9 and 10 were swapped afterward, see the
+levels-shift note at the end of this section). Its artwork (`src/components/predators/Bloop.tsx`,
 `src/assets/bloop.png`, user-provided) hit the same fake-transparency trap
 as SharkPrincess/Mosasaurus/Anglerfish before it (`im.mode == "RGB"`, the
 checkerboard baked into opaque near-white pixels, not a real alpha
@@ -375,13 +375,16 @@ silhouette here; the recording itself, and what it actually looked like
 on a hydrophone, is the point.
 
 Levels 9-11 (`predators.test.ts` pins the count at exactly 11 rows,
-1-11, plus the `getPredatorLevel` cycle length) all had to have their
-`defeat-<level>.mp3`/`victory-<level>.mp3` regenerated after the Bloop's
-insertion shifted what sits at each position: 9 now says "The Bloop"
-instead of the anglerfish's old text, 10 now says the anglerfish's own
-text (previously at 9), and 11 is a wholly new pair for the Kraken
-(previously 10). Same "regenerate only the shifted positions, not a full
-`npm run audio:gen`" approach as the "Reorder levels 5-8" commit.
+1-11, plus the `getPredatorLevel` cycle length) went through two rounds
+of `defeat-<level>.mp3`/`victory-<level>.mp3` regeneration. First, the
+Bloop's insertion: 9 said "The Bloop," 10 said the Anglerfish's own text
+(shifted down from 9), and 11 was a wholly new pair for the Kraken
+(shifted down from 10). Then levels 9 and 10 were swapped back (Bloop to
+10, Anglerfish to 9, Kraken staying put at 11) -- a second, smaller
+regeneration of just those two positions' text, back to what it said
+before the Bloop was ever inserted. Same "regenerate only the shifted
+positions, not a full `npm run audio:gen`" approach both times, per the
+"Reorder levels 5-8" commit.
 
 Level 3's `SharkPrincess` (`src/components/predators/SharkPrincess.tsx`) is a
 cheerful crowned whale shark, user-provided (not sourced/licensed the way the
@@ -502,7 +505,7 @@ freehand return curve back up into the body interior and filled
 red-fading-to-transparent so it blends into the grey above it rather than
 having a hard seam.
 
-Level 10's `Anglerfish` (`src/components/predators/Anglerfish.tsx`) is a
+Level 9's `Anglerfish` (`src/components/predators/Anglerfish.tsx`) is a
 raster illustration, user-provided (not sourced/licensed the way the
 Kraken/PhyloPic assets were -- verify provenance before reusing it
 elsewhere), replacing the old hand-drawn version. `src/assets/anglerfish.png`

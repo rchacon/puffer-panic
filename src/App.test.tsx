@@ -168,12 +168,12 @@ describe("App - predator escalation", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows a dramatic intro before the Bloop (level 9) begins", () => {
+  it("shows a dramatic intro before the Bloop (level 10) begins", () => {
     render(<App />);
 
-    for (let i = 0; i < 8; i++) playThroughOneGame();
+    for (let i = 0; i < 9; i++) playThroughOneGame();
 
-    // 9th start -> level 9, the Bloop. No spoken voice line for this one
+    // 10th start -> level 10, the Bloop. No spoken voice line for this one
     // (see BOSS_INTROS.bloop in App.tsx) -- just its own intro card; the
     // round itself hasn't started yet.
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
