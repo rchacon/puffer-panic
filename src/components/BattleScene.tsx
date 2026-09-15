@@ -80,6 +80,25 @@ const PREDATOR_APPROACH: Partial<Record<PredatorKind, PredatorApproach>> = {
     startX: DEFAULT_START_X,
     ease: (t) => t * 0.75,
   },
+  // The opposite tweak from the Amargasaurus above: per explicit request,
+  // this one should end up *closer* than the shared default's usual
+  // closest approach (sharkX=150) by the final round. `ease(t) = t*1.1`
+  // overshoots past 1 at t=1, so the shared `sharkX = startX -
+  // approachProgress*(startX-150)` formula lands past its normal
+  // endpoint: 350 - 1.1*(350-150) = 130 instead of 150. Barely changes
+  // early rounds (t is small there, so t*1.1 is close to t*1), only
+  // visibly diverges as progress nears 1 -- same reason a smaller
+  // `startX` alone wouldn't have worked: that only moves round 1's
+  // starting point, not round 5's endpoint, which the shared formula
+  // always drives to exactly `startX - 1*(startX-150) = 150` regardless
+  // of `startX` unless `ease` itself pushes past 1. (A first pass used
+  // `t*1.2`, landing at 110 -- close enough to actually overlap the
+  // puffer once seen at the true final-round position, not just a
+  // mid-round snapshot; dialed back to 1.1.)
+  dunkleosteus: {
+    startX: DEFAULT_START_X,
+    ease: (t) => t * 1.1,
+  },
 };
 
 export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
@@ -106,17 +125,13 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   // a scattered `predator.kind === "amargasaurus"` check each time.
   const isShore = predator.kind === "amargasaurus";
   // Coral and Kelp are skipped outright (not just dimmed like the rest
-  // of the seabed) for three different reasons, one per flag/kind below:
-  // the Anglerfish is photosynthetic reef life, and neither grows this
-  // deep past where any sunlight reaches; the Bloop just reads better
-  // against open, uncluttered seabed at the scale it's drawn; the
-  // Amargasaurus level is a shallow freshwater lake, not a reef, so
-  // neither grows there at all. Collected into one derived flag rather
-  // than a growing inline `&&` chain at the render site -- each reason
-  // stays a single named term here instead of the whole expression
-  // needing a rewrite (and its own comment re-justified) every time a
-  // future level adds a fourth.
-  const skipsReefDecor = isMurky || predator.kind === "bloop" || isShore;
+  // of the seabed) for some levels -- see `PredatorLevel.skipsReefDecor`'s
+  // own doc comment in predators.ts for the per-level reasons. Read
+  // straight from the level data rather than re-deriving it from
+  // `isMurky`/`isShore`/a `predator.kind` check here, so a future level
+  // that wants this only needs to set the flag in predators.ts, not also
+  // touch this component.
+  const skipsReefDecor = predator.skipsReefDecor ?? false;
   const className = [
     "scene",
     outcome && `scene--${outcome}`,

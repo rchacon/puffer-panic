@@ -10,6 +10,7 @@ export type PredatorKind =
   | "catfish"
   | "sharkprincess"
   | "megalodon"
+  | "dunkleosteus"
   | "mosasaurus"
   | "bloop"
   | "amargasaurus"
@@ -60,6 +61,18 @@ export interface PredatorLevel {
   offsets?: PredatorOffset[];
   /** Ready-to-use sentence subject, e.g. "The shark", "The two sharks". */
   label: string;
+  /**
+   * Skip rendering Coral/Kelp for this level (BattleScene draws them
+   * outright, not just dimmed like the rest of the seabed). Four
+   * different reasons so far, one per level below: the Anglerfish is
+   * photosynthetic reef life, and neither grows this deep past where any
+   * sunlight reaches; the Bloop and Dunkleosteus just read better against
+   * open, uncluttered seabed at the scale they're drawn; the Amargasaurus
+   * level is a shallow freshwater lake, not a reef, so neither grows
+   * there at all. Omit (falsy) for every level that keeps the normal
+   * reef.
+   */
+  skipsReefDecor?: boolean;
 }
 
 // 1-indexed position (`PredatorLevel.level`) is computed below from
@@ -90,12 +103,18 @@ const PREDATOR_LEVEL_ENTRIES: Omit<PredatorLevel, "level">[] = [
     label: "The Shark Princess and her two brothers",
   },
   { kind: "megalodon", count: 1, label: "The Megalodon" }, // boss fight
+  {
+    kind: "dunkleosteus",
+    count: 1,
+    label: "The Dunkleosteus",
+    skipsReefDecor: true,
+  },
   { kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
   { kind: "piranha", count: 7, label: "The seven piranhas" },
   { kind: "eel", count: 3, label: "The three electric eels" },
-  { kind: "anglerfish", count: 1, label: "The anglerfish" },
-  { kind: "bloop", count: 1, label: "The Bloop" }, // boss fight
-  { kind: "amargasaurus", count: 1, label: "The Amargasaurus" },
+  { kind: "anglerfish", count: 1, label: "The anglerfish", skipsReefDecor: true },
+  { kind: "bloop", count: 1, label: "The Bloop", skipsReefDecor: true }, // boss fight
+  { kind: "amargasaurus", count: 1, label: "The Amargasaurus", skipsReefDecor: true },
   { kind: "kraken", count: 1, label: "The Kraken" }, // final boss fight
 ];
 
