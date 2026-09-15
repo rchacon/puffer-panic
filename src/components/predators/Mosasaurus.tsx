@@ -1,6 +1,6 @@
 import mosasaurusArt from "../../assets/mosasaurus.png";
 
-// Level 6's Mosasaurus -- a raster illustration (not vendored/licensed;
+// The Mosasaurus -- a raster illustration (not vendored/licensed;
 // user-provided, see AGENTS.md), imported as a URL (not `?raw`) so Vite
 // emits it as its own cacheable file instead of inlining a base64 string
 // into the JS bundle. Already drawn nose-left in its native orientation.

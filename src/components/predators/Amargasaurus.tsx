@@ -1,9 +1,10 @@
 import amargasaurusArt from "../../assets/amargasaurus-foreground.png";
 
-// Level 11's threat -- unlike the rest of BattleScene.tsx's shallow-lake
-// scene (see AGENTS.md), this one approaches the puffer the same plain
-// linear way every other predator does, just with a shorter final
-// stretch (see BattleScene.tsx's own `PREDATOR_APPROACH.amargasaurus`).
+// The Amargasaurus's threat -- unlike the rest of BattleScene.tsx's
+// shallow-lake scene (see AGENTS.md), this one approaches the puffer
+// the same plain linear way every other predator does, just with a
+// shorter final stretch (see BattleScene.tsx's own
+// `PREDATOR_APPROACH.amargasaurus`).
 // An earlier revision kept it stationary and had it dip deeper into the
 // water each round instead (see AGENTS.md for that whole detour) --
 // reverted once the source art itself changed: this photo's neck is

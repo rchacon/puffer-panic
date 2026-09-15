@@ -7,7 +7,7 @@ import rawMegalodonArtwork from "../../assets/megalodon.svg?raw";
 // other vendored asset, see vendoredSvg.ts.
 const megalodonArtwork = stripRootSvgDimensions(rawMegalodonArtwork);
 
-// Level 5's Megalodon -- the first genuine "boss fight" (see
+// The Megalodon -- the first genuine "boss fight" (see
 // MegalodonIntro.tsx and AGENTS.md for the intro/music side of that).
 // Used to just reuse Shark's vendored art scaled 1.5x and darkened via CSS
 // filter (an "it's just a bigger ancient shark" shortcut); now its own
