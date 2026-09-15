@@ -1,7 +1,7 @@
 import bloopSpectrogram from "../assets/bloop-spectrogram.jpg";
 
-// Title-card flourish shown right before a Bloop (level 10, and every time
-// the cycle comes back around to it) game begins -- see AGENTS.md. Unlike
+// Title-card flourish shown right before a Bloop (and every time the
+// cycle comes back around to it) game begins -- see AGENTS.md. Unlike
 // the Kraken/Megalodon's vendored creature-silhouette icon, the visual here
 // is the actual NOAA spectrogram of the real recording (public domain, a
 // US federal government work -- see AGENTS.md for provenance), since the

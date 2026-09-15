@@ -39,7 +39,7 @@ export interface SchoolOffset {
  * `PREDATOR_LEVELS` for which levels currently qualify), applied relative
  * to the shared approach position so the group retreats/flees together on
  * an outcome while keeping its formation. The Shark Princess's escort
- * (currently level 4) is the one exception -- it supplies its own
+ * is the one exception -- it supplies its own
  * `PredatorLevel.offsets` instead of using this table, since it wants
  * different relative sizing between its instances, not the uniform sizing
  * every entry here gives a school of same-kind creatures.

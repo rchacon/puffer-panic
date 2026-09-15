@@ -3,16 +3,17 @@ import { getInstanceKinds, getPredatorLevel, PREDATOR_LEVELS } from "./predators
 import { getSchoolOffsets, PREDATOR_COMPONENTS } from "../components/predators";
 
 describe("getPredatorLevel", () => {
-  it("returns level 1 through level 12 for playCount 1..12", () => {
-    for (let i = 1; i <= 12; i++) {
+  it("returns level 1 through the last level for playCount 1..N", () => {
+    for (let i = 1; i <= PREDATOR_LEVELS.length; i++) {
       expect(getPredatorLevel(i).level).toBe(i);
     }
   });
 
   it("cycles back to level 1 after the Kraken", () => {
-    expect(getPredatorLevel(13).level).toBe(1);
-    expect(getPredatorLevel(24).level).toBe(12);
-    expect(getPredatorLevel(25).level).toBe(1);
+    const n = PREDATOR_LEVELS.length;
+    expect(getPredatorLevel(n + 1).level).toBe(1);
+    expect(getPredatorLevel(n * 2).level).toBe(n);
+    expect(getPredatorLevel(n * 2 + 1).level).toBe(1);
   });
 
   it("treats 0 or negative playCount as the first game", () => {
@@ -22,16 +23,28 @@ describe("getPredatorLevel", () => {
 });
 
 describe("PREDATOR_LEVELS", () => {
-  it("has exactly 12 levels, numbered 1..12 in order", () => {
-    expect(PREDATOR_LEVELS.map((p) => p.level)).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-    ]);
+  it("numbers every level 1..N in array order", () => {
+    // `level` is derived from array position (see predators.ts), so this
+    // is really pinning that derivation, not a hardcoded expectation --
+    // stays correct no matter how many levels there are or how they're
+    // ordered.
+    expect(PREDATOR_LEVELS.map((p) => p.level)).toEqual(
+      PREDATOR_LEVELS.map((_, i) => i + 1),
+    );
   });
 
-  it("only levels 2, 4, 7 and 8 have more than one instance", () => {
-    const multiLevels = new Set([2, 4, 7, 8]);
+  it("only the school levels have more than one instance", () => {
+    // Named by label, not level number -- these four schools' *positions*
+    // shift as levels get reordered, but which ones are schools at all
+    // doesn't, so this stays correct across a reorder without editing.
+    const schoolLabels = new Set([
+      "The two sharks",
+      "The Shark Princess and her two brothers",
+      "The seven piranhas",
+      "The three electric eels",
+    ]);
     for (const p of PREDATOR_LEVELS) {
-      expect(p.count > 1).toBe(multiLevels.has(p.level));
+      expect(p.count > 1).toBe(schoolLabels.has(p.label));
     }
   });
 
@@ -80,10 +93,14 @@ describe("PREDATOR_LEVELS", () => {
     // indexes `kinds` in lockstep with it. This pins both assumptions
     // together so reordering one without the other doesn't silently draw
     // a brother shark on top at full size instead of the Princess.
-    const level4 = PREDATOR_LEVELS.find((p) => p.level === 4);
-    expect(level4).toBeDefined();
-    expect(getInstanceKinds(level4!)).toEqual(["shark", "shark", "sharkprincess"]);
-    const offsets = level4!.offsets ?? getSchoolOffsets(level4!.count);
+    // Found by label, not level number -- her escort's *position* shifts
+    // as levels get reordered, but her label doesn't.
+    const escort = PREDATOR_LEVELS.find(
+      (p) => p.label === "The Shark Princess and her two brothers",
+    );
+    expect(escort).toBeDefined();
+    expect(getInstanceKinds(escort!)).toEqual(["shark", "shark", "sharkprincess"]);
+    const offsets = escort!.offsets ?? getSchoolOffsets(escort!.count);
     expect(offsets.at(-1)!.scale).toBeGreaterThan(offsets[0].scale);
     expect(offsets.at(-1)!.scale).toBeGreaterThan(offsets[1].scale);
   });

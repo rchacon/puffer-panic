@@ -26,12 +26,20 @@ export interface PredatorOffset {
 }
 
 export interface PredatorLevel {
-  level: number; // 1-12
+  /**
+   * 1-indexed position in `PREDATOR_LEVELS` -- derived from array order
+   * (see the `.map()` below `PREDATOR_LEVEL_ENTRIES`), never hand-written
+   * on an entry. Inserting/reordering a level is then just moving its
+   * object in the array; nothing else needs renumbering.
+   */
+  level: number;
   /** Primary kind -- drives the approach curve lookup, ShipWreck/Kraken
    *  check, and (for a mixed-kind level like the Shark Princess's escort)
    *  is the one `kinds` doesn't need to repeat for every instance. */
   kind: PredatorKind;
-  /** How many instances BattleScene renders (only >1 for levels 2, 4, 7). */
+  /** How many instances BattleScene renders (only >1 for a school -- the
+   *  two-shark level, the Shark Princess's escort, and the piranha/eel
+   *  schools below; everything else is a solo predator). */
   count: number;
   /**
    * Per-instance kind override, same length as `count`, for a level that
@@ -54,12 +62,14 @@ export interface PredatorLevel {
   label: string;
 }
 
-export const PREDATOR_LEVELS: PredatorLevel[] = [
-  { level: 1, kind: "shark", count: 1, label: "The shark" },
-  { level: 2, kind: "shark", count: 2, label: "The two sharks" },
-  { level: 3, kind: "sharkprincess", count: 1, label: "The Shark Princess" },
+// 1-indexed position (`PredatorLevel.level`) is computed below from
+// array order, not written per-entry -- see that field's own doc
+// comment for why. Order here is play order.
+const PREDATOR_LEVEL_ENTRIES: Omit<PredatorLevel, "level">[] = [
+  { kind: "shark", count: 1, label: "The shark" },
+  { kind: "shark", count: 2, label: "The two sharks" },
+  { kind: "sharkprincess", count: 1, label: "The Shark Princess" },
   {
-    level: 4,
     kind: "sharkprincess",
     count: 3,
     // Order is also draw order (later = on top): the two brothers first
@@ -79,15 +89,20 @@ export const PREDATOR_LEVELS: PredatorLevel[] = [
     ],
     label: "The Shark Princess and her two brothers",
   },
-  { level: 5, kind: "megalodon", count: 1, label: "The Megalodon" }, // boss fight
-  { level: 6, kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
-  { level: 7, kind: "piranha", count: 7, label: "The seven piranhas" },
-  { level: 8, kind: "eel", count: 3, label: "The three electric eels" },
-  { level: 9, kind: "anglerfish", count: 1, label: "The anglerfish" },
-  { level: 10, kind: "bloop", count: 1, label: "The Bloop" }, // boss fight
-  { level: 11, kind: "amargasaurus", count: 1, label: "The Amargasaurus" },
-  { level: 12, kind: "kraken", count: 1, label: "The Kraken" }, // final boss fight
+  { kind: "megalodon", count: 1, label: "The Megalodon" }, // boss fight
+  { kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
+  { kind: "piranha", count: 7, label: "The seven piranhas" },
+  { kind: "eel", count: 3, label: "The three electric eels" },
+  { kind: "anglerfish", count: 1, label: "The anglerfish" },
+  { kind: "bloop", count: 1, label: "The Bloop" }, // boss fight
+  { kind: "amargasaurus", count: 1, label: "The Amargasaurus" },
+  { kind: "kraken", count: 1, label: "The Kraken" }, // final boss fight
 ];
+
+export const PREDATOR_LEVELS: PredatorLevel[] = PREDATOR_LEVEL_ENTRIES.map((p, i) => ({
+  ...p,
+  level: i + 1,
+}));
 
 /**
  * Resolve the predator for the `playCount`-th game started this session

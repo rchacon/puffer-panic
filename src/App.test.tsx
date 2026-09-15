@@ -2,6 +2,18 @@ import { act } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+import { PREDATOR_LEVELS } from "./game/predators";
+import type { PredatorKind } from "./game/predators";
+
+// Number of *other* games to play through before the given kind's own
+// level comes up -- derived from PREDATOR_LEVELS's own order instead of a
+// hardcoded literal, so these tests don't need editing every time a level
+// gets inserted/reordered (see AGENTS.md).
+function playthroughsBefore(kind: PredatorKind): number {
+  const idx = PREDATOR_LEVELS.findIndex((p) => p.kind === kind);
+  if (idx === -1) throw new Error(`no PREDATOR_LEVELS entry has kind "${kind}"`);
+  return idx;
+}
 
 describe("App", () => {
   beforeEach(() => localStorage.clear());
@@ -101,13 +113,12 @@ describe("App - predator escalation", () => {
     fireEvent.click(screen.getByRole("button", { name: /play again/i }));
   }
 
-  it("shows a dramatic intro before the Kraken (level 12) begins", () => {
+  it("shows a dramatic intro before the Kraken begins", () => {
     render(<App />);
 
-    for (let i = 0; i < 11; i++) playThroughOneGame();
+    for (let i = 0; i < playthroughsBefore("kraken"); i++) playThroughOneGame();
 
-    // 12th start -> level 12, the Kraken. The intro plays first; the round
-    // itself hasn't started yet.
+    // The intro plays first; the round itself hasn't started yet.
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
     expect(screen.getByText(/release the kraken/i)).toBeInTheDocument();
     expect(document.querySelector(".kraken-intro__icon")).toBeInTheDocument();
@@ -126,7 +137,7 @@ describe("App - predator escalation", () => {
   it("keeps Start disabled through the Kraken intro so a repeat activation can't double-start the game", () => {
     render(<App />);
 
-    for (let i = 0; i < 11; i++) playThroughOneGame();
+    for (let i = 0; i < playthroughsBefore("kraken"); i++) playThroughOneGame();
 
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
     const startButton = screen.getByRole("button", { name: /start/i });
@@ -147,13 +158,12 @@ describe("App - predator escalation", () => {
     expect(document.querySelectorAll(".kraken")).toHaveLength(1);
   });
 
-  it("shows a dramatic intro before the Megalodon (level 5) begins", () => {
+  it("shows a dramatic intro before the Megalodon begins", () => {
     render(<App />);
 
-    for (let i = 0; i < 4; i++) playThroughOneGame();
+    for (let i = 0; i < playthroughsBefore("megalodon"); i++) playThroughOneGame();
 
-    // 5th start -> level 5, the Megalodon. The intro plays first; the
-    // round itself hasn't started yet.
+    // The intro plays first; the round itself hasn't started yet.
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
     expect(screen.getByText(/bigger boat/i)).toBeInTheDocument();
     expect(document.querySelector(".megalodon-intro__icon")).toBeInTheDocument();
@@ -169,14 +179,14 @@ describe("App - predator escalation", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows a dramatic intro before the Bloop (level 10) begins", () => {
+  it("shows a dramatic intro before the Bloop begins", () => {
     render(<App />);
 
-    for (let i = 0; i < 9; i++) playThroughOneGame();
+    for (let i = 0; i < playthroughsBefore("bloop"); i++) playThroughOneGame();
 
-    // 10th start -> level 10, the Bloop. No spoken voice line for this one
-    // (see BOSS_INTROS.bloop in App.tsx) -- just its own intro card; the
-    // round itself hasn't started yet.
+    // No spoken voice line for this one (see BOSS_INTROS.bloop in
+    // App.tsx) -- just its own intro card; the round itself hasn't
+    // started yet.
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
     expect(screen.getByText(/loudest sound/i)).toBeInTheDocument();
     expect(document.querySelector(".bloop-intro__spectrogram")).toBeInTheDocument();
@@ -192,13 +202,12 @@ describe("App - predator escalation", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows a dramatic intro before the Amargasaurus (level 11) begins", () => {
+  it("shows a dramatic intro before the Amargasaurus begins", () => {
     render(<App />);
 
-    for (let i = 0; i < 10; i++) playThroughOneGame();
+    for (let i = 0; i < playthroughsBefore("amargasaurus"); i++) playThroughOneGame();
 
-    // 11th start -> level 11, the Amargasaurus. The intro plays first; the
-    // round itself hasn't started yet.
+    // The intro plays first; the round itself hasn't started yet.
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
     expect(screen.getByText(/move in herds/i)).toBeInTheDocument();
     expect(document.querySelector(".amargasaurus-intro__icon")).toBeInTheDocument();
