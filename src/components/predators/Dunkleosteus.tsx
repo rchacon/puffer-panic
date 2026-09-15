@@ -1,11 +1,11 @@
 import dunkleosteusArt from "../../assets/dunkleosteus.png";
 
-// Level 6's threat -- inserted right after the Megalodon (level 5),
-// shifting every level from the old Mosasaurus (6) onward down by one;
-// see predators.ts and AGENTS.md. A real (if long-extinct) armored fish,
-// Dunkleosteus, not a boss fight -- no BOSS_INTROS entry, just a normal
-// approaching predator like Shark/Piranha/Anglerfish, following the
-// shared default linear approach with no PREDATOR_APPROACH override.
+// Inserted right after the Megalodon in play order -- see predators.ts
+// (PREDATOR_LEVEL_ENTRIES) and AGENTS.md for provenance. A real (if
+// long-extinct) armored fish, Dunkleosteus, not a boss fight -- no
+// BOSS_INTROS entry, just a normal approaching predator like
+// Shark/Piranha/Anglerfish, following the shared default linear approach
+// with no PREDATOR_APPROACH override.
 //
 // Third source image for this level (see AGENTS.md for the first two --
 // one watermarked and never used, one used briefly but photorealistic
