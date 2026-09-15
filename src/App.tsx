@@ -40,10 +40,11 @@ interface BossIntro {
 // Title-card flourish played before round 1 of a "boss" game -- currently
 // the Megalodon, the Bloop, the Amargasaurus and the Kraken (see
 // `PREDATOR_LEVELS` in predators.ts for which levels those currently
-// are), and every time the cycle comes back around to any of them. A
-// lookup keyed by kind instead of one hardcoded `if` per boss so a
-// future boss just adds a row here, not another copy of the whole
-// intro/timer/guard flow in handleStart below.
+// are), and every time the cycle comes back around to any of them. The
+// Dunkleosteus is deliberately not one of these -- a normal predator,
+// not a boss fight. A lookup keyed by kind instead of one hardcoded `if`
+// per boss so a future boss just adds a row here, not another copy of
+// the whole intro/timer/guard flow in handleStart below.
 const BOSS_INTROS: Partial<Record<PredatorKind, BossIntro>> = {
   kraken: {
     Component: KrakenIntro,
