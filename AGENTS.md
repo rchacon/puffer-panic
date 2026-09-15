@@ -693,7 +693,31 @@ round-by-round via headless Chrome that the shared linear approach still
 reads fine at this size, no early-contact or off-screen-runway issues to
 work around.
 
-Level 8's `Eel` (school of 3, see `getSchoolOffsets`) is a raster
+The `Swordfish` is inserted right before the electric eels in play
+order -- like the Dunkleosteus, it's a plain predator, not a boss fight:
+no `BOSS_INTROS` entry, no intro card/music/voice line, and no
+`PREDATOR_APPROACH` override either, just the shared default linear
+approach. `src/assets/swordfish.png` is a processed derivative of a
+cartoon stock illustration: verified real alpha (corners genuinely
+`(0,0,0,0)`, no watermark hiding in the RGB channel under the
+transparent region -- see the Dunkleosteus section above for what that
+trap and its fix both look like when a source *doesn't* check out clean)
+before cropping to content and downscaling to 320x146. Deliberately kept
+shark-scale rather than the bigger 600px-wide source a boss-fight
+predator gets -- this one is drawn at 159x73 in `Swordfish.tsx`, about
+2x the source's own resolution, matching the plain `Shark`'s own
+~159x72 footprint rather than Dunkleosteus/Bloop's larger, more
+dramatic presence. No visible teeth, so its bill tip stands in for the
+usual bite point, found the usual coordinate-grid-overlay way and
+anchored at the local origin like every other raster predator's mouth.
+
+Adding this level only needed two brand-new audio clips
+(`defeat-the-swordfish.mp3`/`victory-the-swordfish.mp3`, via a one-off
+`npm run audio:gen` run with the incidental re-fetch diff on every other
+clip discarded) and no renumbering anywhere else -- see "Reducing diff
+size on predator-level reorders" below for why.
+
+The `Eel` (school of 3, see `getSchoolOffsets`) is a raster
 illustration, user-provided (not sourced/licensed the way the
 Kraken/PhyloPic assets were -- verify provenance before reusing it
 elsewhere), replacing the old hand-drawn S-curve. Unlike the
@@ -751,7 +775,7 @@ the "pulse" was really just a faint bloom on top of an already-bright
 line. Dimming the base first makes the two layers' opacity swing (0.15
 to 1, wider than initially tried too) read as an actual on/off flicker.
 
-Level 7's `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
+The `Piranha` (school of 7, see `getSchoolOffsets`) is vendored real
 vector art -- "piranha" by liakad on OpenClipart
 (openclipart.org/detail/4631/piranha-by-liakad), public domain
 (`src/assets/piranha.svg`'s own `<metadata>` carries the CC0-equivalent
