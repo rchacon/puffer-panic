@@ -88,11 +88,12 @@ describe("App - predator escalation", () => {
 
   function playThroughOneGame() {
     fireEvent.click(screen.getByRole("button", { name: /start/i }));
-    // Some levels (Kraken, Megalodon, Bloop) show a boss intro before the
-    // round cards exist -- advance past it (long enough to cover the
-    // longest of the three, the Bloop's ~4.9s; a no-op if there's no intro
-    // showing, since a longer wait than a since-fired timer needs is
-    // harmless) before assuming the battle scene has started.
+    // Some levels (Megalodon, Bloop, Amargasaurus, Kraken) show a boss
+    // intro before the round cards exist -- advance past it (long enough
+    // to cover the longest of the four, the Bloop's ~4.9s; a no-op if
+    // there's no intro showing, since a longer wait than a since-fired
+    // timer needs is harmless) before assuming the battle scene has
+    // started.
     act(() => {
       vi.advanceTimersByTime(5100);
     });

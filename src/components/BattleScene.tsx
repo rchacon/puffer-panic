@@ -23,8 +23,11 @@ const PREDATOR_Y = 94;
 
 // Where the Amargasaurus level's land meets its shallow water -- see
 // `isShore` below and AmargasaurusBackground.tsx, which solves its own
-// vertical placement against this same line.
-const SHORE_HORIZON_Y = 70;
+// vertical placement against this same line. Exported so that file
+// derives its own y/height from this constant directly instead of a
+// hand-copied number that would silently drift out of sync if this ever
+// moves.
+export const SHORE_HORIZON_Y = 70;
 
 const DEFAULT_START_X = 350;
 
@@ -102,6 +105,18 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   // fill and the seabed-decoration skip below both key off it instead of
   // a scattered `predator.kind === "amargasaurus"` check each time.
   const isShore = predator.kind === "amargasaurus";
+  // Coral and Kelp are skipped outright (not just dimmed like the rest
+  // of the seabed) for three different reasons, one per flag/kind below:
+  // the Anglerfish is photosynthetic reef life, and neither grows this
+  // deep past where any sunlight reaches; the Bloop just reads better
+  // against open, uncluttered seabed at the scale it's drawn; the
+  // Amargasaurus level is a shallow freshwater lake, not a reef, so
+  // neither grows there at all. Collected into one derived flag rather
+  // than a growing inline `&&` chain at the render site -- each reason
+  // stays a single named term here instead of the whole expression
+  // needing a rewrite (and its own comment re-justified) every time a
+  // future level adds a fourth.
+  const skipsReefDecor = isMurky || predator.kind === "bloop" || isShore;
   const className = [
     "scene",
     outcome && `scene--${outcome}`,
@@ -212,19 +227,25 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
               fill="#a9c98f"
               opacity="0.75"
             />
-            <path
-              d="M0 66 Q 70 50 160 60 T 340 58 L 400 64 V72 H0 Z"
-              fill="#7fae5f"
-            />
             <rect
               y={SHORE_HORIZON_Y}
               width="400"
               height={200 - SHORE_HORIZON_Y}
               fill="url(#lakeWater)"
             />
-            {/* Drawn after the water, not before -- its feet sit a couple
-                of units below the horizon line (see AmargasaurusBackground.tsx),
-                which would otherwise get clipped by the opaque water fill. */}
+            {/* The near hill is drawn after the water rect, not before --
+                its base extends 2 units past SHORE_HORIZON_Y on purpose
+                (see the comment above), and an opaque rect drawn on top
+                of it would paint over that overlap entirely, undoing the
+                one thing it's there for. */}
+            <path
+              d="M0 66 Q 70 50 160 60 T 340 58 L 400 64 V72 H0 Z"
+              fill="#7fae5f"
+            />
+            {/* Drawn after the water (and the near hill), not before --
+                its feet sit a couple of units below the horizon line (see
+                AmargasaurusBackground.tsx), which would otherwise get
+                clipped by the opaque water fill. */}
             <AmargasaurusBackground />
           </>
         ) : (
@@ -240,14 +261,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
             opacity="0.85"
           />
           <Rocks />
-          {/* Coral and Kelp are skipped outright (not just dimmed like the
-              rest of the seabed) for three different reasons: the
-              Anglerfish is photosynthetic reef life, and neither grows
-              this deep past where any sunlight reaches; the Bloop just
-              reads better against open, uncluttered seabed at the scale
-              it's drawn; the Amargasaurus level is a shallow freshwater
-              lake, not a reef, so neither grows there at all. */}
-          {!isMurky && predator.kind !== "bloop" && !isShore && (
+          {!skipsReefDecor && (
             <>
               <Coral />
               <Kelp />

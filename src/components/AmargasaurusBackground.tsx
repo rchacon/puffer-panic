@@ -1,4 +1,14 @@
 import amargasaurusBg from "../assets/amargasaurus-background.png";
+import { SHORE_HORIZON_Y } from "./BattleScene";
+
+// The saved source's own width and the feet's (ground-contact line's)
+// y-position within it -- see the sizing comment below for how these
+// feed into the actual display width/height/y.
+const SRC_WIDTH = 360;
+const SRC_HEIGHT = 235;
+const SRC_FEET_Y = 224;
+const DISPLAY_WIDTH = 80;
+const SCALE = DISPLAY_WIDTH / SRC_WIDTH;
 
 // Level 11's distant scenery: a second Amargasaurus, further up the shore,
 // bent down drinking from the lake -- static (it never approaches; the
@@ -19,21 +29,22 @@ import amargasaurusBg from "../assets/amargasaurus-background.png";
 // this photo's own downward angle already reads as "drinking" once small
 // and distant).
 //
-// Sized/positioned so its feet (the ground-contact line, roughly y=224 of
-// the saved 360x235 file) land right on the scene's horizon -- found by
-// the same coordinate-grid overlay technique used throughout, then solved
-// for the image's own top-left corner: display scale 80/360 (width 80,
-// height 235*that ratio), horizon at scene y=70, so the top edge sits at
-// 70 minus (224 * that same scale).
+// Sized/positioned so its feet (the ground-contact line, roughly
+// SRC_FEET_Y of the saved SRC_WIDTHxSRC_HEIGHT file) land right on the
+// scene's horizon -- found by the same coordinate-grid overlay technique
+// used throughout, then solved for the image's own top-left corner:
+// display scale DISPLAY_WIDTH/SRC_WIDTH, horizon at SHORE_HORIZON_Y
+// (BattleScene.tsx's own constant, not a re-derived copy of it), so the
+// top edge sits at SHORE_HORIZON_Y minus (SRC_FEET_Y * that same scale).
 export function AmargasaurusBackground() {
   return (
     <image
       className="amargasaurus-bg"
       href={amargasaurusBg}
       x={180}
-      y={20}
-      width={80}
-      height={52}
+      y={SHORE_HORIZON_Y - SRC_FEET_Y * SCALE}
+      width={DISPLAY_WIDTH}
+      height={SRC_HEIGHT * SCALE}
       opacity={0.92}
     />
   );

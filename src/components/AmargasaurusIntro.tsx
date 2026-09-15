@@ -7,7 +7,7 @@ import rawDinoParkIcon from "../assets/dino-park.svg?raw";
 const dinoParkIcon = stripRootSvgDimensions(rawDinoParkIcon);
 
 // Title-card flourish shown right before an Amargasaurus (level 11, and
-// every time the cycle comes back around to it) game begins -- the third
+// every time the cycle comes back around to it) game begins -- the fourth
 // boss fight, following KrakenIntro/MegalodonIntro's exact technique (a
 // big, mostly-transparent vendored silhouette behind the title line, dark
 // overlay makes it readable). The silhouette (`src/assets/dino-park.svg`,

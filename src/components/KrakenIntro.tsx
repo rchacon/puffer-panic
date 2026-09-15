@@ -1,6 +1,6 @@
 import krakenIcon from "../assets/kraken-icon.svg?raw";
 
-// Title-card flourish shown right before a Kraken (level 11) game begins.
+// Title-card flourish shown right before a Kraken (level 12) game begins.
 // The background icon is vendored from SVG Repo -- see
 // src/assets/kraken-icon.svg for source/license. It's already solid black;
 // the dark overlay behind it is what lets you make out the silhouette.
