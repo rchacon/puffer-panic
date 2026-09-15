@@ -468,6 +468,22 @@ no `progress` prop -- `PREDATOR_COMPONENTS`'s type reverted too, back to
 a plain `ComponentType`), relying on the photo's own downward angle to
 sell "leaning toward the water" as it swims in like everything else does.
 
+The source photo itself changed one more time after that: the close-up
+head/neck crop read as "a floating neck" once the plain approach closed
+in and the frame/puffer cropped away everything else, nothing anchoring
+it as a whole creature. `amargasaurus-foreground.png` briefly became a
+full-body side view instead (head, body, legs) to fix that -- hit the
+same fake-transparency trap as several predators before it along the
+way, except this source's checkerboard used two distinct grey tones
+rather than one, so the flood-fill's background-color test had to match
+both (a range test on saturation and lightness, not a single fixed
+threshold) or it left one tone's checker squares opaque -- but was
+reverted back to the close-up crop shortly after: dealing with the
+legs' own ground placement (see the now-removed sand-patch paragraph
+this replaced) wasn't worth it for one predator. The actual fix for the
+close-up crop's floating-neck problem turned out to be much simpler --
+see the `PREDATOR_APPROACH.amargasaurus` entry below.
+
 The boss intro (`AmargasaurusIntro.tsx`) follows Kraken/Megalodon's
 silhouette-behind-title-line technique, using another user-provided asset
 (`src/assets/dino-park.svg`, not sourced/licensed like the SVG Repo
@@ -521,6 +537,35 @@ pair split at a `SHORE_HORIZON_Y=70` line, adds two overlapping hill
 reasoning as the Anglerfish/Bloop, third distinct reason on that same
 conditional). The seabed sand curve and `Rocks` are kept as-is, doing
 double duty as a lake bed/shoreline instead of an ocean floor.
+
+Both Amargasaurus creatures briefly got their own small sand patch so
+their feet planted on visible ground instead of sitting right at the
+bare hill/water boundary -- a downward-bulging `<path>` under
+`AmargasaurusBackground`, and one baked into `Amargasaurus.tsx` itself
+so it would travel with the creature's own `sharkX` translate. Both were
+removed again: the foreground one stopped mattering once that source
+photo reverted to the close-up crop with no visible feet in frame (see
+above), and the background one was reverted per explicit feedback --
+*"no sand for background dino. the way it was before was good."* Worth
+knowing if a future predator needs the same "feet planted on ground"
+treatment: the technique (a `Z`-closed downward-bulge `<path>`, same
+sand tone as the seabed) worked fine on its own terms, it just wasn't
+what this particular level wanted.
+
+The close-up head/neck crop's own "disembodied neck" problem (see
+above) was fixed differently: `PREDATOR_APPROACH.amargasaurus` caps its
+`ease` at `t * 0.75` instead of the usual 1, so the shared
+`sharkX = startX - approachProgress*(startX-150)` formula never reaches
+its normal endpoint -- final contact lands at sharkX=200 (75% of the
+default 200-unit closing distance from `startX=350`) instead of 150.
+*"maybe you can move the fish closer so the dino doesn't have to cover
+as much ground"* -- read as "shorten the final approach" rather than
+literally repositioning the Puffer (which is a shared, unconditional
+constant every level relies on; changing it for just one level would
+risk the Rocks-clearance tuning `AGENTS.md` notes elsewhere), capping
+`ease` achieves the same effect from the predator's side instead: the
+same close-up crop that read as a disembodied neck at the *default*
+closest approach reads as a real threat 50 units short of it.
 
 Level 3's `SharkPrincess` (`src/components/predators/SharkPrincess.tsx`) is a
 cheerful crowned whale shark, user-provided (not sourced/licensed the way the

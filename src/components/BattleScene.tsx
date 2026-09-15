@@ -63,6 +63,20 @@ const PREDATOR_APPROACH: Partial<Record<PredatorKind, PredatorApproach>> = {
     startX: 460,
     ease: (t) => 0.2 * t + 0.8 * t ** 3,
   },
+  // At the shared default's full closest approach (sharkX=150), this
+  // close-up head/neck crop (see Amargasaurus.tsx) read as a
+  // "disembodied neck" on a real device -- there isn't a body/legs in
+  // frame to anchor it as a whole creature the way every other predator
+  // has. Capping `ease` at 0.75 instead of the usual 1 stops the shared
+  // `sharkX = startX - approachProgress*(startX-150)` formula short of
+  // its normal endpoint: `startX` (still the plain default, 350) minus
+  // 75% of the usual 200-unit closing distance lands the final round at
+  // sharkX=200 instead of 150 -- close enough to read as a real threat,
+  // without covering the last 50 units that made it crop too tight.
+  amargasaurus: {
+    startX: DEFAULT_START_X,
+    ease: (t) => t * 0.75,
+  },
 };
 
 export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
