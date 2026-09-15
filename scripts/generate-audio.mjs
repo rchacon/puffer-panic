@@ -48,6 +48,7 @@ const CUES = [
   ["survive-hurt", "Nice work! The puffer fish got away."],
   ["release-the-kraken", "Release the Kraken!"],
   ["bigger-boat", "You're going to need a bigger boat."],
+  ["move-in-herds", "They do move in herds."],
   ...outcomeCues,
 ];
 

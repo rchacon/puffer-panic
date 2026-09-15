@@ -3,16 +3,16 @@ import { getInstanceKinds, getPredatorLevel, PREDATOR_LEVELS } from "./predators
 import { getSchoolOffsets, PREDATOR_COMPONENTS } from "../components/predators";
 
 describe("getPredatorLevel", () => {
-  it("returns level 1 through level 11 for playCount 1..11", () => {
-    for (let i = 1; i <= 11; i++) {
+  it("returns level 1 through level 12 for playCount 1..12", () => {
+    for (let i = 1; i <= 12; i++) {
       expect(getPredatorLevel(i).level).toBe(i);
     }
   });
 
   it("cycles back to level 1 after the Kraken", () => {
-    expect(getPredatorLevel(12).level).toBe(1);
-    expect(getPredatorLevel(22).level).toBe(11);
-    expect(getPredatorLevel(23).level).toBe(1);
+    expect(getPredatorLevel(13).level).toBe(1);
+    expect(getPredatorLevel(24).level).toBe(12);
+    expect(getPredatorLevel(25).level).toBe(1);
   });
 
   it("treats 0 or negative playCount as the first game", () => {
@@ -22,8 +22,10 @@ describe("getPredatorLevel", () => {
 });
 
 describe("PREDATOR_LEVELS", () => {
-  it("has exactly 11 levels, numbered 1..11 in order", () => {
-    expect(PREDATOR_LEVELS.map((p) => p.level)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+  it("has exactly 12 levels, numbered 1..12 in order", () => {
+    expect(PREDATOR_LEVELS.map((p) => p.level)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ]);
   });
 
   it("only levels 2, 4, 7 and 8 have more than one instance", () => {

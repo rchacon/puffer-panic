@@ -11,6 +11,7 @@ import { playCue, playUrl } from "./audio/player";
 import krakenMusic from "./assets/kraken-music.wav";
 import megalodonMusic from "./assets/megalodon-music.wav";
 import bloopSound from "./assets/bloop-sound.wav";
+import amargasaurusMusic from "./assets/amargasaurus-music.wav";
 import { StartScreen } from "./components/StartScreen";
 import { BattleScene } from "./components/BattleScene";
 import { PromptBar } from "./components/PromptBar";
@@ -21,6 +22,7 @@ import { DebugPanel } from "./components/DebugPanel";
 import { KrakenIntro } from "./components/KrakenIntro";
 import { MegalodonIntro } from "./components/MegalodonIntro";
 import { BloopIntro } from "./components/BloopIntro";
+import { AmargasaurusIntro } from "./components/AmargasaurusIntro";
 
 const DEBUG =
   typeof window !== "undefined" &&
@@ -36,11 +38,11 @@ interface BossIntro {
 }
 
 // Title-card flourish played before round 1 of a "boss" game -- currently
-// the Kraken (level 11), the Megalodon (level 5) and the Bloop (level 10),
-// and every time the cycle comes back around to any of them. A lookup
-// keyed by kind instead of one hardcoded `if` per boss so a future boss
-// just adds a row here, not another copy of the whole intro/timer/guard
-// flow in handleStart below.
+// the Megalodon (level 5), the Bloop (level 10), the Amargasaurus
+// (level 11) and the Kraken (level 12), and every time the cycle comes
+// back around to any of them. A lookup keyed by kind instead of one
+// hardcoded `if` per boss so a future boss just adds a row here, not
+// another copy of the whole intro/timer/guard flow in handleStart below.
 const BOSS_INTROS: Partial<Record<PredatorKind, BossIntro>> = {
   kraken: {
     Component: KrakenIntro,
@@ -69,6 +71,18 @@ const BOSS_INTROS: Partial<Record<PredatorKind, BossIntro>> = {
     // a beat of margin after the fade-out finishes.
     music: { url: bloopSound, volume: 0.9 },
     durationMs: 4900,
+  },
+  amargasaurus: {
+    Component: AmargasaurusIntro,
+    voiceCue: "move-in-herds",
+    // See src/assets/amargasaurus-music.wav's provenance in AGENTS.md --
+    // same "quieter than full volume, voice line stays clear on top"
+    // reasoning as the Kraken's/Megalodon's own music. durationMs covers
+    // its own trimmed ~2.6s (fades baked in) rather than the voice
+    // line's shorter ~2s, so the music's own fade-out finishes instead
+    // of getting cut off mid-swell.
+    music: { url: amargasaurusMusic, volume: 0.55 },
+    durationMs: 2700,
   },
 };
 
