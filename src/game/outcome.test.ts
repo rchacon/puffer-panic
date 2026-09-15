@@ -48,13 +48,15 @@ describe("outcomeText", () => {
 });
 
 describe("outcomeAudioCue", () => {
-  it("names the level for defeat and victory", () => {
-    expect(outcomeAudioCue("defeat", 3)).toBe("defeat-3");
-    expect(outcomeAudioCue("victory", 10)).toBe("victory-10");
+  it("names the (slugified) predator for defeat and victory", () => {
+    expect(outcomeAudioCue("defeat", "The Shark Princess")).toBe(
+      "defeat-the-shark-princess",
+    );
+    expect(outcomeAudioCue("victory", "The Bloop")).toBe("victory-the-bloop");
   });
 
   it("leaves the survive outcomes as generic clip names", () => {
-    expect(outcomeAudioCue("survive-barely", 7)).toBe("survive-barely");
-    expect(outcomeAudioCue("survive-hurt", 7)).toBe("survive-hurt");
+    expect(outcomeAudioCue("survive-barely", "The Kraken")).toBe("survive-barely");
+    expect(outcomeAudioCue("survive-hurt", "The Kraken")).toBe("survive-hurt");
   });
 });

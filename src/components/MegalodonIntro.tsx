@@ -6,8 +6,8 @@ import rawMegalodonIcon from "../assets/megalodon-icon.svg?raw";
 // out before nesting this inside the wrapper below.
 const megalodonIcon = stripRootSvgDimensions(rawMegalodonIcon);
 
-// Title-card flourish shown right before a Megalodon (level 5, and every
-// time the cycle comes back around to it) game begins -- the first
+// Title-card flourish shown right before a Megalodon (and every time the
+// cycle comes back around to it) game begins -- the first
 // genuine "boss fight," see AGENTS.md. Same technique as KrakenIntro.tsx:
 // a big, mostly-transparent vendored silhouette (this one an open shark
 // jaw, teeth and all -- from SVG Repo, see src/assets/megalodon-icon.svg

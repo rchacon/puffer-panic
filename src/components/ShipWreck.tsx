@@ -1,5 +1,5 @@
 // A sunken ship, half-buried in the seabed -- background scenery for the
-// Kraken's lair (level 12), the reward for playing 12 games in a row.
+// Kraken's lair, the reward for reaching the final level.
 // Positioned in scene-absolute coordinates (not around an origin like the
 // predators/Puffer, since it never moves or scales). The whole group is
 // nudged down 9 units from where its paths were originally drawn --

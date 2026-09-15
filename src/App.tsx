@@ -38,11 +38,12 @@ interface BossIntro {
 }
 
 // Title-card flourish played before round 1 of a "boss" game -- currently
-// the Megalodon (level 5), the Bloop (level 10), the Amargasaurus
-// (level 11) and the Kraken (level 12), and every time the cycle comes
-// back around to any of them. A lookup keyed by kind instead of one
-// hardcoded `if` per boss so a future boss just adds a row here, not
-// another copy of the whole intro/timer/guard flow in handleStart below.
+// the Megalodon, the Bloop, the Amargasaurus and the Kraken (see
+// `PREDATOR_LEVELS` in predators.ts for which levels those currently
+// are), and every time the cycle comes back around to any of them. A
+// lookup keyed by kind instead of one hardcoded `if` per boss so a
+// future boss just adds a row here, not another copy of the whole
+// intro/timer/guard flow in handleStart below.
 const BOSS_INTROS: Partial<Record<PredatorKind, BossIntro>> = {
   kraken: {
     Component: KrakenIntro,
@@ -120,7 +121,7 @@ export default function App() {
 
   const beginGame = () => {
     setPlayCount((c) => c + 1);
-    game.start(selectedWords, nextPredator.level);
+    game.start(selectedWords, nextPredator.label);
   };
 
   const handleStart = () => {
@@ -210,7 +211,7 @@ export default function App() {
       )}
 
       {activeBossIntro && <activeBossIntro.Component />}
-      {DEBUG && <DebugPanel game={game} predatorLevel={predator.level} />}
+      {DEBUG && <DebugPanel game={game} predatorLabel={predator.label} />}
     </div>
   );
 }

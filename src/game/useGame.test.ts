@@ -6,12 +6,12 @@ describe("useGame outcome audio", () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());
 
-  it("plays the level-specific victory cue on a perfect game", () => {
+  it("plays the predator-specific victory cue on a perfect game", () => {
     const audioSpy = vi.spyOn(window, "Audio");
     const { result } = renderHook(() => useGame());
 
     act(() => {
-      result.current.start(["cat", "dog", "run", "big", "red"], 7);
+      result.current.start(["cat", "dog", "run", "big", "red"], "The seven piranhas");
     });
 
     for (let i = 0; i < 5; i++) {
@@ -24,16 +24,18 @@ describe("useGame outcome audio", () => {
 
     expect(result.current.state.phase).toBe("result");
     const srcs = audioSpy.mock.calls.map((args) => String(args[0]));
-    expect(srcs.some((s) => s.endsWith("/audio/victory-7.mp3"))).toBe(true);
-    expect(srcs.some((s) => /\/audio\/defeat-\d+\.mp3$/.test(s))).toBe(false);
+    expect(srcs.some((s) => s.endsWith("/audio/victory-the-seven-piranhas.mp3"))).toBe(
+      true,
+    );
+    expect(srcs.some((s) => /\/audio\/defeat-[a-z-]+\.mp3$/.test(s))).toBe(false);
   });
 
-  it("plays the level-specific defeat cue on a shutout, and defaults to level 1 without one", () => {
+  it("plays the predator-specific defeat cue on a shutout, and defaults to the shark without one", () => {
     const audioSpy = vi.spyOn(window, "Audio");
     const { result } = renderHook(() => useGame());
 
     act(() => {
-      // no level passed -> defaults to 1
+      // no label passed -> defaults to "The shark"
       result.current.start(["cat", "dog", "run", "big", "red"]);
     });
 
@@ -48,20 +50,24 @@ describe("useGame outcome audio", () => {
 
     expect(result.current.state.phase).toBe("result");
     const srcs = audioSpy.mock.calls.map((args) => String(args[0]));
-    expect(srcs.some((s) => s.endsWith("/audio/defeat-1.mp3"))).toBe(true);
+    expect(srcs.some((s) => s.endsWith("/audio/defeat-the-shark.mp3"))).toBe(true);
   });
 
-  it("debugOutcome uses the level from the most recent start()", () => {
+  it("debugOutcome uses the predator from the most recent start()", () => {
     const audioSpy = vi.spyOn(window, "Audio");
     const { result } = renderHook(() => useGame());
 
     act(() => {
-      result.current.start(["cat", "dog", "run"], 4);
+      result.current.start(["cat", "dog", "run"], "The Shark Princess and her two brothers");
       result.current.debugOutcome(5);
     });
 
     const srcs = audioSpy.mock.calls.map((args) => String(args[0]));
-    expect(srcs.some((s) => s.endsWith("/audio/victory-4.mp3"))).toBe(true);
+    expect(
+      srcs.some((s) =>
+        s.endsWith("/audio/victory-the-shark-princess-and-her-two-brothers.mp3"),
+      ),
+    ).toBe(true);
   });
 });
 
@@ -73,12 +79,12 @@ describe("useGame answerTyped", () => {
     const audioSpy = vi.spyOn(window, "Audio");
     const { result } = renderHook(() => useGame());
 
-    // A pool/level not reused by any other test in this file -- player.ts
+    // A pool/label not reused by any other test in this file -- player.ts
     // caches Audio elements by src, so reusing a combination another test
-    // already played would mean this level's clip was already constructed
-    // and wouldn't show up again in *this* test's own spy.
+    // already played would mean this predator's clip was already
+    // constructed and wouldn't show up again in *this* test's own spy.
     act(() => {
-      result.current.start(["see", "you", "can", "not", "get"], 42);
+      result.current.start(["see", "you", "can", "not", "get"], "The anglerfish");
     });
 
     for (let i = 0; i < 5; i++) {
@@ -91,7 +97,7 @@ describe("useGame answerTyped", () => {
 
     expect(result.current.state.phase).toBe("result");
     const srcs = audioSpy.mock.calls.map((args) => String(args[0]));
-    expect(srcs.some((s) => s.endsWith("/audio/victory-42.mp3"))).toBe(true);
+    expect(srcs.some((s) => s.endsWith("/audio/victory-the-anglerfish.mp3"))).toBe(true);
   });
 
   it("spelling wrong reaches the reveal phase with lastCorrect false and pickedIndex -1", () => {

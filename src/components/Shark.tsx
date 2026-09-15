@@ -12,7 +12,8 @@ const sharkArtwork = stripRootSvgDimensions(rawSharkArtwork);
 // white belly, thinned outline -- see AGENTS.md for provenance and details)
 // rather than hand-drawn, embedded the same way as Kraken.tsx: `?raw` +
 // dangerouslySetInnerHTML. Its internal ids get scoped per-instance (see
-// scopeIds.ts) since level 2 renders two of these at once (a school);
+// scopeIds.ts) since the two-shark level renders two of these at once
+// (a school);
 // Megalodon reuses this same artwork via a CSS filter to darken it (see
 // that file) rather than fill-prop overrides, since this art's colors are
 // baked into the file instead of being simple shape fills.

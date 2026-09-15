@@ -15,7 +15,7 @@ import sharkPrincessArt from "../../assets/shark-princess.png";
 // change (no special-casing in BattleScene.tsx): a school-of-2 test at
 // the same scale (Megalodon reusing Shark's own art, resized similarly)
 // worked fine there, so this hasn't needed the extra approach-curve
-// treatment the much-larger Mosasaurus (level 6) required.
+// treatment the much-larger Mosasaurus required.
 export function SharkPrincess() {
   return (
     <g className="shark-princess">

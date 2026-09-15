@@ -9,7 +9,7 @@
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
-import { toMidSentence } from "../src/shared/textUtils.mjs";
+import { toMidSentence, slugify } from "../src/shared/textUtils.mjs";
 
 const ROOT = new URL("../", import.meta.url);
 const OUT = new URL("public/audio/", ROOT);
@@ -31,13 +31,16 @@ if (PREDATOR_LABELS.length === 0) {
   process.exit(1);
 }
 
-// defeat-<level>.mp3 / victory-<level>.mp3 -- text matches outcomeText() in
-// src/game/outcome.ts so the voice says what the screen says.
-const outcomeCues = PREDATOR_LABELS.flatMap((label, i) => {
-  const level = i + 1;
+// defeat-<slug>.mp3 / victory-<slug>.mp3 -- text matches outcomeText() in
+// src/game/outcome.ts so the voice says what the screen says. Keyed by the
+// predator's own (slugified) label, not its position in PREDATOR_LEVELS,
+// so these filenames don't need renaming every time levels get reordered
+// -- see AGENTS.md and src/game/outcome.ts's outcomeAudioCue.
+const outcomeCues = PREDATOR_LABELS.flatMap((label) => {
+  const slug = slugify(label);
   return [
-    [`defeat-${level}`, `${label} caught the puffer fish this time. Try again!`],
-    [`victory-${level}`, `The puffer fish puffed up huge and sent ${toMidSentence(label)} packing!`],
+    [`defeat-${slug}`, `${label} caught the puffer fish this time. Try again!`],
+    [`victory-${slug}`, `The puffer fish puffed up huge and sent ${toMidSentence(label)} packing!`],
   ];
 });
 
