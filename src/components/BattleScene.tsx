@@ -80,6 +80,25 @@ const PREDATOR_APPROACH: Partial<Record<PredatorKind, PredatorApproach>> = {
     startX: DEFAULT_START_X,
     ease: (t) => t * 0.75,
   },
+  // The opposite tweak from the Amargasaurus above: per explicit request,
+  // this one should end up *closer* than the shared default's usual
+  // closest approach (sharkX=150) by the final round. `ease(t) = t*1.1`
+  // overshoots past 1 at t=1, so the shared `sharkX = startX -
+  // approachProgress*(startX-150)` formula lands past its normal
+  // endpoint: 350 - 1.1*(350-150) = 130 instead of 150. Barely changes
+  // early rounds (t is small there, so t*1.1 is close to t*1), only
+  // visibly diverges as progress nears 1 -- same reason a smaller
+  // `startX` alone wouldn't have worked: that only moves round 1's
+  // starting point, not round 5's endpoint, which the shared formula
+  // always drives to exactly `startX - 1*(startX-150) = 150` regardless
+  // of `startX` unless `ease` itself pushes past 1. (A first pass used
+  // `t*1.2`, landing at 110 -- close enough to actually overlap the
+  // puffer once seen at the true final-round position, not just a
+  // mid-round snapshot; dialed back to 1.1.)
+  dunkleosteus: {
+    startX: DEFAULT_START_X,
+    ease: (t) => t * 1.1,
+  },
 };
 
 export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
