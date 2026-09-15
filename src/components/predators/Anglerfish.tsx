@@ -12,7 +12,7 @@ import anglerfishArt from "../../assets/anglerfish.png";
 const LURE_X = -61;
 const LURE_Y = -15;
 
-// Level 9's Anglerfish -- a vendored illustration (see AGENTS.md for
+// The Anglerfish -- a vendored illustration (see AGENTS.md for
 // provenance/processing), replacing the old hand-drawn version. Already
 // drawn nose-left in its native orientation, same convention as every
 // creature here, so no mirroring needed. Imported as a URL (not `?raw`)

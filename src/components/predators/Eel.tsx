@@ -1,7 +1,7 @@
 import eelArt from "../../assets/electric-eel.png";
 import eelGlowArt from "../../assets/electric-eel-glow.png";
 
-// Level 8's electric eel (school of 3) -- a raster illustration (not
+// The electric eel (school of 3) -- a raster illustration (not
 // vendored/licensed; user-provided, see AGENTS.md), replacing the old
 // hand-drawn S-curve. Already drawn nose-left in its native orientation,
 // same convention as every other creature here, so no mirroring needed.

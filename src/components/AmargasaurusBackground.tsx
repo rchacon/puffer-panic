@@ -10,10 +10,11 @@ const SRC_FEET_Y = 224;
 const DISPLAY_WIDTH = 80;
 const SCALE = DISPLAY_WIDTH / SRC_WIDTH;
 
-// Level 11's distant scenery: a second Amargasaurus, further up the shore,
-// bent down drinking from the lake -- static (it never approaches; the
-// close-up one in predators/Amargasaurus.tsx is the actual threat) and
-// positioned in scene-absolute coordinates, same convention as
+// The Amargasaurus level's distant scenery: a second Amargasaurus,
+// further up the shore, bent down drinking from the lake -- static (it
+// never approaches; the close-up one in predators/Amargasaurus.tsx is
+// the actual threat) and positioned in scene-absolute coordinates,
+// same convention as
 // ShipWreck.tsx/FishingBoat.tsx. Only rendered for this one level (see
 // BattleScene.tsx's `isShore` branch), sitting right at the horizon line
 // between the land above and the shallow water below -- the "one creature
