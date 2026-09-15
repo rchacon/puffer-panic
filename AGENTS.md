@@ -148,38 +148,41 @@ place).
 
 Each game actually *started* this session (including the very first) bumps a
 `playCount` in `App.tsx` and advances one step through `PREDATOR_LEVELS` in
-`src/game/predators.ts` -- level 1 is one shark, level 12 is the Kraken, then
-it wraps back to level 1. **Visual/thematic only**: every level still plays
+`src/game/predators.ts` -- the first level is one shark, the last level
+(currently the Kraken -- see `PREDATOR_LEVELS`) wraps back to the first.
+**Visual/thematic only**: every level still plays
 the same 5 rounds with the same scoring thresholds above; only what
 `BattleScene` draws, the `ResultScreen` wording, and the defeat/victory voice
 line change. The counter is **session-only** (a plain `useState`, not
 persisted) -- unlike the word selection, reloading the page resets it to
-level 1.
+the first level.
 
-Level 4 (the Shark Princess's escort) is the one level that mixes
-creatures instead of rendering `count` copies of one `kind` -- two
-`PredatorLevel` fields exist just for this: `kinds` (per-instance kind,
-same length as `count`) and `offsets` (per-instance position/scale,
-overriding the generic same-size `getSchoolOffsets(count)` formation).
-Both are read by index in lockstep in `BattleScene.tsx`
-(`getInstanceKinds(predator)` for the kind, `predator.offsets ??
-getSchoolOffsets(predator.count)` for the position), and array order is
-also *draw* order -- later entries render on top. Level 4 uses that to
-give the Princess the exact same `{dx: 0, dy: 0, scale: 1}` position/size
-her solo level-3 appearance uses (not just "full size" in the abstract --
-matching level 3's own numbers directly), drawn last (in front), with her
-two brother sharks small (`scale: 0.4`) and spread well apart from her
+The Shark Princess's escort ("The Shark Princess and her two brothers")
+is the one level that mixes creatures instead of rendering `count`
+copies of one `kind` -- two `PredatorLevel` fields exist just for this:
+`kinds` (per-instance kind, same length as `count`) and `offsets`
+(per-instance position/scale, overriding the generic same-size
+`getSchoolOffsets(count)` formation). Both are read by index in lockstep
+in `BattleScene.tsx` (`getInstanceKinds(predator)` for the kind,
+`predator.offsets ?? getSchoolOffsets(predator.count)` for the position),
+and array order is also *draw* order -- later entries render on top. The
+escort level uses that to give the Princess the exact same
+`{dx: 0, dy: 0, scale: 1}` position/size her solo appearance ("The Shark
+Princess") uses (not just "full size" in the abstract -- matching that
+other entry's own numbers directly), drawn last (in front), with her two
+brother sharks small (`scale: 0.4`) and spread well apart from her
 (drawn first, behind her). Tucking them in low next to her at a bigger
 scale, the first attempt at this, looked wrong once actually rendered
 two different ways: reusing the generic 3-slot school formation
 (`getSchoolOffsets(3)`) as-is made all three read as the same size; a
 custom formation that still kept the brothers large and close (`scale:
 0.55`, tight spacing) fixed that but let them visually overlap/crowd the
-Princess enough that she read as smaller than her level-3 self, even
+Princess enough that she read as smaller than her solo self, even
 though her own `scale` was already `1` both times -- the occlusion was
 the actual problem, not her size. `predators.test.ts` pins both the kind
-order and the relative scale so a future edit to either can't silently
-swap who's in front.
+order and the relative scale (finding the escort entry by its own label,
+not a level number) so a future edit to either can't silently swap who's
+in front.
 
 The defeat/victory voice cue names the actual predator: `useGame.start(pool,
 predatorLabel)` stashes the label in a ref purely so `outcomeAudioCue()` in
