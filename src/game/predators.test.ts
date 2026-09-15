@@ -93,10 +93,14 @@ describe("PREDATOR_LEVELS", () => {
     // indexes `kinds` in lockstep with it. This pins both assumptions
     // together so reordering one without the other doesn't silently draw
     // a brother shark on top at full size instead of the Princess.
-    const level4 = PREDATOR_LEVELS.find((p) => p.level === 4);
-    expect(level4).toBeDefined();
-    expect(getInstanceKinds(level4!)).toEqual(["shark", "shark", "sharkprincess"]);
-    const offsets = level4!.offsets ?? getSchoolOffsets(level4!.count);
+    // Found by label, not level number -- her escort's *position* shifts
+    // as levels get reordered, but her label doesn't.
+    const escort = PREDATOR_LEVELS.find(
+      (p) => p.label === "The Shark Princess and her two brothers",
+    );
+    expect(escort).toBeDefined();
+    expect(getInstanceKinds(escort!)).toEqual(["shark", "shark", "sharkprincess"]);
+    const offsets = escort!.offsets ?? getSchoolOffsets(escort!.count);
     expect(offsets.at(-1)!.scale).toBeGreaterThan(offsets[0].scale);
     expect(offsets.at(-1)!.scale).toBeGreaterThan(offsets[1].scale);
   });
