@@ -125,17 +125,13 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
   // a scattered `predator.kind === "amargasaurus"` check each time.
   const isShore = predator.kind === "amargasaurus";
   // Coral and Kelp are skipped outright (not just dimmed like the rest
-  // of the seabed) for three different reasons, one per flag/kind below:
-  // the Anglerfish is photosynthetic reef life, and neither grows this
-  // deep past where any sunlight reaches; the Bloop just reads better
-  // against open, uncluttered seabed at the scale it's drawn; the
-  // Amargasaurus level is a shallow freshwater lake, not a reef, so
-  // neither grows there at all. Collected into one derived flag rather
-  // than a growing inline `&&` chain at the render site -- each reason
-  // stays a single named term here instead of the whole expression
-  // needing a rewrite (and its own comment re-justified) every time a
-  // future level adds a fourth.
-  const skipsReefDecor = isMurky || predator.kind === "bloop" || isShore;
+  // of the seabed) for some levels -- see `PredatorLevel.skipsReefDecor`'s
+  // own doc comment in predators.ts for the per-level reasons. Read
+  // straight from the level data rather than re-deriving it from
+  // `isMurky`/`isShore`/a `predator.kind` check here, so a future level
+  // that wants this only needs to set the flag in predators.ts, not also
+  // touch this component.
+  const skipsReefDecor = predator.skipsReefDecor ?? false;
   const className = [
     "scene",
     outcome && `scene--${outcome}`,

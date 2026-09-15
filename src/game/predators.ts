@@ -112,9 +112,9 @@ const PREDATOR_LEVEL_ENTRIES: Omit<PredatorLevel, "level">[] = [
   { kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
   { kind: "piranha", count: 7, label: "The seven piranhas" },
   { kind: "eel", count: 3, label: "The three electric eels" },
-  { kind: "anglerfish", count: 1, label: "The anglerfish" },
-  { kind: "bloop", count: 1, label: "The Bloop" }, // boss fight
-  { kind: "amargasaurus", count: 1, label: "The Amargasaurus" },
+  { kind: "anglerfish", count: 1, label: "The anglerfish", skipsReefDecor: true },
+  { kind: "bloop", count: 1, label: "The Bloop", skipsReefDecor: true }, // boss fight
+  { kind: "amargasaurus", count: 1, label: "The Amargasaurus", skipsReefDecor: true },
   { kind: "kraken", count: 1, label: "The Kraken" }, // final boss fight
 ];
 
