@@ -5,6 +5,7 @@
 export type PredatorKind =
   | "shark"
   | "swordfish"
+  | "footballshark"
   | "eel"
   | "piranha"
   | "anglerfish"
@@ -103,6 +104,7 @@ const PREDATOR_LEVEL_ENTRIES: Omit<PredatorLevel, "level">[] = [
     ],
     label: "The Shark Princess and her two brothers",
   },
+  { kind: "footballshark", count: 1, label: "The football shark" },
   { kind: "megalodon", count: 1, label: "The Megalodon" }, // boss fight
   {
     kind: "dunkleosteus",

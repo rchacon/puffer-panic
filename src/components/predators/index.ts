@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import type { PredatorKind } from "../../game/predators";
 import { Shark } from "../Shark";
 import { Swordfish } from "./Swordfish";
+import { FootballShark } from "./FootballShark";
 import { Eel } from "./Eel";
 import { Piranha } from "./Piranha";
 import { Anglerfish } from "./Anglerfish";
@@ -17,6 +18,7 @@ import { Kraken } from "./Kraken";
 export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
   shark: Shark,
   swordfish: Swordfish,
+  footballshark: FootballShark,
   eel: Eel,
   piranha: Piranha,
   anglerfish: Anglerfish,

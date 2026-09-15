@@ -573,6 +573,28 @@ risk the Rocks-clearance tuning `AGENTS.md` notes elsewhere), capping
 same close-up crop that read as a disembodied neck at the *default*
 closest approach reads as a real threat 50 units short of it.
 
+The `FootballShark` is inserted right before the Megalodon in play
+order -- like the Dunkleosteus/Swordfish, it's a plain predator, not a
+boss fight: no `BOSS_INTROS` entry, no `PREDATOR_APPROACH` override,
+just the shared default linear approach. A cartoon shark restyled as an
+American football (white laces down its back, a football helmet with a
+strand of seaweed and a starfish tucked under it), user-provided.
+`src/assets/football-shark.png` is a processed derivative: the source
+had no alpha channel at all (`im.mode == "RGB"`), a flat two-tone grey
+checkerboard baked into fully opaque pixels -- the plainest version of
+the fake-transparency trap seen so far, fixed the usual way
+(flood-fill from the border, matching both near-neutral-grey checker
+tones), except this source's own helmet is *also* white/grey: flooding
+only from pixels actually reachable from the canvas border (not a
+global "replace grey" pass) left the enclosed helmet untouched since
+it's never connected to the border. Cropped to content, downscaled to
+320x187 -- like the Swordfish, kept shark-scale (159x93 in
+`FootballShark.tsx`, matching the plain `Shark`'s own footprint) rather
+than a boss-fight predator's bigger 600px-wide source. ~2MB down to
+~80KB. The bite point (roughly the midpoint between the two front fang
+tips, same convention as every other toothed predator) was found the
+usual coordinate-grid-overlay way and anchored at the local origin.
+
 The Dunkleosteus is inserted right after the Megalodon --
 unlike the Amargasaurus/Bloop/Megalodon, it's a plain predator, not a
 boss fight: no `BOSS_INTROS` entry, no intro card/music/voice line, just
