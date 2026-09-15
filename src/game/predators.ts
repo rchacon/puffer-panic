@@ -104,6 +104,7 @@ const PREDATOR_LEVEL_ENTRIES: Omit<PredatorLevel, "level">[] = [
     ],
     label: "The Shark Princess and her two brothers",
   },
+  { kind: "swordfish", count: 1, label: "The swordfish" },
   { kind: "footballshark", count: 1, label: "The football shark" },
   {
     kind: "dunkleosteus",
@@ -113,7 +114,6 @@ const PREDATOR_LEVEL_ENTRIES: Omit<PredatorLevel, "level">[] = [
   },
   { kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
   { kind: "piranha", count: 7, label: "The seven piranhas" },
-  { kind: "swordfish", count: 1, label: "The swordfish" },
   { kind: "megalodon", count: 1, label: "The Megalodon" }, // boss fight
   { kind: "eel", count: 3, label: "The three electric eels" },
   { kind: "anglerfish", count: 1, label: "The anglerfish", skipsReefDecor: true },
