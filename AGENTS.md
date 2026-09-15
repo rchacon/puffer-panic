@@ -24,7 +24,7 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
 - `src/components/` &mdash; presentational. `BattleScene` owns the `<svg>` and
   renders whichever creature(s) `predators.ts` resolved, via
   `predators/index.ts`'s `PREDATOR_COMPONENTS` map, plus `Puffer` and
-  (level 11 only) `AmargasaurusBackground`, static shore scenery rendered
+  (Amargasaurus's own level only) `AmargasaurusBackground`, static shore scenery rendered
   directly by `BattleScene` rather than through that map (see "Predator
   escalation" below); `CardRow` / `FlashCard` are Easy Mode's answers,
   `SpellInput` is Hard Mode's (see "Game modes" below); `WordPicker` is
@@ -232,7 +232,7 @@ blocks automated fetches with a bot-detection checkpoint, so this was
 downloaded by hand and its exact license wasn't independently re-verified --
 check that page before reusing this icon anywhere beyond this one spot.
 
-The Megalodon (level 5, and every time the cycle comes back around to it)
+The Megalodon (and every time the cycle comes back around to it)
 is the other boss fight, added well after the Kraken's -- `App.tsx`'s
 `BOSS_INTROS` is a lookup keyed by `PredatorKind` (kraken and megalodon
 both entries) rather than another hardcoded `if` in `handleStart`, so a
@@ -291,7 +291,7 @@ same absolute-scene-coordinates technique as `ShipWreck.tsx` -- positioned
 where the Megalodon's approach will eventually cover it, which is fine;
 the whole point of a boss this size is that it can.
 
-The Bloop (level 10) is the third boss fight, inserted between the
+The Bloop is the third boss fight, inserted between the
 Anglerfish and the Kraken (originally between the eels and the
 Anglerfish -- levels 9 and 10 were swapped afterward, see the
 levels-shift note at the end of this section). Its artwork (`src/components/predators/Bloop.tsx`,
@@ -395,7 +395,7 @@ before the Bloop was ever inserted. Same "regenerate only the shifted
 positions, not a full `npm run audio:gen`" approach both times, per the
 "Reorder levels 5-8" commit.
 
-The Amargasaurus (level 11) is the fourth boss fight, inserted between the
+The Amargasaurus is the fourth boss fight, inserted between the
 Bloop and the Kraken (shifting the Kraken from level 11 to 12 --
 `predators.test.ts`'s level-count/cycle-length assertions and
 `App.test.tsx`'s Kraken-intro tests both had to move from 10/11
@@ -573,7 +573,7 @@ risk the Rocks-clearance tuning `AGENTS.md` notes elsewhere), capping
 same close-up crop that read as a disembodied neck at the *default*
 closest approach reads as a real threat 50 units short of it.
 
-The Dunkleosteus (level 6) is inserted right after the Megalodon --
+The Dunkleosteus is inserted right after the Megalodon --
 unlike the Amargasaurus/Bloop/Megalodon, it's a plain predator, not a
 boss fight: no `BOSS_INTROS` entry, no intro card/music/voice line, just
 a normal approaching creature like the Shark or Anglerfish, using the
@@ -688,7 +688,7 @@ Sized 1.5x its original footprint in `SharkPrincess.tsx` (162 wide, up
 from 108) -- she's a whale shark, the largest fish species alive, and the
 original box was actually smaller than the plain Shark's 159, undersold
 for what she's meant to be. No special-casing needed in `BattleScene.tsx`
-for this, unlike the much-larger Mosasaurus (level 6) -- verified
+for this, unlike the much-larger Mosasaurus -- verified
 round-by-round via headless Chrome that the shared linear approach still
 reads fine at this size, no early-contact or off-screen-runway issues to
 work around.
