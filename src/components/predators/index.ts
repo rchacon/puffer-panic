@@ -12,13 +12,7 @@ import { Bloop } from "./Bloop";
 import { Amargasaurus } from "./Amargasaurus";
 import { Kraken } from "./Kraken";
 
-// `progress` is only read by Amargasaurus (see that file) -- every other
-// component here is a plain zero-prop function, which TypeScript still
-// accepts as a `ComponentType<{ progress?: number }>` (a function
-// declared to take fewer parameters than a type calls for is assignable
-// to it, same as any other callback-shaped type in TS), so this one
-// shared prop type doesn't need a per-kind special case.
-export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType<{ progress?: number }>> = {
+export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
   shark: Shark,
   eel: Eel,
   piranha: Piranha,

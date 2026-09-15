@@ -63,17 +63,6 @@ const PREDATOR_APPROACH: Partial<Record<PredatorKind, PredatorApproach>> = {
     startX: 460,
     ease: (t) => 0.2 * t + 0.8 * t ** 3,
   },
-  // The Amargasaurus never swims toward the puffer at all -- it's a
-  // stationary lakeside grazer, not a hunter closing in. `ease: () => 0`
-  // pins sharkX at `startX` for every round (the shared math below,
-  // `startX - approachProgress*(startX-150)`, collapses to a constant
-  // when approachProgress is always 0), so its only per-round change is
-  // the progress-driven head dip its own component handles internally --
-  // see Amargasaurus.tsx.
-  amargasaurus: {
-    startX: 300,
-    ease: () => 0,
-  },
 };
 
 export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: Props) {
@@ -118,13 +107,7 @@ export function BattleScene({ sharkProgress, pufferScale, outcome, predator }: P
         return (
           <g key={i} transform={`translate(${o.dx} ${o.dy}) scale(${o.scale})`}>
             <g className="scene__predator-bob">
-              {/* Every predator but the Amargasaurus ignores this --
-                  see Amargasaurus.tsx for the one that reads it. Passed
-                  as the raw, un-eased sharkProgress (not the local
-                  `approachProgress`) so it still reflects actual round
-                  completion regardless of this kind's own `ease: () => 0`
-                  approach override above. */}
-              <Creature progress={sharkProgress} />
+              <Creature />
             </g>
           </g>
         );

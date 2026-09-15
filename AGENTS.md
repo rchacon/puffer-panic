@@ -36,9 +36,7 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `src/components/`), `Kraken`, `SharkPrincess`, `Piranha`, `Mosasaurus`,
   `Megalodon`, `Anglerfish`, `Eel`, `Bloop` and `Amargasaurus` are
   vendored/user-provided raster or vector art rather than hand-drawn --
-  see "Predator escalation" below. `Amargasaurus` is also the only entry
-  in `PREDATOR_COMPONENTS` that reads the map's shared `progress` prop
-  (every other component ignores it) -- see its own file header.
+  see "Predator escalation" below.
   `Puffer.tsx` (also one level up -- the protagonist, not a
   `predators/` entry) is likewise now vendored vector art, not hand-drawn.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
@@ -428,37 +426,31 @@ Positioned in scene-absolute coordinates directly inside `BattleScene.tsx`
 through, since it never needs to move or react to game state at all.
 
 `Amargasaurus.tsx` (`src/components/predators/Amargasaurus.tsx`) is the
-actual threat, and went through a full redesign mid-flight. The first cut
-followed every other predator's convention: a close-up head/neck raster
+actual threat, and went through two redesigns before landing back on
+every other predator's own plain convention. The first cut followed that
+convention from the start: a close-up head/neck raster
 (`amargasaurus-foreground.png`, an earlier source photo since replaced --
 see below) nose-anchored and swimming in via the default `sharkX`
-approach curve, mouth open as if lunging. The user explicitly rejected
-this shape of animation, not just its tuning: *"i dont want the dino in
-foreground swimming towards the fish. its standing in water (off in
-distance) and you see its head submerge as if its drinking water."* That
-meant the creature needed to stay in one place while still visibly
+approach curve, mouth open as if lunging. The user rejected this shape of
+animation, not just its tuning: *"i dont want the dino in foreground
+swimming towards the fish. its standing in water (off in distance) and
+you see its head submerge as if its drinking water."*
+
+That meant the creature needed to stay in one place while still visibly
 escalating round over round -- something none of the existing
 `PREDATOR_APPROACH` entries did (they all reshape *how fast* `sharkX`
-closes in, never whether it moves at all).
-
-Two changes made that possible. First,
-`PREDATOR_APPROACH.amargasaurus = { startX: 300, ease: () => 0 }` in
-`BattleScene.tsx` -- the shared `sharkX = startX - approachProgress *
-(startX - 150)` formula collapses to a constant when `ease` always
-returns 0, pinning the group at `startX` for every round instead of
-sliding it toward 150. Second, `PREDATOR_COMPONENTS`'s type grew a
-`progress?: number` prop (`components/predators/index.ts`) and
-`BattleScene.tsx` now passes its own raw `sharkProgress` into every
-`<Creature>` it renders -- every predator but this one ignores it
-(a zero-arg function component is still structurally assignable to
-`ComponentType<{ progress?: number }>` in TypeScript, so nothing else
-needed to change just to add the prop to the shared map's type). Inside
-`Amargasaurus.tsx`, `progress` now drives an outer `translate` (the head
-sliding down from just above the waterline at round 1 to past the
-predator anchor's own submerged depth by the last round -- the actual
-"getting closer" cue), a small extra `rotate` around a pivot near the
-neck's own exit point, and a gentle `scale` growth, rather than any
-horizontal movement at all.
+closes in, never whether it moves at all). Two changes made it possible:
+`PREDATOR_APPROACH.amargasaurus = { startX: 300, ease: () => 0 }` (the
+shared `sharkX` formula collapses to a constant when `ease` always
+returns 0, pinning the group in place instead of sliding it toward 150),
+and a `progress?: number` prop threaded through `PREDATOR_COMPONENTS`'s
+shared type (`components/predators/index.ts`) and passed from
+`BattleScene.tsx` into every `<Creature>` -- every predator but this one
+ignored it. Inside the component, `progress` drove an outer `translate`
+(the head sliding down from just above the waterline at round 1 to past
+the predator anchor's own submerged depth by the last round), a small
+extra `rotate`, and a gentle `scale` growth, in place of any horizontal
+movement.
 
 The user then swapped in a new source photo mid-redesign
 (`amargasaurus-foreground.png`, replacing the original) with a much
@@ -466,11 +458,15 @@ sharper natural neck curve that already reads as "leaning down to drink"
 on its own -- *"i thnk it might give the approach angle im going for."*
 Re-processed the same way (crop/downscale-to-700px-wide/quantize, ~69KB),
 re-found the nose tip via the usual coordinate-grid-overlay technique
-against the new file, and simplified the component to lean on the art's
-own curve: a smaller added rotation range than the first cut needed,
-since most of the "reaching down" angle is now baked into the photo
-itself rather than something this component has to manufacture through
-rotation alone.
+against the new file. That new curve turned out to make the whole
+stationary-dip mechanic unnecessary: *"the dino can approach horizonally
+similar to other predators. the fact that the image contains a dino
+looking downward might take away the need for a custom approach."*
+`Amargasaurus.tsx` reverted to the plain nose-anchored-raster-plus-default-
+approach shape every other predator uses (no `PREDATOR_APPROACH` entry,
+no `progress` prop -- `PREDATOR_COMPONENTS`'s type reverted too, back to
+a plain `ComponentType`), relying on the photo's own downward angle to
+sell "leaning toward the water" as it swims in like everything else does.
 
 The boss intro (`AmargasaurusIntro.tsx`) follows Kraken/Megalodon's
 silhouette-behind-title-line technique, using another user-provided asset
@@ -487,22 +483,34 @@ pattern as `bigger-boat.mp3`/`release-the-kraken.mp3` -- added as a
 generated directly here to avoid re-rolling all the other clips' TTS
 non-determinism just to add one file.
 
-`amargasaurus-music.wav` went through two candidates before landing on
-the current one, both CC0 via OpenGameArt, both trimmed the same way
-`kraken-music.wav`/`megalodon-music.wav` were (RMS-envelope analysis to
-find the loudest sustained stretch, fades baked in): first "A Legend Will
-Rise" by CodeManu (opengameart.org/content/a-legend-will-rise-orchestral),
-a short standalone "epic uplifter" cue; replaced when the user asked for
-something closer to Jurassic Park's own theme specifically. "Fantasy
-Orchestral Theme" by Joth
-(opengameart.org/content/fantasy-orchestral-theme) -- a ~3:12 piece
-explicitly described by its own author as starting slow/serene and
-building into an intense crescendo -- was the closer structural match;
-trimmed to a ~2.6s slice of its loudest sustained plateau (around the
-112-115s mark, found the same RMS-envelope way, not by ear). `durationMs`
-on `BOSS_INTROS.amargasaurus` (2700) covers this clip's own length rather
-than the shorter voice line's, so its fade-out finishes instead of
-getting cut off mid-swell.
+`amargasaurus-music.wav` went through three candidates before landing on
+the current one, each trimmed the same way `kraken-music.wav`/
+`megalodon-music.wav` were (RMS-envelope analysis to find the loudest
+sustained stretch, fades baked in): first "A Legend Will Rise" by
+CodeManu, CC0 via OpenGameArt
+(opengameart.org/content/a-legend-will-rise-orchestral), a short
+standalone "epic uplifter" cue -- replaced when the user asked for
+something closer to a specific well-known film theme's mood. The second
+candidate the user pointed at directly was a Pixabay track *titled*
+after that film -- declined rather than used: a fan reinterpretation
+named after a copyrighted score is a real infringement risk regardless
+of Pixabay's own license terms (which only cover what the uploader
+actually owns, not a melody they don't), so this was flagged back to the
+user instead of downloaded. "Dawn of Time" by geoffharvey, also via
+Pixabay (pixabay.com/music/modern-classical-dawn-of-time-369563) -- an
+independent, Content-ID-registered composition (evolution/dinosaur/
+nature themed, not named or modeled after any existing score) -- is the
+current pick; downloaded by hand (Pixabay blocks automated fetches with
+a bot-detection checkpoint like SVG Repo elsewhere in this doc) and
+handed over as an unstaged file, same as every raster asset in this
+project. First trimmed to a ~2.6s slice of its loudest sustained
+plateau (around the 51s mark of its ~79s length, found via the same
+RMS-envelope technique as `kraken-music.wav`/`megalodon-music.wav`) --
+then re-trimmed from the very start of the track instead, per explicit
+request, rather than that louder mid-track stretch. `durationMs` on
+`BOSS_INTROS.amargasaurus` (2700) covers this clip's own ~2.6s length
+rather than the shorter voice line's, so its fade-out finishes instead
+of getting cut off mid-swell.
 
 `BattleScene.tsx`'s `isShore` flag (true only for this kind, same
 per-kind-backdrop-swap pattern as the Anglerfish's `isMurky`) swaps the
