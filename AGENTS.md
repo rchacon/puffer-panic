@@ -907,6 +907,33 @@ attributes, an id referenced from a `<style>` block, or a SMIL
 kraken.svg as they stand; check for those before reusing it on a
 differently-authored source file.
 
+The `GrandpaShark` is inserted right before the Mosasaurus in play
+order -- like the Swordfish/FootballShark, it's a plain predator, not a
+boss fight: no `BOSS_INTROS` entry, no `PREDATOR_APPROACH` override,
+just the shared default linear approach. A cartoon shark cast as a
+grandpa (flat cap, glasses, white eyebrows/mustache), reading an
+"OCEAN TIMES" newspaper that covers most of its mouth, user-provided.
+`src/assets/grandpa-shark.png` is a processed derivative: the source
+had no alpha channel at all (`im.mode == "RGB"`), the same flat
+two-tone grey checkerboard trap as the football shark's own source,
+fixed the same way (flood-fill from the border, matching both
+near-neutral-grey checker tones -- the glasses' light-blue lenses and
+the newspaper's cream tone are both far enough from neutral grey to
+survive untouched). Cropped to content, downscaled to 320x187 (shark-
+scale, 159x93 in `GrandpaShark.tsx`), then palette-quantized (64
+colors, Floyd-Steinberg dither) -- checked for banding on the body's
+own gradient and legibility on the newspaper's headline text first,
+both held up clean. ~2MB down to ~9.8KB, the smallest predator source
+yet, since 64 colors was enough for this art's flat cel-shading with no
+visible loss.
+
+Unlike every other toothed predator, its mouth is mostly hidden behind
+the newspaper -- no clean pair of front fang tips to anchor the bite
+point on. Anchored at the leftmost point of the whole composition
+instead (the newspaper's own top-left corner), same technique as the
+Swordfish's bill tip when the mouth itself isn't the visual "front" of
+a predator.
+
 The `Mosasaurus` is a raster illustration, user-provided (not
 sourced/licensed the way the Kraken/PhyloPic assets were -- verify
 provenance before reusing it elsewhere). Went through two other approaches
