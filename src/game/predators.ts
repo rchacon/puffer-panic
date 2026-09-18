@@ -7,6 +7,7 @@ export type PredatorKind =
   | "swordfish"
   | "footballshark"
   | "grandpashark"
+  | "seaserpent"
   | "eel"
   | "piranha"
   | "anglerfish"
@@ -114,6 +115,7 @@ const PREDATOR_LEVEL_ENTRIES: Omit<PredatorLevel, "level">[] = [
     skipsReefDecor: true,
   },
   { kind: "grandpashark", count: 1, label: "The grandpa shark" },
+  { kind: "seaserpent", count: 1, label: "The sea serpent" },
   { kind: "mosasaurus", count: 1, label: "The Mosasaurus" },
   { kind: "piranha", count: 7, label: "The seven piranhas" },
   { kind: "megalodon", count: 1, label: "The Megalodon" }, // boss fight

@@ -934,6 +934,39 @@ instead (the newspaper's own top-left corner), same technique as the
 Swordfish's bill tip when the mouth itself isn't the visual "front" of
 a predator.
 
+The `SeaSerpent` is inserted right before the Mosasaurus in play order
+-- like the Swordfish/FootballShark/GrandpaShark, it's a plain
+predator, not a boss fight: no `BOSS_INTROS` entry, no
+`PREDATOR_APPROACH` override, just the shared default linear approach.
+A painterly (not flat cel-shaded, unlike most predators here) dragon-
+like sea serpent, teal scales with orange spine frills, roaring with a
+long tongue and bared fangs, user-provided.
+
+`src/assets/sea-serpent.png` is a processed derivative: the source had
+no alpha channel at all (`im.mode == "RGB"`), the same checkerboard
+trap as several predators before it, fixed the usual way (flood-fill
+from the border, matching both near-neutral-grey checker tones -- a
+looser range than usual, `195 <= max(r,g,b) <= 255`, since this
+source's checkerboard ran much lighter than the others'). One extra
+cleanup pass beyond the usual flood-fill: a few dozen isolated 2-3px
+dust specks in the background were never connected to the border
+(off-tone enough to break the flood-fill's path through them), left
+over as stray opaque dots after the main fill. Found and dropped by
+taking every remaining opaque connected component and keeping only the
+largest (the serpent itself) -- everything else was noise, not real
+art content. Also checked (contrast-boosted, same technique as the
+Dunkleosteus section above) for a watermark hiding in the transparent
+region; none found.
+
+Cropped to content, downscaled to 360x169, then palette-quantized --
+128 colors here instead of the 64 several flatter-shaded predators
+(Swordfish, FootballShark, GrandpaShark) use, since this art's
+painterly gradient shading showed early banding at lower counts where
+their flat cel-shading didn't. ~2.2MB down to ~18KB. The bite point
+(roughly the midpoint between the two front fang tips, same convention
+as every other toothed predator) was found the usual coordinate-grid-
+overlay way and anchored at the local origin.
+
 The `Mosasaurus` is a raster illustration, user-provided (not
 sourced/licensed the way the Kraken/PhyloPic assets were -- verify
 provenance before reusing it elsewhere). Went through two other approaches
