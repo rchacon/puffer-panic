@@ -4,6 +4,7 @@ import { Shark } from "../Shark";
 import { Swordfish } from "./Swordfish";
 import { FootballShark } from "./FootballShark";
 import { GrandpaShark } from "./GrandpaShark";
+import { SeaSerpent } from "./SeaSerpent";
 import { Eel } from "./Eel";
 import { Piranha } from "./Piranha";
 import { Anglerfish } from "./Anglerfish";
@@ -21,6 +22,7 @@ export const PREDATOR_COMPONENTS: Record<PredatorKind, ComponentType> = {
   swordfish: Swordfish,
   footballshark: FootballShark,
   grandpashark: GrandpaShark,
+  seaserpent: SeaSerpent,
   eel: Eel,
   piranha: Piranha,
   anglerfish: Anglerfish,
