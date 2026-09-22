@@ -43,7 +43,15 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
   (see there).
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
-  silence if a file is missing or autoplay is blocked.
+  silence if a file is missing or autoplay is blocked. Also owns the single
+  looping background-music element (`startMusic`/`pauseMusic`/`stopMusic`),
+  driven by `useBackgroundMusic.ts`. `App.tsx` plays
+  `src/assets/ebunny-ocean.mp3` (user-provided, ~5.4MB -- provenance/license
+  not verified, check before reusing) on loop during the rounds of every
+  boss fight (any kind in `BOSS_INTROS`), starting after the intro's own
+  sting ends and stopping on the result screen. `MuteButton` (corner of
+  the app, always visible) pauses it; the choice persists in
+  `localStorage["puffer-panic:muted"]` (`src/data/muteSelection.ts`).
 - `src/shared/` &mdash; plain `.mjs` (not `.ts`) helpers needed by both the app
   and a `scripts/*.mjs` tool, e.g. `textUtils.mjs`'s `toMidSentence` (used by
   `outcome.ts` and `generate-audio.mjs`) &mdash; a `.d.mts` alongside gives

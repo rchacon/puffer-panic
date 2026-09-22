@@ -27,6 +27,7 @@ body {
 }
 
 .app {
+  position: relative;
   max-width: 720px;
   margin: 0 auto;
   padding: 16px 16px 32px;
@@ -202,6 +203,26 @@ body {
 }
 
 .wordpicker__chip:has(input:focus-visible) {
+  outline: 3px solid #0b3a5b;
+  outline-offset: 2px;
+}
+
+/* ---------- Mute button ---------- */
+.mutebutton {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--card-edge);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mutebutton:focus-visible {
   outline: 3px solid #0b3a5b;
   outline-offset: 2px;
 }
