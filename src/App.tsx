@@ -7,7 +7,7 @@ import type { PredatorKind } from "./game/predators";
 import { WORDS } from "./data/words";
 import { loadSelection, saveSelection } from "./data/wordSelection";
 import { loadMode, saveMode, type Mode } from "./data/modeSelection";
-import { playCue, playUrl } from "./audio/player";
+import { playCue, playUrl, preloadMusic } from "./audio/player";
 import krakenMusic from "./assets/kraken-music.wav";
 import megalodonMusic from "./assets/megalodon-music.wav";
 import bloopSound from "./assets/bloop-sound.wav";
@@ -131,6 +131,16 @@ export default function App() {
   };
   const inRound = state.phase === "playing" || state.phase === "reveal";
   useBackgroundMusic(bossMusic, 0.35, inRound && predator.kind in BOSS_INTROS, muted);
+
+  // Warm the network fetch for the (multi-MB) boss track as early as
+  // possible -- on mount, not when a boss round actually starts -- so
+  // useBackgroundMusic's own startMusic() call finds it already loaded
+  // instead of beginning a cold fetch right when playback is wanted. Just
+  // sets up the <audio> element/starts the request; doesn't play anything,
+  // so no user gesture is needed here.
+  useEffect(() => {
+    preloadMusic(bossMusic);
+  }, []);
 
   // The currently-showing boss intro, if any -- see BOSS_INTROS above.
   const [activeBossIntro, setActiveBossIntro] = useState<BossIntro | null>(null);
