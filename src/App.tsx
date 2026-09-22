@@ -7,11 +7,15 @@ import type { PredatorKind } from "./game/predators";
 import { WORDS } from "./data/words";
 import { loadSelection, saveSelection } from "./data/wordSelection";
 import { loadMode, saveMode, type Mode } from "./data/modeSelection";
-import { playCue, playUrl } from "./audio/player";
+import { playCue, playUrl, preloadMusic } from "./audio/player";
 import krakenMusic from "./assets/kraken-music.wav";
 import megalodonMusic from "./assets/megalodon-music.wav";
 import bloopSound from "./assets/bloop-sound.wav";
 import amargasaurusMusic from "./assets/amargasaurus-music.wav";
+import bossMusic from "./assets/ebunny-ocean.mp3";
+import { useBackgroundMusic } from "./audio/useBackgroundMusic";
+import { loadMuted, saveMuted } from "./data/muteSelection";
+import { MuteButton } from "./components/MuteButton";
 import { StartScreen } from "./components/StartScreen";
 import { BattleScene } from "./components/BattleScene";
 import { PromptBar } from "./components/PromptBar";
@@ -115,6 +119,29 @@ export default function App() {
   const predator = getPredatorLevel(playCount || 1);
   const nextPredator = getPredatorLevel(playCount + 1);
 
+  // Looping background track for every boss fight's rounds (whichever kinds
+  // BOSS_INTROS lists), not plain predators. Starts only once the round
+  // actually begins -- after the intro's own sting has finished -- and stops
+  // on the result screen. The mute choice is a persisted per-player
+  // preference, like mode.
+  const [muted, setMuted] = useState(() => loadMuted());
+  const toggleMuted = () => {
+    setMuted(!muted);
+    saveMuted(!muted);
+  };
+  const inRound = state.phase === "playing" || state.phase === "reveal";
+  useBackgroundMusic(bossMusic, 0.35, inRound && predator.kind in BOSS_INTROS, muted);
+
+  // Warm the network fetch for the (multi-MB) boss track as early as
+  // possible -- on mount, not when a boss round actually starts -- so
+  // useBackgroundMusic's own startMusic() call finds it already loaded
+  // instead of beginning a cold fetch right when playback is wanted. Just
+  // sets up the <audio> element/starts the request; doesn't play anything,
+  // so no user gesture is needed here.
+  useEffect(() => {
+    preloadMusic(bossMusic);
+  }, []);
+
   // The currently-showing boss intro, if any -- see BOSS_INTROS above.
   const [activeBossIntro, setActiveBossIntro] = useState<BossIntro | null>(null);
   const introTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -154,6 +181,7 @@ export default function App() {
   return (
     <div className="app">
       <h1 className="app__title">Puffer Panic</h1>
+      <MuteButton muted={muted} onToggle={toggleMuted} />
 
       {state.phase === "start" ? (
         <StartScreen

@@ -222,6 +222,55 @@ describe("App - predator escalation", () => {
       screen.getByRole("img", { name: /amargasaurus swimming toward a puffer fish/i }),
     ).toBeInTheDocument();
   });
+
+  describe("background music", () => {
+    function spyOnMusic() {
+      const played: string[] = [];
+      const paused: string[] = [];
+      vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(function (
+        this: HTMLMediaElement,
+      ) {
+        played.push(this.src);
+        return Promise.resolve();
+      });
+      vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(function (
+        this: HTMLMediaElement,
+      ) {
+        paused.push(this.src);
+      });
+      return {
+        plays: () => played.filter((s) => s.includes("ebunny-ocean")),
+        pauses: () => paused.filter((s) => s.includes("ebunny-ocean")),
+      };
+    }
+
+    it("doesn't play during a plain (non-boss) predator's rounds", () => {
+      const music = spyOnMusic();
+      render(<App />);
+      fireEvent.click(screen.getByRole("button", { name: /start/i }));
+      expect(music.plays()).toHaveLength(0);
+    });
+
+    it("starts once a boss round begins (not during the intro), and mute pauses it", () => {
+      const music = spyOnMusic();
+      render(<App />);
+      for (let i = 0; i < playthroughsBefore("megalodon"); i++) playThroughOneGame();
+      const before = music.plays().length;
+
+      fireEvent.click(screen.getByRole("button", { name: /start/i }));
+      expect(music.plays()).toHaveLength(before);
+
+      act(() => {
+        vi.advanceTimersByTime(2500);
+      });
+      expect(music.plays().length).toBeGreaterThan(before);
+
+      const pausesBefore = music.pauses().length;
+      fireEvent.click(screen.getByRole("button", { name: "Mute music" }));
+      expect(music.pauses().length).toBeGreaterThan(pausesBefore);
+      expect(localStorage.getItem("puffer-panic:muted")).toBe("1");
+    });
+  });
 });
 
 describe("App - Hard Mode full playthrough", () => {

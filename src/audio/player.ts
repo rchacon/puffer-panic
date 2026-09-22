@@ -55,3 +55,54 @@ export function playUrl(url: string, volume?: number): Promise<void> {
 export function preloadPrompts(words: string[]): void {
   for (const w of words) element(promptSrc(w));
 }
+
+// Background music: one looping element, separate from the one-shot cache
+// above (play() rewinds and resets volume on every call, which is exactly
+// wrong for a track that should keep going across rounds).
+let music: HTMLAudioElement | null = null;
+
+function ensureMusicElement(url: string): HTMLAudioElement {
+  if (!music || music.getAttribute("src") !== url) {
+    music?.pause();
+    music = new Audio(url);
+    music.loop = true;
+    music.preload = "auto";
+  }
+  return music;
+}
+
+/**
+ * Warm the browser's fetch of the background track ahead of time, so
+ * playback can start instantly once a boss round begins instead of a cold
+ * fetch of a multi-MB file starting right when it's meant to be heard.
+ * Only sets up the element/starts the network request -- doesn't call
+ * play(), so (unlike startMusic) it's safe to call with no user gesture,
+ * e.g. once on app mount.
+ */
+export function preloadMusic(url: string): void {
+  ensureMusicElement(url);
+}
+
+/** Start (or resume) the looping background track. Safe to call repeatedly. */
+export function startMusic(url: string, volume: number): Promise<void> {
+  const el = ensureMusicElement(url);
+  el.volume = volume;
+  const result = el.play() as Promise<void> | undefined;
+  return result instanceof Promise ? result.catch(() => undefined) : Promise.resolve();
+}
+
+/** Pause the track where it is (mute), so unmuting picks up mid-song. */
+export function pauseMusic(): void {
+  music?.pause();
+}
+
+/** Pause and rewind, so the next game starts the track from the top. */
+export function stopMusic(): void {
+  if (!music) return;
+  music.pause();
+  try {
+    music.currentTime = 0;
+  } catch {
+    // not seekable yet -- ignore
+  }
+}
