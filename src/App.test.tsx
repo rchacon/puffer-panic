@@ -238,37 +238,61 @@ describe("App - predator escalation", () => {
       ) {
         paused.push(this.src);
       });
-      return {
-        plays: () => played.filter((s) => s.includes("ebunny-ocean")),
-        pauses: () => paused.filter((s) => s.includes("ebunny-ocean")),
-      };
+      // Boss levels and plain levels each loop a different shared track
+      // (see AGENTS.md) -- filter by which one a given assertion cares about.
+      const track = (needle: string) => ({
+        plays: () => played.filter((s) => s.includes(needle)),
+        pauses: () => paused.filter((s) => s.includes(needle)),
+      });
+      return { boss: track("ebunny-ocean"), plain: track("skidnney") };
     }
 
-    it("doesn't play during a plain (non-boss) predator's rounds", () => {
+    it("plays the non-boss track, not the boss track, during a plain predator's rounds", () => {
       const music = spyOnMusic();
       render(<App />);
       fireEvent.click(screen.getByRole("button", { name: /start/i }));
-      expect(music.plays()).toHaveLength(0);
+      expect(music.plain.plays().length).toBeGreaterThan(0);
+      expect(music.boss.plays()).toHaveLength(0);
     });
 
-    it("starts once a boss round begins (not during the intro), and mute pauses it", () => {
+    it("starts the boss track once a boss round begins (not during the intro), and mute pauses it", () => {
       const music = spyOnMusic();
       render(<App />);
       for (let i = 0; i < playthroughsBefore("megalodon"); i++) playThroughOneGame();
-      const before = music.plays().length;
+      const before = music.boss.plays().length;
 
       fireEvent.click(screen.getByRole("button", { name: /start/i }));
-      expect(music.plays()).toHaveLength(before);
+      expect(music.boss.plays()).toHaveLength(before);
 
       act(() => {
         vi.advanceTimersByTime(2500);
       });
-      expect(music.plays().length).toBeGreaterThan(before);
+      expect(music.boss.plays().length).toBeGreaterThan(before);
 
-      const pausesBefore = music.pauses().length;
+      const pausesBefore = music.boss.pauses().length;
       fireEvent.click(screen.getByRole("button", { name: "Mute music" }));
-      expect(music.pauses().length).toBeGreaterThan(pausesBefore);
+      expect(music.boss.pauses().length).toBeGreaterThan(pausesBefore);
       expect(localStorage.getItem("puffer-panic:muted")).toBe("1");
+    });
+
+    it("doesn't leave the previous level's track playing once a different level's rounds begin", () => {
+      const music = spyOnMusic();
+      render(<App />);
+
+      // Play through however many plain (non-boss) games it takes to reach
+      // the Megalodon -- each one loops the plain track for its own rounds.
+      for (let i = 0; i < playthroughsBefore("megalodon"); i++) playThroughOneGame();
+      expect(music.plain.plays().length).toBeGreaterThan(0);
+
+      fireEvent.click(screen.getByRole("button", { name: /start/i }));
+      act(() => {
+        vi.advanceTimersByTime(2500);
+      });
+
+      expect(music.boss.plays().length).toBeGreaterThan(0);
+      // The plain track was paused (at least once, leaving its own last
+      // game) rather than left running underneath the boss track.
+      expect(music.plain.pauses().length).toBeGreaterThan(0);
     });
   });
 });

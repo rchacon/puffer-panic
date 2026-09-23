@@ -13,6 +13,7 @@ import megalodonMusic from "./assets/megalodon-music.wav";
 import bloopSound from "./assets/bloop-sound.wav";
 import amargasaurusMusic from "./assets/amargasaurus-music.wav";
 import bossMusic from "./assets/ebunny-ocean.mp3";
+import nonBossMusic from "./assets/skidnney-arcade-game-bgm.mp3";
 import { useBackgroundMusic } from "./audio/useBackgroundMusic";
 import { loadMuted, saveMuted } from "./data/muteSelection";
 import { MuteButton } from "./components/MuteButton";
@@ -119,10 +120,14 @@ export default function App() {
   const predator = getPredatorLevel(playCount || 1);
   const nextPredator = getPredatorLevel(playCount + 1);
 
-  // Looping background track for every boss fight's rounds (whichever kinds
-  // BOSS_INTROS lists), not plain predators. Starts only once the round
-  // actually begins -- after the intro's own sting has finished -- and stops
-  // on the result screen. The mute choice is a persisted per-player
+  // Looping background track for every level's rounds -- the shared boss
+  // track for whichever kinds BOSS_INTROS lists, or the shared non-boss
+  // track for everything else. One useBackgroundMusic call handles both:
+  // which url it's given switches with predator.kind, not `active` itself,
+  // so a plain predator's rounds get music too, just a different track.
+  // Starts only once the round actually begins -- after a boss intro's own
+  // sting has finished, immediately for a plain predator -- and stops on
+  // the result screen. The mute choice is a persisted per-player
   // preference, like mode.
   const [muted, setMuted] = useState(() => loadMuted());
   const toggleMuted = () => {
@@ -130,16 +135,20 @@ export default function App() {
     saveMuted(!muted);
   };
   const inRound = state.phase === "playing" || state.phase === "reveal";
-  useBackgroundMusic(bossMusic, 0.35, inRound && predator.kind in BOSS_INTROS, muted);
+  const musicUrl = predator.kind in BOSS_INTROS ? bossMusic : nonBossMusic;
+  useBackgroundMusic(musicUrl, 0.35, inRound, muted);
 
-  // Warm the network fetch for the (multi-MB) boss track as early as
-  // possible -- on mount, not when a boss round actually starts -- so
-  // useBackgroundMusic's own startMusic() call finds it already loaded
-  // instead of beginning a cold fetch right when playback is wanted. Just
-  // sets up the <audio> element/starts the request; doesn't play anything,
-  // so no user gesture is needed here.
+  // Warm the network fetch for both (multi-MB) tracks as early as possible
+  // -- on mount, not when a round actually starts -- so useBackgroundMusic's
+  // own startMusic() call finds whichever one it needs already loaded
+  // instead of beginning a cold fetch right when playback is wanted. Both,
+  // not just the one the first game will use, since which track plays next
+  // depends on predator escalation the player hasn't triggered yet. Just
+  // sets up the <audio> elements/starts the requests; doesn't play
+  // anything, so no user gesture is needed here.
   useEffect(() => {
     preloadMusic(bossMusic);
+    preloadMusic(nonBossMusic);
   }, []);
 
   // The currently-showing boss intro, if any -- see BOSS_INTROS above.

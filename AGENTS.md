@@ -43,20 +43,27 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   `scopeIds.ts` is the shared id-uniquing helper `Shark`/`Piranha` both need
   (see there).
 - `src/audio/player.ts` &mdash; plays clips from `public/audio/`, degrades to
-  silence if a file is missing or autoplay is blocked. Also owns the single
-  looping background-music element (`startMusic`/`pauseMusic`/`stopMusic`,
-  plus `preloadMusic` to warm its fetch ahead of time), driven by
-  `useBackgroundMusic.ts`. `App.tsx` plays `src/assets/ebunny-ocean.mp3`
-  (user-provided, ~5.4MB -- provenance/license not verified, check before
-  reusing) on loop during the rounds of every boss fight (any kind in
-  `BOSS_INTROS`), starting after the intro's own sting ends and stopping on
-  the result screen. `App.tsx` calls `preloadMusic` once on mount (not when
-  a boss round actually starts) so this multi-MB file has as long as
-  possible to finish fetching before it's needed -- `startMusic`/
-  `preloadMusic` share an `ensureMusicElement` helper so both end up
-  touching the same cached `<audio>` element instead of two separate ones.
-  `MuteButton` (corner of the app, always visible) pauses it; the choice
-  persists in
+  silence if a file is missing or autoplay is blocked. Also owns looping
+  background-music elements (`startMusic`/`pauseMusic`/`stopMusic`, plus
+  `preloadMusic` to warm a fetch ahead of time), driven by
+  `useBackgroundMusic.ts` and cached by url in a `Map` (`musicCache`) rather
+  than a single element, since there are now two distinct tracks in play at
+  different times &mdash; `startMusic` pauses whichever cached track isn't the
+  one it's switching to, so a previous game's different track can't keep
+  playing underneath the new one. `App.tsx` plays one of two tracks on loop
+  during every level's rounds, picked by `predator.kind`: the boss tracks'
+  shared `src/assets/ebunny-ocean.mp3` for any kind in `BOSS_INTROS`, or
+  `src/assets/skidnney-arcade-game-bgm.mp3` for every other (plain)
+  predator's rounds (both user-provided, ~5.4MB/~3MB &mdash; provenance/license
+  not verified for either, check before reusing). Starts once the round
+  actually begins (after a boss intro's own sting ends, immediately for a
+  plain predator) and stops on the result screen. `App.tsx` calls
+  `preloadMusic` for *both* tracks once on mount (not when a round actually
+  starts, and not just the one the next game will use, since which track
+  that is depends on predator escalation the player hasn't triggered yet)
+  so neither multi-MB file starts a cold fetch right when it's needed.
+  `MuteButton` (corner of the app, always visible) pauses whichever track is
+  playing; the choice persists in
   `localStorage["puffer-panic:muted"]` (`src/data/muteSelection.ts`).
 - `src/shared/` &mdash; plain `.mjs` (not `.ts`) helpers needed by both the app
   and a `scripts/*.mjs` tool, e.g. `textUtils.mjs`'s `toMidSentence` (used by
