@@ -7,11 +7,12 @@
 const BASE = import.meta.env.BASE_URL;
 const cache = new Map<string, HTMLAudioElement>();
 
-function element(src: string): HTMLAudioElement {
+function element(src: string, options?: { loop?: boolean }): HTMLAudioElement {
   let el = cache.get(src);
   if (!el) {
     el = new Audio(src);
     el.preload = "auto";
+    if (options?.loop) el.loop = true;
     cache.set(src, el);
   }
   return el;
@@ -56,52 +57,59 @@ export function preloadPrompts(words: string[]): void {
   for (const w of words) element(promptSrc(w));
 }
 
-// Background music: one looping element, separate from the one-shot cache
-// above (play() rewinds and resets volume on every call, which is exactly
-// wrong for a track that should keep going across rounds).
-let music: HTMLAudioElement | null = null;
-
-function ensureMusicElement(url: string): HTMLAudioElement {
-  if (!music || music.getAttribute("src") !== url) {
-    music?.pause();
-    music = new Audio(url);
-    music.loop = true;
-    music.preload = "auto";
-  }
-  return music;
-}
+// Background music: looping elements, still cached by url (one per distinct
+// track -- there are now two, the boss tracks' shared ebunny-ocean.mp3 and
+// the non-boss levels' skidnney-arcade-game-bgm.mp3, see App.tsx), but
+// sharing the same `cache` map/`element()` helper as the one-shot clips
+// above (via `{ loop: true }`) rather than a second near-identical map --
+// url collisions aren't a concern, prompt/cue src's and music asset urls
+// never overlap. `activeMusic` is whichever cached element is the current
+// game's track -- both startMusic and pauseMusic take `url` and re-resolve
+// it into activeMusic themselves, not just startMusic, so it can't go
+// stale while e.g. muted skips ever calling startMusic for a
+// newly-escalated level's track (stopMusic doesn't need its own url --
+// it's only ever called right as a game ends, before url has changed to
+// the next one, so activeMusic is already the right element by then).
+// startMusic pauses whatever activeMusic previously pointed to if it
+// differs, so leftover audio from a previous game's different track can
+// never keep playing underneath the new one.
+let activeMusic: HTMLAudioElement | null = null;
 
 /**
- * Warm the browser's fetch of the background track ahead of time, so
- * playback can start instantly once a boss round begins instead of a cold
+ * Warm the browser's fetch of a background track ahead of time, so
+ * playback can start instantly once a round begins instead of a cold
  * fetch of a multi-MB file starting right when it's meant to be heard.
  * Only sets up the element/starts the network request -- doesn't call
  * play(), so (unlike startMusic) it's safe to call with no user gesture,
- * e.g. once on app mount.
+ * e.g. once on app mount. Safe to call for more than one url -- each gets
+ * its own cached element, unlike startMusic/stopMusic's single active one.
  */
 export function preloadMusic(url: string): void {
-  ensureMusicElement(url);
+  element(url, { loop: true });
 }
 
-/** Start (or resume) the looping background track. Safe to call repeatedly. */
+/** Start (or resume) the looping background track at `url`. Safe to call repeatedly. */
 export function startMusic(url: string, volume: number): Promise<void> {
-  const el = ensureMusicElement(url);
+  const el = element(url, { loop: true });
+  if (activeMusic && activeMusic !== el) activeMusic.pause();
+  activeMusic = el;
   el.volume = volume;
   const result = el.play() as Promise<void> | undefined;
   return result instanceof Promise ? result.catch(() => undefined) : Promise.resolve();
 }
 
-/** Pause the track where it is (mute), so unmuting picks up mid-song. */
-export function pauseMusic(): void {
-  music?.pause();
+/** Pause the track at `url` where it is (mute), so unmuting picks up mid-song. */
+export function pauseMusic(url: string): void {
+  activeMusic = element(url, { loop: true });
+  activeMusic.pause();
 }
 
-/** Pause and rewind, so the next game starts the track from the top. */
+/** Pause and rewind the active track, so the next game starts it from the top. */
 export function stopMusic(): void {
-  if (!music) return;
-  music.pause();
+  if (!activeMusic) return;
+  activeMusic.pause();
   try {
-    music.currentTime = 0;
+    activeMusic.currentTime = 0;
   } catch {
     // not seekable yet -- ignore
   }
