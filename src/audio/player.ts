@@ -64,9 +64,15 @@ export function preloadPrompts(words: string[]): void {
 // above (via `{ loop: true }`) rather than a second near-identical map --
 // url collisions aren't a concern, prompt/cue src's and music asset urls
 // never overlap. `activeMusic` is whichever cached element is the current
-// game's track -- startMusic pauses any *other* cached track before
-// switching to it, so leftover audio from a previous game's different
-// track can never keep playing underneath the new one.
+// game's track -- both startMusic and pauseMusic take `url` and re-resolve
+// it into activeMusic themselves, not just startMusic, so it can't go
+// stale while e.g. muted skips ever calling startMusic for a
+// newly-escalated level's track (stopMusic doesn't need its own url --
+// it's only ever called right as a game ends, before url has changed to
+// the next one, so activeMusic is already the right element by then).
+// startMusic pauses whatever activeMusic previously pointed to if it
+// differs, so leftover audio from a previous game's different track can
+// never keep playing underneath the new one.
 let activeMusic: HTMLAudioElement | null = null;
 
 /**
@@ -92,9 +98,10 @@ export function startMusic(url: string, volume: number): Promise<void> {
   return result instanceof Promise ? result.catch(() => undefined) : Promise.resolve();
 }
 
-/** Pause the active track where it is (mute), so unmuting picks up mid-song. */
-export function pauseMusic(): void {
-  activeMusic?.pause();
+/** Pause the track at `url` where it is (mute), so unmuting picks up mid-song. */
+export function pauseMusic(url: string): void {
+  activeMusic = element(url, { loop: true });
+  activeMusic.pause();
 }
 
 /** Pause and rewind the active track, so the next game starts it from the top. */
