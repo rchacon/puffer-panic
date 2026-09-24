@@ -58,12 +58,15 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   not verified for either, check before reusing). Starts once the round
   actually begins (after a boss intro's own sting ends, immediately for a
   plain predator) and stops on the result screen. `App.tsx` calls
-  `preloadMusic` for *both* tracks once on mount (not when a round actually
-  starts, and not just the one the next game will use, since which track
-  that is depends on predator escalation the player hasn't triggered yet)
-  so neither multi-MB file starts a cold fetch right when it's needed.
-  `MuteButton` (corner of the app, always visible) pauses whichever track is
-  playing; the choice persists in
+  `preloadMusic` for the non-boss track unconditionally on mount (every
+  session's first level is always a plain predator) but only preloads the
+  boss track once `nextPredator.kind` is actually one &mdash; not
+  unconditionally on every mount, so a player who never reaches a boss
+  level doesn't pay for its ~5.4MB; `nextPredator` is already known for a
+  whole game's length before that level itself starts, so this still has
+  plenty of lead time once it does trigger. `MuteButton` (corner of the
+  app, always visible) pauses whichever track is playing; the choice
+  persists in
   `localStorage["puffer-panic:muted"]` (`src/data/muteSelection.ts`).
 - `src/shared/` &mdash; plain `.mjs` (not `.ts`) helpers needed by both the app
   and a `scripts/*.mjs` tool, e.g. `textUtils.mjs`'s `toMidSentence` (used by

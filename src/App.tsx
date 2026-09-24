@@ -138,18 +138,24 @@ export default function App() {
   const musicUrl = predator.kind in BOSS_INTROS ? bossMusic : nonBossMusic;
   useBackgroundMusic(musicUrl, 0.35, inRound, muted);
 
-  // Warm the network fetch for both (multi-MB) tracks as early as possible
-  // -- on mount, not when a round actually starts -- so useBackgroundMusic's
-  // own startMusic() call finds whichever one it needs already loaded
-  // instead of beginning a cold fetch right when playback is wanted. Both,
-  // not just the one the first game will use, since which track plays next
-  // depends on predator escalation the player hasn't triggered yet. Just
-  // sets up the <audio> elements/starts the requests; doesn't play
-  // anything, so no user gesture is needed here.
+  // Warm the network fetch for background tracks ahead of time -- on mount/
+  // as soon as known, not when a round actually starts -- so
+  // useBackgroundMusic's own startMusic() call finds whichever one it
+  // needs already loaded instead of beginning a cold fetch right when
+  // playback is wanted. The non-boss track preloads unconditionally on
+  // mount, since every session's very first level is always a plain
+  // predator; the boss track only once nextPredator.kind actually is one
+  // (not unconditionally on every mount) -- a player who never reaches a
+  // boss level shouldn't pay for its ~5.4MB. nextPredator is already known
+  // for a whole game's length before that level itself ever starts (it's
+  // derived from playCount, which only changes in beginGame() -- see
+  // above), so this still has plenty of lead time once it does trigger.
   useEffect(() => {
-    preloadMusic(bossMusic);
     preloadMusic(nonBossMusic);
   }, []);
+  useEffect(() => {
+    if (nextPredator.kind in BOSS_INTROS) preloadMusic(bossMusic);
+  }, [nextPredator.kind]);
 
   // The currently-showing boss intro, if any -- see BOSS_INTROS above.
   const [activeBossIntro, setActiveBossIntro] = useState<BossIntro | null>(null);
