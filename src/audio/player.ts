@@ -7,11 +7,12 @@
 const BASE = import.meta.env.BASE_URL;
 const cache = new Map<string, HTMLAudioElement>();
 
-function element(src: string): HTMLAudioElement {
+function element(src: string, options?: { loop?: boolean }): HTMLAudioElement {
   let el = cache.get(src);
   if (!el) {
     el = new Audio(src);
     el.preload = "auto";
+    if (options?.loop) el.loop = true;
     cache.set(src, el);
   }
   return el;
@@ -56,28 +57,17 @@ export function preloadPrompts(words: string[]): void {
   for (const w of words) element(promptSrc(w));
 }
 
-// Background music: looping elements, cached by url (one per distinct
+// Background music: looping elements, still cached by url (one per distinct
 // track -- there are now two, the boss tracks' shared ebunny-ocean.mp3 and
-// the non-boss levels' skidnney-arcade-game-bgm.mp3, see App.tsx) and kept
-// separate from the one-shot cache above (play() rewinds and resets volume
-// on every call, which is exactly wrong for a track that should keep going
-// across rounds). `activeMusic` is whichever of the cached elements is the
-// current game's track -- startMusic pauses any *other* cached track before
-// switching to it, so leftover audio from a previous game's different track
-// can never keep playing underneath the new one.
-const musicCache = new Map<string, HTMLAudioElement>();
+// the non-boss levels' skidnney-arcade-game-bgm.mp3, see App.tsx), but
+// sharing the same `cache` map/`element()` helper as the one-shot clips
+// above (via `{ loop: true }`) rather than a second near-identical map --
+// url collisions aren't a concern, prompt/cue src's and music asset urls
+// never overlap. `activeMusic` is whichever cached element is the current
+// game's track -- startMusic pauses any *other* cached track before
+// switching to it, so leftover audio from a previous game's different
+// track can never keep playing underneath the new one.
 let activeMusic: HTMLAudioElement | null = null;
-
-function ensureMusicElement(url: string): HTMLAudioElement {
-  let el = musicCache.get(url);
-  if (!el) {
-    el = new Audio(url);
-    el.loop = true;
-    el.preload = "auto";
-    musicCache.set(url, el);
-  }
-  return el;
-}
 
 /**
  * Warm the browser's fetch of a background track ahead of time, so
@@ -89,12 +79,12 @@ function ensureMusicElement(url: string): HTMLAudioElement {
  * its own cached element, unlike startMusic/stopMusic's single active one.
  */
 export function preloadMusic(url: string): void {
-  ensureMusicElement(url);
+  element(url, { loop: true });
 }
 
 /** Start (or resume) the looping background track at `url`. Safe to call repeatedly. */
 export function startMusic(url: string, volume: number): Promise<void> {
-  const el = ensureMusicElement(url);
+  const el = element(url, { loop: true });
   if (activeMusic && activeMusic !== el) activeMusic.pause();
   activeMusic = el;
   el.volume = volume;

@@ -46,12 +46,16 @@ library &mdash; a `useReducer` state machine and hand-written inline SVG.
   silence if a file is missing or autoplay is blocked. Also owns looping
   background-music elements (`startMusic`/`pauseMusic`/`stopMusic`, plus
   `preloadMusic` to warm a fetch ahead of time), driven by
-  `useBackgroundMusic.ts` and cached by url in a `Map` (`musicCache`) rather
-  than a single element, since there are now two distinct tracks in play at
-  different times &mdash; `startMusic` pauses whichever cached track isn't the
-  one it's switching to, so a previous game's different track can't keep
-  playing underneath the new one. `App.tsx` plays one of two tracks on loop
-  during every level's rounds, picked by `predator.kind`: the boss tracks'
+  `useBackgroundMusic.ts`, sharing the same url-keyed cache/`element()`
+  helper the one-shot clips above use (`{ loop: true }` sets the one
+  difference) rather than a second near-identical cache &mdash; there are two
+  distinct tracks in play at different times, but no risk of a url
+  collision with a prompt/cue clip. `activeMusic` is whichever cached
+  element is the current game's track -- `startMusic` pauses any *other*
+  cached track before switching to it, so a previous game's different
+  track can't keep playing underneath the new one. `App.tsx` plays one of
+  two tracks on loop during every level's rounds, picked by
+  `predator.kind`: the boss tracks'
   shared `src/assets/ebunny-ocean.mp3` for any kind in `BOSS_INTROS`, or
   `src/assets/skidnney-arcade-game-bgm.mp3` for every other (plain)
   predator's rounds (both user-provided, ~5.4MB/~3MB &mdash; provenance/license
